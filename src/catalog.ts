@@ -589,7 +589,7 @@ export interface Walk {
   readonly dormant: readonly DormantAnswer[];
 }
 
-function holds(
+export function holds(
   guard: Guard,
   chosen: ReadonlyMap<DecisionId, OptionId>,
 ): boolean {

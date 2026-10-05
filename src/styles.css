@@ -11,7 +11,7 @@ body {
 }
 
 .page {
-  max-width: 42rem;
+  max-width: 46rem;
   margin: 0 auto;
   padding: 2rem 1.25rem 4rem;
 }
@@ -45,22 +45,40 @@ ol {
   list-style: none;
 }
 
-.step {
-  padding: 1rem 0;
+.decision {
+  margin: 0 0 1.25rem;
+  padding-top: 0.75rem;
   border-top: 1px solid #d6d3d1;
 }
 
-.step-kicker {
-  margin: 0;
-  color: #57534e;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+.decision-idle {
+  border-top-color: #e7e5e4;
 }
 
 h3 {
   margin: 0.15rem 0 0.35rem;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+}
+
+.branch {
+  padding-left: 0.75rem;
+  border-left: 3px solid #1f2933;
+}
+
+.branch-idle {
+  border-left-color: #d6d3d1;
+}
+
+.children {
+  margin: 0.75rem 0 0.25rem;
+}
+
+.leads {
+  margin: 0 0 0.4rem;
+  color: #57534e;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .options {

@@ -5,97 +5,78 @@ import {
   decodeAnswers,
   encodeAnswers,
   type OptionId,
-  type Walk,
-  type WalkStep,
   walk,
   withAnswer,
 } from "./catalog";
+import { decisionTree, type TreeDecision, type TreeOption } from "./tree";
 
-export interface WalkViewProps {
-  readonly walk: Walk;
-  readonly onAnswer: (decision: DecisionId, option: OptionId) => void;
-}
-
-function titles(current: Walk): Map<string, string> {
-  return new Map(
-    current.steps.map((step) => [step.decision.id, step.decision.title]),
-  );
-}
-
-function Step({
-  step,
-  because,
+function OptionBranch({
+  option,
   onAnswer,
+  decision,
 }: {
-  readonly step: WalkStep;
-  readonly because: readonly string[];
+  readonly option: TreeOption;
+  readonly decision: DecisionId;
   readonly onAnswer: (decision: DecisionId, option: OptionId) => void;
 }) {
-  const citation = step.decision.citations[0];
   return (
-    <li className="step">
-      <p className="step-kicker">
-        {step.index + 1}.{" "}
-        {step.decision.stance === "fact" ? "Environment" : "Choice"}
-      </p>
-      <h3>{step.decision.title}</h3>
-      <p>{step.decision.prompt}</p>
-      <div className="options">
-        {step.options.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            className="option"
-            aria-pressed={option.id === step.chosen}
-            onClick={() => onAnswer(step.decision.id, option.id)}
-          >
-            <span className="option-label">{option.label}</span>
-            <span className="option-summary">{option.summary}</span>
-          </button>
-        ))}
-      </div>
-      <p className="rationale">{step.decision.defaultRationale}</p>
-      {because.length > 0 ? (
-        <p className="because">Shown because of {because.join(", ")}.</p>
+    <div className={option.selected ? "branch" : "branch branch-idle"}>
+      <button
+        type="button"
+        className="option"
+        aria-pressed={option.selected}
+        aria-label={option.label}
+        data-decision={decision}
+        data-option={option.id}
+        onClick={() => onAnswer(decision, option.id)}
+      >
+        <span className="option-label">{option.label}</span>
+        <span className="option-summary">{option.summary}</span>
+      </button>
+      {option.children.length > 0 ? (
+        <div className="children">
+          <p className="leads">Leads to</p>
+          {option.children.map((child) => (
+            <DecisionNode key={child.id} node={child} onAnswer={onAnswer} />
+          ))}
+        </div>
       ) : null}
-      <p className="citation">
-        <a href={citation.url} rel="noreferrer">
-          {citation.locator}
-        </a>
-      </p>
-    </li>
+    </div>
   );
 }
 
-export function WalkView({ walk: current, onAnswer }: WalkViewProps) {
-  const byId = titles(current);
+function DecisionNode({
+  node,
+  onAnswer,
+}: {
+  readonly node: TreeDecision;
+  readonly onAnswer: (decision: DecisionId, option: OptionId) => void;
+}) {
   return (
-    <div className="walk">
-      {current.sections.map((section) => (
-        <section key={section.id}>
-          <h2>{section.title}</h2>
-          <ol>
-            {current.steps
-              .filter((step) => step.decision.section === section.id)
-              .map((step) => (
-                <Step
-                  key={step.decision.id}
-                  step={step}
-                  because={step.because.map((id) => byId.get(id) ?? id)}
-                  onAnswer={onAnswer}
-                />
-              ))}
-          </ol>
-        </section>
-      ))}
-      {current.dormant.length > 0 ? (
-        <p className="dormant">
-          {current.dormant.length} earlier{" "}
-          {current.dormant.length === 1 ? "answer is" : "answers are"} saved and
-          return if this path includes them again.
-        </p>
-      ) : null}
-    </div>
+    <article
+      className={node.active ? "decision" : "decision decision-idle"}
+      data-decision={node.id}
+      data-active={node.active ? "true" : "false"}
+    >
+      <h3>{node.title}</h3>
+      <p>{node.prompt}</p>
+      <div className="options">
+        {node.options.map((option) => (
+          <OptionBranch
+            key={option.id}
+            option={option}
+            decision={node.id}
+            onAnswer={onAnswer}
+          />
+        ))}
+      </div>
+      <p className="rationale">{node.rationale}</p>
+      <p className="citation">
+        <a href={node.url} rel="noreferrer">
+          {node.locator}
+        </a>
+      </p>
+    </article>
   );
 }
 
@@ -109,19 +90,19 @@ export function App({ catalog }: { readonly catalog: Catalog }) {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
   const answers = decodeAnswers(catalog, hash);
-  const current = walk(catalog, answers);
+  const tree = decisionTree(catalog, answers);
   return (
     <main className="page">
       <header>
         <p className="release">
           OpenShift Container Platform {catalog.release}
         </p>
-        <h1>Bare metal install decisions</h1>
+        <h1>Agent-based bare metal decisions</h1>
         <p className="lede">
-          These are the decisions named by the installation overview. Defaults
-          are the shortest path. A connected network uses the Assisted
-          Installer. Choosing installer-provisioned infrastructure adds the
-          ingress load balancer question.
+          Every branch is an Agent-based Installer choice. A choice that opens
+          more work shows those decisions underneath it. Defaults are the
+          shortest path: platform baremetal, DHCP, a full ISO, and the default
+          br-ex bridge.
         </p>
         <p>
           <button
@@ -136,17 +117,22 @@ export function App({ catalog }: { readonly catalog: Catalog }) {
           </button>
         </p>
       </header>
-      <WalkView
-        walk={current}
-        onAnswer={(decision, option) => {
-          const next = encodeAnswers(
-            walk(catalog, withAnswer(answers, decision, option)),
-          );
-          if (next === hash) return;
-          window.location.hash = next;
-          setHash(next);
-        }}
-      />
+      <div className="tree">
+        {tree.roots.map((node) => (
+          <DecisionNode
+            key={node.id}
+            node={node}
+            onAnswer={(decision, option) => {
+              const next = encodeAnswers(
+                walk(catalog, withAnswer(answers, decision, option)),
+              );
+              if (next === hash) return;
+              window.location.hash = next;
+              setHash(next);
+            }}
+          />
+        ))}
+      </div>
     </main>
   );
 }
