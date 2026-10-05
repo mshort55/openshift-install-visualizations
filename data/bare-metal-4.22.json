@@ -2,39 +2,54 @@
   "release": "4.22",
   "platform": "bare-metal",
   "sections": [
-    { "id": "connectivity", "title": "Network reachability" },
-    { "id": "method", "title": "Install method" },
-    { "id": "ingress", "title": "Ingress" },
-    { "id": "cryptography", "title": "FIPS" }
+    { "id": "platform", "title": "Platform and topology" },
+    { "id": "access", "title": "Images and proxy" },
+    { "id": "boot", "title": "Boot media" },
+    { "id": "network", "title": "Host and cluster networks" },
+    { "id": "cluster", "title": "Cluster settings" },
+    { "id": "exposure", "title": "Load balancing and host records" },
+    { "id": "operate", "title": "Ready for applications" }
   ],
   "decisions": [
     {
-      "id": "network-connectivity",
-      "section": "connectivity",
-      "stance": "fact",
-      "title": "Network reachability",
+      "id": "architecture",
+      "section": "platform",
+      "stance": "choice",
+      "title": "CPU architecture",
       "variants": [
         {
           "when": { "kind": "always" },
-          "prompt": "Can the hosts reach the internet?",
+          "prompt": "Which architecture are the hosts?",
           "default": {
-            "id": "connected",
-            "label": "Connected",
-            "summary": "The hosts can reach the internet."
+            "id": "amd64",
+            "label": "x86_64",
+            "summary": "amd64. Every machine pool must use the same architecture."
           },
-          "defaultRationale": "The installation overview calls the Assisted Installer the easiest method when the network is connected, so the shortest path starts there.",
+          "defaultRationale": "The agent-based parameter table lists amd64, arm64, ppc64le, and s390x, and mixed architectures are not supported.",
           "alternatives": [
             {
-              "id": "disconnected",
-              "label": "Disconnected or restricted",
-              "summary": "The hosts cannot reach the internet directly.",
+              "id": "arm64",
+              "label": "ARM 64-bit",
+              "summary": "arm64 for every pool.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "ppc64le",
+              "label": "IBM Power",
+              "summary": "ppc64le for every pool.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "s390x",
+              "label": "IBM Z or LinuxONE",
+              "summary": "s390x. ISO boot is only supported on KVM. z/VM and LPAR boot with PXE.",
               "when": { "kind": "always" }
             }
           ],
           "citations": [
             {
-              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/ocp-installation-overview",
-              "locator": "1.1. The OpenShift Container Platform installation",
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.3. compute.architecture",
               "extraction": "extracted"
             }
           ]
@@ -42,48 +57,147 @@
       ]
     },
     {
-      "id": "install-method",
-      "section": "method",
+      "id": "platform",
+      "section": "platform",
       "stance": "choice",
-      "title": "Install method",
+      "title": "Platform",
       "variants": [
         {
-          "when": {
-            "kind": "answer",
-            "decision": "network-connectivity",
-            "isAnyOf": ["connected"]
-          },
-          "prompt": "Which install method will you use?",
+          "when": { "kind": "always" },
+          "prompt": "Which platform value will install-config.yaml use for these bare metal hosts?",
           "default": {
-            "id": "assisted",
-            "label": "Assisted Installer",
-            "summary": "A web installer with pre-flight checks. On bare metal you still supply the machines, network, load balancer, and storage."
+            "id": "baremetal",
+            "label": "baremetal",
+            "summary": "platform.baremetal. Day-2 provisioning fields can be set now so you do not have to add them later."
           },
-          "defaultRationale": "The overview calls the Assisted Installer the easiest way to install when the network is connected.",
+          "defaultRationale": "The parameter guide lists baremetal as a platform. Its bare metal table is not used to boot the agent ISO, but it is there for the cluster after installation.",
           "alternatives": [
             {
-              "id": "agent",
-              "label": "Agent-based installer",
-              "summary": "Download the installer and configure it on the command line.",
-              "when": { "kind": "always" }
-            },
-            {
-              "id": "ipi",
-              "label": "Installer-provisioned infrastructure",
-              "summary": "The installer uses each host BMC. You still supply the machines, network, load balancer, and storage.",
-              "when": { "kind": "always" }
-            },
-            {
-              "id": "upi",
-              "label": "User-provisioned infrastructure",
-              "summary": "You prepare the machines, load balancer, DNS, and storage, then generate the install assets.",
+              "id": "none",
+              "label": "none",
+              "summary": "platform.none. You provide API and ingress load balancers yourself, except on single-node OpenShift.",
               "when": { "kind": "always" }
             }
           ],
           "citations": [
             {
-              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/index",
-              "locator": "Table 1.1. Supported platforms",
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.1. platform",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "topology",
+      "section": "platform",
+      "stance": "choice",
+      "title": "Cluster topology",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "How many control plane and compute nodes will the cluster have?",
+          "default": {
+            "id": "ha",
+            "label": "High availability with workers",
+            "summary": "3 control plane nodes and the default of 3 workers. controlPlane.replicas may also be 4 or 5."
+          },
+          "defaultRationale": "Supported control plane replica counts are 3, 4, 5, or 1. The compute replica default is 3.",
+          "alternatives": [
+            {
+              "id": "compact",
+              "label": "Three-node compact",
+              "summary": "3 control plane nodes and 0 workers. Ingress pods run on the control plane.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "sno",
+              "label": "Single-node OpenShift",
+              "summary": "controlPlane.replicas is 1 and there are no workers.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "arbiter",
+              "label": "Two-node with an arbiter",
+              "summary": "arbiter.replicas is 1. ZTP is not supported for two-node clusters with fencing.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.3. controlPlane.replicas and arbiter.replicas",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "network-access",
+      "section": "access",
+      "stance": "fact",
+      "title": "Network reachability",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Can the hosts pull release images from the internet?",
+          "default": {
+            "id": "connected",
+            "label": "Connected",
+            "summary": "Hosts can reach the registries named in the pull secret."
+          },
+          "defaultRationale": "A disconnected install has to mirror the release images first. A connected install does not.",
+          "alternatives": [
+            {
+              "id": "disconnected",
+              "label": "Disconnected or restricted",
+              "summary": "Mirror the OpenShift images into a registry the hosts can reach.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "Chapter 2. Understanding disconnected installation mirroring",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "release-source",
+      "section": "access",
+      "stance": "choice",
+      "title": "Release images",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "network-access",
+            "isAnyOf": ["connected"]
+          },
+          "prompt": "Where do the hosts get the OpenShift release images?",
+          "default": {
+            "id": "connected-pull",
+            "label": "Pull from the public registries",
+            "summary": "Use the pull secret from the Hybrid Cloud Console. No mirror registry."
+          },
+          "defaultRationale": "Connected installs authenticate to the public registries with the pull secret.",
+          "alternatives": [
+            {
+              "id": "no-external-registry",
+              "label": "Self-contained media, no external registry",
+              "summary": "Technology Preview. The media includes a virtualization operator bundle and no storage operators.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "Chapter 5. Installing a cluster without an external registry",
               "extraction": "extracted"
             }
           ]
@@ -91,34 +205,28 @@
         {
           "when": {
             "kind": "answer",
-            "decision": "network-connectivity",
+            "decision": "network-access",
             "isAnyOf": ["disconnected"]
           },
-          "prompt": "Which install method will you use on a disconnected network?",
+          "prompt": "How will a disconnected environment get the release images?",
           "default": {
-            "id": "agent",
-            "label": "Agent-based installer",
-            "summary": "The local agent-based installer is the method the overview recommends when the network is disconnected."
+            "id": "mirror",
+            "label": "Mirror registry",
+            "summary": "Mirror the images, then set imageContentSources from the mirror command output."
           },
-          "defaultRationale": "The overview says the Agent-based installer is for disconnected environments, and it says to prefer Assisted Installer only when you do not need that download.",
+          "defaultRationale": "Chapter 2 says a disconnected install on infrastructure you provision must mirror the images before installation.",
           "alternatives": [
             {
-              "id": "ipi",
-              "label": "Installer-provisioned infrastructure",
-              "summary": "The installer can provision from the BMC in a disconnected environment. You still supply the machines and the network.",
-              "when": { "kind": "always" }
-            },
-            {
-              "id": "upi",
-              "label": "User-provisioned infrastructure",
-              "summary": "You prepare the infrastructure yourself. This method supports a disconnected install.",
+              "id": "no-external-registry",
+              "label": "Self-contained media, no external registry",
+              "summary": "Technology Preview. Skips the mirror registry. Storage operators are not in the bundle.",
               "when": { "kind": "always" }
             }
           ],
           "citations": [
             {
-              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/ocp-installation-overview",
-              "locator": "1.1. The OpenShift Container Platform installation",
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "Chapter 2. Understanding disconnected installation mirroring",
               "extraction": "extracted"
             }
           ]
@@ -126,36 +234,700 @@
       ]
     },
     {
-      "id": "external-load-balancer",
-      "section": "ingress",
+      "id": "mirror-command",
+      "section": "access",
       "stance": "choice",
-      "title": "Ingress load balancer",
+      "title": "Mirror command",
       "variants": [
         {
           "when": {
             "kind": "answer",
-            "decision": "install-method",
-            "isAnyOf": ["ipi"]
+            "decision": "release-source",
+            "isAnyOf": ["mirror"]
           },
-          "prompt": "Must ingress router performance exceed the baseline?",
+          "prompt": "Which command builds the mirror that imageContentSources will point at?",
           "default": {
-            "id": "baseline",
-            "label": "Baseline performance is enough",
-            "summary": "Keep the default IngressController. No extra load balancer."
+            "id": "oc-mirror",
+            "label": "oc-mirror plugin v2",
+            "summary": "The supported way to mirror the release. Copy its output into imageContentSources."
           },
-          "defaultRationale": "The overview requires an external load balancer only when router performance must exceed the baseline.",
+          "defaultRationale": "oc adm release mirror is deprecated in 4.22. The guide tells you to use oc-mirror plugin v2 instead.",
           "alternatives": [
             {
-              "id": "beyond",
-              "label": "Performance must exceed the baseline",
-              "summary": "Configure an external load balancer so ingress VIP traffic is balanced across IngressController replicas.",
+              "id": "oc-adm-release-mirror",
+              "label": "oc adm release mirror",
+              "summary": "Deprecated in 4.22 and planned for removal. Still documented as a source of imageContentSources text.",
               "when": { "kind": "always" }
             }
           ],
           "citations": [
             {
-              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/index",
-              "locator": "2.1.3. Do you want to use existing components in your cluster?",
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "2.2. About mirroring the OpenShift Container Platform image repository",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mirror-trust",
+      "section": "access",
+      "stance": "choice",
+      "title": "Mirror certificate",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "release-source",
+            "isAnyOf": ["mirror"]
+          },
+          "prompt": "How does the cluster trust the mirror registry?",
+          "default": {
+            "id": "additional-trust-bundle",
+            "label": "additionalTrustBundle",
+            "summary": "Paste the mirror CA or self-signed certificate into additionalTrustBundle."
+          },
+          "defaultRationale": "The disconnected procedure says to add that certificate when the mirror is not already trusted.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "Chapter 2. additionalTrustBundle for the mirror registry",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proxy",
+      "section": "access",
+      "stance": "fact",
+      "title": "Proxy or firewall",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Do the hosts reach Red Hat services directly?",
+          "default": {
+            "id": "direct",
+            "label": "Direct",
+            "summary": "No proxy in front of the sites the cluster must reach."
+          },
+          "defaultRationale": "The preparing steps say to configure a firewall or proxy only when one sits between the hosts and the required sites.",
+          "alternatives": [
+            {
+              "id": "proxied",
+              "label": "Proxy or firewall",
+              "summary": "The hosts go through a proxy or firewall. It must allow the sites the cluster needs.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "Chapter 3. Configuring your firewall",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "proxy-trust",
+      "section": "access",
+      "stance": "choice",
+      "title": "Proxy trust bundle",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "proxy",
+            "isAnyOf": ["proxied"]
+          },
+          "prompt": "Does the proxy present a certificate the nodes do not already trust?",
+          "default": {
+            "id": "already-trusted",
+            "label": "Already trusted",
+            "summary": "No extra bundle."
+          },
+          "defaultRationale": "additionalTrustBundle is how a proxy certificate is added to the nodes' trust store when one is required.",
+          "alternatives": [
+            {
+              "id": "additional-trust-bundle",
+              "label": "Add additionalTrustBundle",
+              "summary": "PEM bundle added to the nodes' trusted certificate store.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.3. additionalTrustBundle",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "boot-image",
+      "section": "boot",
+      "stance": "choice",
+      "title": "Boot media",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "How will the hosts boot the agent?",
+          "default": {
+            "id": "full-iso",
+            "label": "Full ISO",
+            "summary": "minimalISO is false. The ISO contains the rootfs."
+          },
+          "defaultRationale": "minimalISO defaults to false, so the generated image is a full ISO.",
+          "alternatives": [
+            {
+              "id": "minimal-iso",
+              "label": "Minimal ISO",
+              "summary": "minimalISO is true. The ISO does not contain the rootfs image.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "pxe",
+              "label": "PXE or iPXE",
+              "summary": "The installer uploads PXE assets to the bootArtifactsBaseURL server.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.8. minimalISO and bootArtifactsBaseURL",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s390x-iso",
+      "section": "boot",
+      "stance": "choice",
+      "title": "IBM Z boot limit",
+      "variants": [
+        {
+          "when": {
+            "kind": "all",
+            "of": [
+              {
+                "kind": "answer",
+                "decision": "architecture",
+                "isAnyOf": ["s390x"]
+              },
+              {
+                "kind": "answer",
+                "decision": "boot-image",
+                "isAnyOf": ["full-iso", "minimal-iso"]
+              }
+            ]
+          },
+          "prompt": "The ISO boot is only supported when the s390x host is KVM. What is the host?",
+          "default": {
+            "id": "kvm",
+            "label": "RHEL KVM",
+            "summary": "ISO or PXE is allowed."
+          },
+          "defaultRationale": "The preparing chapter says ISO boot on s390x is only for RHEL KVM. z/VM and LPAR use PXE.",
+          "alternatives": [
+            {
+              "id": "zvm-or-lpar",
+              "label": "z/VM or LPAR",
+              "summary": "Switch the boot media to PXE. ISO boot is not supported here.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
+              "locator": "1.2. About the Agent-based Installer",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rootfs-url",
+      "section": "boot",
+      "stance": "choice",
+      "title": "Rootfs or PXE asset URL",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "boot-image",
+            "isAnyOf": ["pxe"]
+          },
+          "prompt": "Where will PXE clients download the boot assets?",
+          "default": {
+            "id": "set-url",
+            "label": "Set bootArtifactsBaseURL",
+            "summary": "URL of the server that serves the PXE assets."
+          },
+          "defaultRationale": "For an iPXE script, bootArtifactsBaseURL is the server the installer uploads PXE assets to.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.8. bootArtifactsBaseURL",
+              "extraction": "extracted"
+            }
+          ]
+        },
+        {
+          "when": {
+            "kind": "all",
+            "of": [
+              {
+                "kind": "answer",
+                "decision": "boot-image",
+                "isAnyOf": ["minimal-iso"]
+              },
+              {
+                "kind": "answer",
+                "decision": "network-access",
+                "isAnyOf": ["connected"]
+              }
+            ]
+          },
+          "prompt": "Where does the minimal ISO pull the rootfs?",
+          "default": {
+            "id": "embedded",
+            "label": "Embedded public URL",
+            "summary": "Leave bootArtifactsBaseURL empty. The installer embeds a URL that needs internet access."
+          },
+          "defaultRationale": "On a connected network the embedded rootfs URL is the default when minimalISO is true.",
+          "alternatives": [
+            {
+              "id": "set-url",
+              "label": "Set bootArtifactsBaseURL",
+              "summary": "Point the minimal ISO at your own rootfs URL.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.8. minimalISO",
+              "extraction": "extracted"
+            }
+          ]
+        },
+        {
+          "when": {
+            "kind": "all",
+            "of": [
+              {
+                "kind": "answer",
+                "decision": "boot-image",
+                "isAnyOf": ["minimal-iso"]
+              },
+              {
+                "kind": "answer",
+                "decision": "network-access",
+                "isAnyOf": ["disconnected"]
+              }
+            ]
+          },
+          "prompt": "Where does the minimal ISO pull the rootfs when the network is disconnected?",
+          "default": {
+            "id": "set-url",
+            "label": "Set bootArtifactsBaseURL",
+            "summary": "The embedded URL needs the internet. A disconnected install has to provide its own rootfs URL."
+          },
+          "defaultRationale": "The embedded rootfs URL is only described as usable when the environment has an internet connection.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.8. minimalISO",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ip-family",
+      "section": "network",
+      "stance": "choice",
+      "title": "IP family",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Which address family will the cluster network use?",
+          "default": {
+            "id": "ipv4",
+            "label": "IPv4",
+            "summary": "Single-stack IPv4. Do not install this on a host that is itself dual-stack."
+          },
+          "defaultRationale": "The network section says not to install a single-stack IPv4 cluster on a dual-stack host, and it documents IPv4, IPv6, and dual-stack.",
+          "alternatives": [
+            {
+              "id": "ipv6",
+              "label": "IPv6",
+              "summary": "Single-stack IPv6. networkType stays OVNKubernetes.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "dual-stack",
+              "label": "Dual-stack",
+              "summary": "IPv4 and IPv6 on the same default-gateway NIC, listed in the same order everywhere.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "9.1.2. Network configuration parameters",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dual-stack-rules",
+      "section": "network",
+      "stance": "choice",
+      "title": "Dual-stack rules",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "ip-family",
+            "isAnyOf": ["dual-stack"]
+          },
+          "prompt": "How will you order the two address families?",
+          "default": {
+            "id": "ipv4-first",
+            "label": "IPv4 before IPv6 on one NIC",
+            "summary": "Same NIC for both default gateways. The same order in clusterNetwork, serviceNetwork, and machineNetwork."
+          },
+          "defaultRationale": "Both families must use the same default-gateway interface, and every network list must use the same family order.",
+          "alternatives": [
+            {
+              "id": "ipv6-first",
+              "label": "IPv6 before IPv4 on one NIC",
+              "summary": "Same rules, with IPv6 listed first in every network parameter.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "9.1.2. Network configuration parameters",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "host-addressing",
+      "section": "network",
+      "stance": "choice",
+      "title": "Host addressing",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "How do the hosts get their IP addresses?",
+          "default": {
+            "id": "dhcp",
+            "label": "DHCP",
+            "summary": "Leave networkConfig empty. rendezvousIP must be an address of a host that will be a control plane node."
+          },
+          "defaultRationale": "The preparing chapter shows DHCP with an empty networkConfig and a rendezvous IP chosen before the ISO is built.",
+          "alternatives": [
+            {
+              "id": "static",
+              "label": "Static NMState",
+              "summary": "Put each host address in networkConfig. The same block can describe bonds, VLANs, and SR-IOV.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
+              "locator": "1.6. About networking",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rendezvous",
+      "section": "network",
+      "stance": "choice",
+      "title": "Rendezvous IP",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["dhcp"]
+          },
+          "prompt": "Which address is the rendezvous host?",
+          "default": {
+            "id": "control-plane-dhcp",
+            "label": "A future control plane DHCP address",
+            "summary": "Set rendezvousIP before you generate the ISO. Every host checks in to the service on that address."
+          },
+          "defaultRationale": "With DHCP, rendezvousIP has to be known when the ISO is generated, and it has to belong to a host that will join the control plane.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
+              "locator": "1.6.1. DHCP",
+              "extraction": "extracted"
+            }
+          ]
+        },
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "How is the rendezvous IP chosen when addresses are static?",
+          "default": {
+            "id": "explicit",
+            "label": "Set rendezvousIP",
+            "summary": "Put the rendezvous address in agent-config.yaml."
+          },
+          "defaultRationale": "If you omit rendezvousIP, one address is taken from the hosts' networkConfig. You must set it when no host IP is in networkConfig.",
+          "alternatives": [
+            {
+              "id": "from-network-config",
+              "label": "Select it from networkConfig",
+              "summary": "Omit rendezvousIP and let the installer pick an address that networkConfig already has.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.8. rendezvousIP",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nic-layout",
+      "section": "network",
+      "stance": "choice",
+      "title": "NIC layout",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "What does each host's networkConfig describe?",
+          "default": {
+            "id": "single",
+            "label": "Single interface",
+            "summary": "One ethernet NIC, with name and macAddress filled in so they match networkConfig."
+          },
+          "defaultRationale": "NMState can describe a single NIC, a bond, a VLAN, or SR-IOV. The interfaces table must match networkConfig when you provide one.",
+          "alternatives": [
+            {
+              "id": "bond",
+              "label": "NIC bond",
+              "summary": "Bond member interfaces in NMState. The preparing chapter names bonds as a supported networkConfig.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "vlan",
+              "label": "VLAN",
+              "summary": "A VLAN interface on a parent NIC, in NMState.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "bond-sriov",
+              "label": "Bond and SR-IOV",
+              "summary": "Dual-port NIC with a bond and ethernet.sr-iov.total-vfs, as in the agent-config example.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
+              "locator": "1.9. Example: Bonds and SR-IOV dual-NIC node network configuration",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bond-attributes",
+      "section": "network",
+      "stance": "choice",
+      "title": "Bond attributes",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "nic-layout",
+            "isAnyOf": ["bond", "bond-sriov"]
+          },
+          "prompt": "Will you set bonding mode, MIImon, or QoS on that bond?",
+          "default": {
+            "id": "in-network-config",
+            "label": "Only what networkConfig already says",
+            "summary": "The bond is fully described in the install-time NMState. No later br-ex change for bond attributes."
+          },
+          "defaultRationale": "Chapter 10 lists bonding mode, MIImon, and QoS as bond attributes you can change later on br-ex, which means they are part of the bond decision now.",
+          "alternatives": [
+            {
+              "id": "tune",
+              "label": "Set mode, MIImon, or QoS",
+              "summary": "Record the bonding mode, Media Independent Interface Monitor, and QoS in the NMState bond.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "10.1. Creating a manifest object that includes a customized br-ex bridge",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vlan-id",
+      "section": "network",
+      "stance": "choice",
+      "title": "VLAN id",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "nic-layout",
+            "isAnyOf": ["vlan"]
+          },
+          "prompt": "Which VLAN id goes on the parent interface?",
+          "default": {
+            "id": "set-vlan",
+            "label": "Set the VLAN id in networkConfig",
+            "summary": "NMState VLAN on the parent NIC, and the interfaces table matches that name and MAC."
+          },
+          "defaultRationale": "The preparing chapter says NMState is how you apply VLANs, in the same host network definition as static addresses.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
+              "locator": "1.6. About networking",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sriov-vfs",
+      "section": "network",
+      "stance": "choice",
+      "title": "SR-IOV virtual functions",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "nic-layout",
+            "isAnyOf": ["bond-sriov"]
+          },
+          "prompt": "How many virtual functions does each physical port expose?",
+          "default": {
+            "id": "total-vfs",
+            "label": "Set ethernet.sr-iov.total-vfs",
+            "summary": "The documented example sets total-vfs to 2 on each of eno1 and eno2 and names the VF interfaces sriov:eno1:0 and so on."
+          },
+          "defaultRationale": "Section 1.9 is an agent-config example of a bond plus SR-IOV virtual functions created in networkConfig.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
+              "locator": "1.9. Example: Bonds and SR-IOV dual-NIC node network configuration",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cluster-network",
+      "section": "network",
+      "stance": "choice",
+      "title": "Cluster network CIDRs",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Will you keep the default pod, service, and machine networks?",
+          "default": {
+            "id": "defaults",
+            "label": "Keep the defaults",
+            "summary": "Pods 10.128.0.0/14 with hostPrefix 23, services 172.30.0.0/16, machines 10.0.0.0/16. networkType is OVNKubernetes. The join subnet stays 100.64.0.0/16."
+          },
+          "defaultRationale": "Those are the defaults in the network parameter table, and you cannot change the networking object after installation.",
+          "alternatives": [
+            {
+              "id": "custom",
+              "label": "Set your own CIDRs",
+              "summary": "Replace clusterNetwork, serviceNetwork, or machineNetwork. They must not overlap, and machineNetwork must match the preferred NIC.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.2. Network parameters",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cidr-overlap",
+      "section": "network",
+      "stance": "choice",
+      "title": "CIDR conflicts",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "cluster-network",
+            "isAnyOf": ["custom"]
+          },
+          "prompt": "Did you keep the custom CIDRs away from the ranges OpenShift already uses?",
+          "default": {
+            "id": "checked",
+            "label": "Checked",
+            "summary": "machineNetwork does not include Podman's 10.88.0.0/16 bridge. The OVN join subnet does not overlap any node network and is larger than the node count."
+          },
+          "defaultRationale": "The preparing chapter says a machineNetwork that includes 10.88.0.0/16 fails the install. The join subnet cannot be changed later.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
+              "locator": "1.6. About networking",
               "extraction": "extracted"
             }
           ]
@@ -164,31 +936,657 @@
     },
     {
       "id": "fips",
-      "section": "cryptography",
+      "section": "cluster",
       "stance": "choice",
       "title": "FIPS mode",
       "variants": [
         {
           "when": { "kind": "always" },
-          "prompt": "Install the cluster in FIPS mode?",
+          "prompt": "Install with FIPS mode enabled?",
           "default": {
             "id": "off",
-            "label": "Leave FIPS off",
-            "summary": "Do not request FIPS mode."
+            "label": "Leave fips false",
+            "summary": "The default is false."
           },
-          "defaultRationale": "FIPS is optional. The overview says it cannot be turned on after the cluster boots, and the shortest path does not enable it.",
+          "defaultRationale": "fips defaults to false. Turning it on requires the installer to run on a RHEL host that is already in FIPS mode, and it cannot be enabled after the first boot.",
           "alternatives": [
             {
               "id": "on",
-              "label": "Install in FIPS mode",
-              "summary": "Boot RHCOS in FIPS mode and use a FIPS-capable installation program. This cannot be enabled later.",
+              "label": "fips true",
+              "summary": "Run openshift-install on a FIPS-enabled RHEL host. Supported on x86_64, ppc64le, and s390x.",
               "when": { "kind": "always" }
             }
           ],
           "citations": [
             {
-              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/index",
-              "locator": "Chapter 4. Support for FIPS cryptography",
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.3. fips",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "capabilities",
+      "section": "cluster",
+      "stance": "choice",
+      "title": "Capability baseline",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Which optional components ship with the cluster?",
+          "default": {
+            "id": "vcurrent",
+            "label": "vCurrent",
+            "summary": "baselineCapabilitySet defaults to vCurrent."
+          },
+          "defaultRationale": "Valid baselines are None, v4.11, v4.12, and vCurrent. The default is vCurrent.",
+          "alternatives": [
+            {
+              "id": "none",
+              "label": "None",
+              "summary": "Start with no optional capabilities and add only what you list.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "v4-11",
+              "label": "v4.11",
+              "summary": "The v4.11 baseline set.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "v4-12",
+              "label": "v4.12",
+              "summary": "The v4.12 baseline set.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.3. capabilities.baselineCapabilitySet",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "extra-capabilities",
+      "section": "cluster",
+      "stance": "choice",
+      "title": "Extra capabilities",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Add capabilities beyond the baseline?",
+          "default": {
+            "id": "no",
+            "label": "No additionalEnabledCapabilities",
+            "summary": "The baseline alone."
+          },
+          "defaultRationale": "additionalEnabledCapabilities is optional and extends the baseline.",
+          "alternatives": [
+            {
+              "id": "yes",
+              "label": "List additionalEnabledCapabilities",
+              "summary": "Name the extra optional components to install with the cluster.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.3. capabilities.additionalEnabledCapabilities",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cpu-partitioning",
+      "section": "cluster",
+      "stance": "choice",
+      "title": "Workload partitioning",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Reserve CPUs for OpenShift services?",
+          "default": {
+            "id": "none",
+            "label": "cpuPartitioningMode None",
+            "summary": "The default. Workload partitioning stays off."
+          },
+          "defaultRationale": "You can only enable workload partitioning at install, and you cannot turn it off later. None is the default.",
+          "alternatives": [
+            {
+              "id": "all-nodes",
+              "label": "AllNodes",
+              "summary": "Isolate platform workloads onto reserved CPUs on every node. This does not by itself pin your application CPUs.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.3. cpuPartitioningMode",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hyperthreading",
+      "section": "cluster",
+      "stance": "choice",
+      "title": "Hyperthreading",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Leave simultaneous multithreading enabled?",
+          "default": {
+            "id": "enabled",
+            "label": "Enabled",
+            "summary": "The default for control plane and compute pools."
+          },
+          "defaultRationale": "Hyperthreading is enabled by default. Disabling it cuts machine capacity and has to be planned for.",
+          "alternatives": [
+            {
+              "id": "disabled",
+              "label": "Disabled",
+              "summary": "Set hyperthreading to Disabled on the control plane and compute pools.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.3. hyperthreading",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ssh-key",
+      "section": "cluster",
+      "stance": "choice",
+      "title": "SSH key",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Will you put an SSH public key in install-config.yaml?",
+          "default": {
+            "id": "provide",
+            "label": "Provide sshKey",
+            "summary": "Needed for installation debugging and disaster recovery on a production cluster."
+          },
+          "defaultRationale": "The parameter note says to set an SSH key on production clusters where you may need to debug the install or recover a node.",
+          "alternatives": [
+            {
+              "id": "omit",
+              "label": "Omit sshKey",
+              "summary": "The field is optional. You will not have that login on the hosts.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.3. sshKey",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ntp",
+      "section": "cluster",
+      "stance": "choice",
+      "title": "NTP sources",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Add NTP servers beyond what the hosts already use?",
+          "default": {
+            "id": "existing",
+            "label": "No additionalNTPSources",
+            "summary": "Hosts keep the NTP configuration they already have."
+          },
+          "defaultRationale": "additionalNTPSources is optional and is added on top of NTP sources configured another way.",
+          "alternatives": [
+            {
+              "id": "extra",
+              "label": "List additionalNTPSources",
+              "summary": "Hostnames or IP addresses added to every cluster host.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.8. additionalNTPSources",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "host-roles",
+      "section": "cluster",
+      "stance": "choice",
+      "title": "Host roles",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Who assigns master and worker roles?",
+          "default": {
+            "id": "installer",
+            "label": "Let the installer assign roles",
+            "summary": "Omit hosts.role. Roles are assigned during installation. The host count still cannot exceed controlPlane.replicas plus compute.replicas."
+          },
+          "defaultRationale": "If agent-config.yaml does not set a role, the installer assigns master or worker during the install.",
+          "alternatives": [
+            {
+              "id": "pinned",
+              "label": "Pin each host's role",
+              "summary": "Set hosts.role to master or worker, and set hostname if DHCP or reverse DNS is not enough.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.8. hosts.role",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "root-device",
+      "section": "cluster",
+      "stance": "choice",
+      "title": "Install disk",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Which disk gets RHCOS?",
+          "default": {
+            "id": "discover",
+            "label": "First matching disk the installer finds",
+            "summary": "Omit rootDeviceHints."
+          },
+          "defaultRationale": "rootDeviceHints is optional. Without it the installer does not target a specific device.",
+          "alternatives": [
+            {
+              "id": "hint",
+              "label": "Set rootDeviceHints",
+              "summary": "The installer uses the first discovered device that matches every hint you set.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
+              "locator": "1.5.2. About root device hints",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "root-hint",
+      "section": "cluster",
+      "stance": "choice",
+      "title": "Root device hint",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "root-device",
+            "isAnyOf": ["hint"]
+          },
+          "prompt": "Which hint identifies the install disk?",
+          "default": {
+            "id": "device-name",
+            "label": "deviceName by path",
+            "summary": "Prefer /dev/disk/by-path/... The hint must match exactly."
+          },
+          "defaultRationale": "The hint table says to prefer the by-path device name. Hints can be combined, and the device must match all of them.",
+          "alternatives": [
+            {
+              "id": "wwn",
+              "label": "wwn",
+              "summary": "Unique storage identifier. If udevadm prints ID_WWN_WITH_EXTENSION, use that value.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "serial",
+              "label": "serialNumber",
+              "summary": "Exact serial number.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "hctl",
+              "label": "hctl",
+              "summary": "SCSI address such as 0:0:0:0. Exact match.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "model-vendor",
+              "label": "model or vendor",
+              "summary": "A substring match on the model or the vendor name.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "size-or-rotational",
+              "label": "minSizeGigabytes or rotational",
+              "summary": "Minimum size in gigabytes, or whether the disk must be rotational.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
+              "locator": "Table 1.3. Root device hint subfields",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "external-lb",
+      "section": "exposure",
+      "stance": "choice",
+      "title": "API and ingress load balancers",
+      "variants": [
+        {
+          "when": {
+            "kind": "all",
+            "of": [
+              { "kind": "answer", "decision": "platform", "isAnyOf": ["none"] },
+              {
+                "kind": "answer",
+                "decision": "topology",
+                "isAnyOf": ["ha", "compact", "arbiter"]
+              }
+            ]
+          },
+          "prompt": "How will you load balance the API and application ingress?",
+          "default": {
+            "id": "shared",
+            "label": "One load balancer",
+            "summary": "The documented example uses one HAProxy for API ports 6443 and 22623 and ingress ports 80 and 443. A compact cluster must send ingress to the control plane nodes."
+          },
+          "defaultRationale": "platform none requires you to provision API and ingress load balancers before installation, except for single-node OpenShift. Production clusters can split them.",
+          "alternatives": [
+            {
+              "id": "split",
+              "label": "Separate API and ingress balancers",
+              "summary": "Scale the API and application ingress load balancers independently. API balancing stays layer 4 and stateless.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
+              "locator": "1.7.2. Platform none load balancing requirements",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "provisioning-network",
+      "section": "exposure",
+      "stance": "choice",
+      "title": "Provisioning network",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "platform",
+            "isAnyOf": ["baremetal"]
+          },
+          "prompt": "Will the cluster manage a provisioning network after installation?",
+          "default": {
+            "id": "managed",
+            "label": "Managed",
+            "summary": "The default. The cluster runs DHCP and TFTP for the provisioning network."
+          },
+          "defaultRationale": "provisioningNetwork defaults to Managed. These fields are for after the agent install, so setting them now avoids a day-2 edit.",
+          "alternatives": [
+            {
+              "id": "disabled",
+              "label": "Disabled",
+              "summary": "No provisioning network. Later hosts are added with virtual media, and BMCs must be reachable on the bare-metal network.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.4. provisioningNetwork",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "provisioning-followup",
+      "section": "exposure",
+      "stance": "choice",
+      "title": "Provisioning services without a provisioning network",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "provisioning-network",
+            "isAnyOf": ["disabled"]
+          },
+          "prompt": "Where do the provisioning services listen?",
+          "default": {
+            "id": "two-ips",
+            "label": "Two addresses on the bare-metal network",
+            "summary": "Provide two bare-metal IPs for the provisioning services. Day-2 provisioning is virtual media only."
+          },
+          "defaultRationale": "When provisioningNetwork is Disabled, the table requires those two addresses, and virtual media is the only day-2 provisioning method.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.4. provisioningNetwork",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "baremetal-records",
+      "section": "exposure",
+      "stance": "choice",
+      "title": "BMC records",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "platform",
+            "isAnyOf": ["baremetal"]
+          },
+          "prompt": "When will you record BMC addresses for the hosts?",
+          "default": {
+            "id": "later",
+            "label": "Leave them for day 2",
+            "summary": "platform.baremetal.hosts is not used to boot the agent ISO."
+          },
+          "defaultRationale": "The bare metal table says these fields are not used for the initial provision. They exist so you can set them at install time instead of coming back later.",
+          "alternatives": [
+            {
+              "id": "now",
+              "label": "Set them in install-config.yaml now",
+              "summary": "Record bootMACAddress, BMC address URL, username, and password. Set disableCertificateVerification when the BMC certificate is self-signed. The address URL includes the protocol, for example redfish.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+              "locator": "Table 9.4. Additional bare metal parameters",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "br-ex",
+      "section": "operate",
+      "stance": "choice",
+      "title": "br-ex bridge",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "After installation, do you keep the default OVS br-ex bridge?",
+          "default": {
+            "id": "default",
+            "label": "Keep the default bridge",
+            "summary": "One NIC and the standard OVS settings. OpenShift configures br-ex for you."
+          },
+          "defaultRationale": "Chapter 10 says the default bridge is for a single NIC and standard OVS settings. Customizing it is a post-install step.",
+          "alternatives": [
+            {
+              "id": "custom",
+              "label": "Custom NodeNetworkConfigurationPolicy",
+              "summary": "Override br-ex for MTU, DNS, bond attributes, or LLDP. Copy the full install NMState into the policy or the node can lose its network.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "Chapter 10. Postinstallation tasks",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-operator",
+      "section": "operate",
+      "stance": "choice",
+      "title": "Kubernetes NMState Operator",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "br-ex",
+            "isAnyOf": ["custom"]
+          },
+          "prompt": "The custom bridge is applied by the Kubernetes NMState Operator. Is it installed?",
+          "default": {
+            "id": "install",
+            "label": "Install the NMState Operator",
+            "summary": "Required before the NodeNetworkConfigurationPolicy. The policy's primary IP cannot be changed afterward."
+          },
+          "defaultRationale": "Chapter 10 lists the NMState Operator as a prerequisite for the br-ex policy.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "10.1. Creating a manifest object that includes a customized br-ex bridge",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "br-ex-reason",
+      "section": "operate",
+      "stance": "choice",
+      "title": "Why customize br-ex",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "br-ex",
+            "isAnyOf": ["custom"]
+          },
+          "prompt": "What are you changing on the bridge?",
+          "default": {
+            "id": "mtu",
+            "label": "MTU",
+            "summary": "Change the maximum transmission unit."
+          },
+          "defaultRationale": "The post-install chapter lists MTU, DNS, bond attributes, and LLDP as the reasons to replace the default bridge.",
+          "alternatives": [
+            {
+              "id": "dns",
+              "label": "DNS",
+              "summary": "Update DNS values in the NMState policy.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "bond",
+              "label": "Bond mode, MIImon, or QoS",
+              "summary": "Change attributes of a bond that backs br-ex.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "lldp",
+              "label": "LLDP",
+              "summary": "Enable Link Layer Discovery Protocol to troubleshoot the switch port.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "10.1. Creating a manifest object that includes a customized br-ex bridge",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app-storage",
+      "section": "operate",
+      "stance": "choice",
+      "title": "Application storage",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "release-source",
+            "isAnyOf": ["no-external-registry"]
+          },
+          "prompt": "The self-contained media does not include a storage operator. What will applications use for persistent volumes?",
+          "default": {
+            "id": "bring-your-own",
+            "label": "Configure storage yourself",
+            "summary": "Install a storage operator after the cluster exists and create the StorageClass applications will claim."
+          },
+          "defaultRationale": "Chapter 5 says that installation method ships no storage operators and you must configure storage separately before virtualized or other workloads can use persistent volumes.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "5.1. Installation method advantages",
               "extraction": "extracted"
             }
           ]

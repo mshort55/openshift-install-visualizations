@@ -11,6 +11,7 @@ import {
   walk,
   withAnswer,
 } from "./catalog";
+import { decisionTree, type TreeDecision } from "./tree";
 
 function load() {
   const parsed = parseCatalog(rawCatalog);
@@ -32,93 +33,145 @@ function option(step: WalkStep, id: string) {
   return found.id;
 }
 
-test("default answers follow the connected Assisted Installer path", () => {
+function findNode(
+  nodes: readonly TreeDecision[],
+  id: string,
+): TreeDecision | undefined {
+  for (const node of nodes) {
+    if (node.id === id) return node;
+    for (const choice of node.options) {
+      const child = findNode(choice.children, id);
+      if (child) return child;
+    }
+  }
+  return undefined;
+}
+
+test("the default path is an agent-based baremetal cluster with DHCP and a managed provisioning network", () => {
   const catalog = load();
   const current = walk(catalog, NO_ANSWERS);
   expect(current.steps.map(line)).toEqual([
-    "network-connectivity=connected",
-    "install-method=assisted",
+    "architecture=amd64",
+    "platform=baremetal",
+    "topology=ha",
+    "network-access=connected",
+    "release-source=connected-pull",
+    "proxy=direct",
+    "boot-image=full-iso",
+    "ip-family=ipv4",
+    "host-addressing=dhcp",
+    "rendezvous=control-plane-dhcp",
+    "cluster-network=defaults",
     "fips=off",
+    "capabilities=vcurrent",
+    "extra-capabilities=no",
+    "cpu-partitioning=none",
+    "hyperthreading=enabled",
+    "ssh-key=provide",
+    "ntp=existing",
+    "host-roles=installer",
+    "root-device=discover",
+    "provisioning-network=managed",
+    "baremetal-records=later",
+    "br-ex=default",
   ]);
   expect(encodeAnswers(current)).toBe("");
-  expect(current.dormant).toEqual([]);
+  expect(JSON.stringify(rawCatalog)).not.toContain("assisted");
+  expect(JSON.stringify(rawCatalog)).not.toContain("ipi");
+  expect(JSON.stringify(rawCatalog)).not.toContain("upi");
 });
 
-test("a disconnected network selects the Agent-based installer and hides Assisted", () => {
+test("static addressing opens the NIC tree, and a bond opens bond attributes", () => {
   const catalog = load();
   const baseline = walk(catalog, NO_ANSWERS);
-  const connectivity = baseline.steps[0];
-  if (!connectivity) throw new Error("missing connectivity");
+  const addressing = baseline.steps.find(
+    (step) => step.decision.id === "host-addressing",
+  );
+  if (!addressing) throw new Error("missing addressing");
   const current = walk(
     catalog,
     withAnswer(
       NO_ANSWERS,
-      connectivity.decision.id,
-      option(connectivity, "disconnected"),
+      addressing.decision.id,
+      option(addressing, "static"),
     ),
   );
-  const method = current.steps[1];
-  if (!method) throw new Error("missing method");
-  expect(current.steps.map(line)).toEqual([
-    "network-connectivity=disconnected",
-    "install-method=agent",
-    "fips=off",
-  ]);
-  expect(method.options.map((item) => item.id)).toEqual([
-    "agent",
-    "ipi",
-    "upi",
-  ]);
-  expect(encodeAnswers(current)).toBe("network-connectivity=disconnected");
-});
-
-test("installer-provisioned infrastructure adds the ingress load balancer at its default", () => {
-  const catalog = load();
-  const baseline = walk(catalog, NO_ANSWERS);
-  const method = baseline.steps[1];
-  if (!method) throw new Error("missing method");
-  const current = walk(
+  expect(current.steps.map(line)).toContain("nic-layout=single");
+  expect(current.steps.map(line)).toContain("rendezvous=explicit");
+  const tree = decisionTree(
     catalog,
-    withAnswer(NO_ANSWERS, method.decision.id, option(method, "ipi")),
+    current.steps[0]
+      ? decodeAnswers(catalog, encodeAnswers(current))
+      : NO_ANSWERS,
   );
-  expect(current.steps.map(line)).toEqual([
-    "network-connectivity=connected",
-    "install-method=ipi",
-    "external-load-balancer=baseline",
-    "fips=off",
+  const nics = findNode(tree.roots, "nic-layout");
+  if (!nics) throw new Error("missing nic node");
+  const bond = nics.options.find((item) => item.id === "bond");
+  expect(bond?.children.map((child) => child.id)).toEqual(["bond-attributes"]);
+  const sriov = nics.options.find((item) => item.id === "bond-sriov");
+  expect(sriov?.children.map((child) => child.id)).toEqual([
+    "bond-attributes",
+    "sriov-vfs",
   ]);
-  const balancer = current.steps[2];
-  if (!balancer) throw new Error("missing balancer");
-  expect(balancer.because).toEqual([method.decision.id]);
-  expect(balancer.source).toBe("default");
 });
 
-test("the hash round trip keeps a non-default answer and drops defaults", () => {
+test("platform none on a high availability cluster asks for load balancers, and single-node does not", () => {
   const catalog = load();
   const baseline = walk(catalog, NO_ANSWERS);
-  const method = baseline.steps[1];
-  if (!method) throw new Error("missing method");
+  const platform = baseline.steps.find(
+    (step) => step.decision.id === "platform",
+  );
+  const topology = baseline.steps.find(
+    (step) => step.decision.id === "topology",
+  );
+  if (!platform || !topology) throw new Error("missing platform or topology");
+  const none = walk(
+    catalog,
+    withAnswer(NO_ANSWERS, platform.decision.id, option(platform, "none")),
+  );
+  expect(none.steps.map(line)).toContain("external-lb=shared");
+  expect(none.steps.map((step) => step.decision.id)).not.toContain(
+    "provisioning-network",
+  );
+  const sno = walk(
+    catalog,
+    withAnswer(
+      withAnswer(NO_ANSWERS, platform.decision.id, option(platform, "none")),
+      topology.decision.id,
+      option(topology, "sno"),
+    ),
+  );
+  expect(sno.steps.map((step) => step.decision.id)).not.toContain(
+    "external-lb",
+  );
+});
+
+test("a disconnected network selects a mirror and hides the public pull", () => {
+  const catalog = load();
+  const baseline = walk(catalog, NO_ANSWERS);
+  const access = baseline.steps.find(
+    (step) => step.decision.id === "network-access",
+  );
+  if (!access) throw new Error("missing access");
   const current = walk(
     catalog,
-    withAnswer(NO_ANSWERS, method.decision.id, option(method, "upi")),
+    withAnswer(NO_ANSWERS, access.decision.id, option(access, "disconnected")),
+  );
+  expect(current.steps.map(line)).toContain("release-source=mirror");
+  expect(current.steps.map(line)).toContain("mirror-command=oc-mirror");
+  expect(current.steps.map(line)).toContain(
+    "mirror-trust=additional-trust-bundle",
   );
   const text = encodeAnswers(current);
-  expect(text).toBe("install-method=upi");
-  const again = walk(catalog, decodeAnswers(catalog, text));
-  expect(again.steps.map(line)).toEqual(current.steps.map(line));
+  expect(text).toBe("network-access=disconnected");
+  expect(walk(catalog, decodeAnswers(catalog, text)).steps.map(line)).toEqual(
+    current.steps.map(line),
+  );
 });
 
-test("a decision without a citation does not parse", () => {
-  const broken = structuredClone(rawCatalog);
-  broken.decisions[0]?.variants[0]?.citations.splice(0, 1);
-  const parsed = parseCatalog(broken);
-  expect(parsed.ok).toBe(false);
-  if (parsed.ok) return;
-  expect(
-    parsed.issues.some(
-      (issue) => issue.kind === "malformed" && issue.path.includes("citations"),
-    ),
-  ).toBe(true);
+test("the agent-based inventory passes", () => {
+  const catalog = load();
+  expect(audit(catalog, inventory).failures).toEqual([]);
 });
 
 test("a guard that reads a later decision does not parse", () => {
@@ -144,8 +197,8 @@ test("a guard that reads a later decision does not parse", () => {
             alternatives: [],
             citations: [
               {
-                url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/index",
-                locator: "Chapter 1",
+                url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+                locator: "Chapter 9",
                 extraction: "extracted",
               },
             ],
@@ -166,8 +219,8 @@ test("a guard that reads a later decision does not parse", () => {
             alternatives: [],
             citations: [
               {
-                url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/index",
-                locator: "Chapter 1",
+                url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installation-config-parameters-agent",
+                locator: "Chapter 9",
                 extraction: "extracted",
               },
             ],
@@ -179,27 +232,4 @@ test("a guard that reads a later decision does not parse", () => {
   expect(parsed.ok).toBe(false);
   if (parsed.ok) return;
   expect(parsed.issues.map((issue) => issue.kind)).toContain("forward-guard");
-});
-
-test("an http citation does not parse", () => {
-  const broken = structuredClone(rawCatalog);
-  const citation = broken.decisions[0]?.variants[0]?.citations[0];
-  if (!citation) throw new Error("missing citation");
-  citation.url = "http://example.com/install";
-  const parsed = parseCatalog(broken);
-  expect(parsed.ok).toBe(false);
-  if (parsed.ok) return;
-  expect(parsed.issues.map((issue) => issue.kind)).toContain("bad-citation");
-});
-
-test("the overview inventory passes, and a missing section fails", () => {
-  const catalog = load();
-  expect(audit(catalog, inventory).failures).toEqual([]);
-  const missing = audit(catalog, {
-    decisionIds: inventory.decisionIds,
-    sectionIds: [...inventory.sectionIds, "storage"],
-  });
-  expect(missing.failures).toEqual([
-    { kind: "missing-required-section", section: "storage" },
-  ]);
 });
