@@ -1,0 +1,199 @@
+{
+  "release": "4.22",
+  "platform": "bare-metal",
+  "sections": [
+    { "id": "connectivity", "title": "Network reachability" },
+    { "id": "method", "title": "Install method" },
+    { "id": "ingress", "title": "Ingress" },
+    { "id": "cryptography", "title": "FIPS" }
+  ],
+  "decisions": [
+    {
+      "id": "network-connectivity",
+      "section": "connectivity",
+      "stance": "fact",
+      "title": "Network reachability",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Can the hosts reach the internet?",
+          "default": {
+            "id": "connected",
+            "label": "Connected",
+            "summary": "The hosts can reach the internet."
+          },
+          "defaultRationale": "The installation overview calls the Assisted Installer the easiest method when the network is connected, so the shortest path starts there.",
+          "alternatives": [
+            {
+              "id": "disconnected",
+              "label": "Disconnected or restricted",
+              "summary": "The hosts cannot reach the internet directly.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/ocp-installation-overview",
+              "locator": "1.1. The OpenShift Container Platform installation",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "install-method",
+      "section": "method",
+      "stance": "choice",
+      "title": "Install method",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "network-connectivity",
+            "isAnyOf": ["connected"]
+          },
+          "prompt": "Which install method will you use?",
+          "default": {
+            "id": "assisted",
+            "label": "Assisted Installer",
+            "summary": "A web installer with pre-flight checks. On bare metal you still supply the machines, network, load balancer, and storage."
+          },
+          "defaultRationale": "The overview calls the Assisted Installer the easiest way to install when the network is connected.",
+          "alternatives": [
+            {
+              "id": "agent",
+              "label": "Agent-based installer",
+              "summary": "Download the installer and configure it on the command line.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "ipi",
+              "label": "Installer-provisioned infrastructure",
+              "summary": "The installer uses each host BMC. You still supply the machines, network, load balancer, and storage.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "upi",
+              "label": "User-provisioned infrastructure",
+              "summary": "You prepare the machines, load balancer, DNS, and storage, then generate the install assets.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/index",
+              "locator": "Table 1.1. Supported platforms",
+              "extraction": "extracted"
+            }
+          ]
+        },
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "network-connectivity",
+            "isAnyOf": ["disconnected"]
+          },
+          "prompt": "Which install method will you use on a disconnected network?",
+          "default": {
+            "id": "agent",
+            "label": "Agent-based installer",
+            "summary": "The local agent-based installer is the method the overview recommends when the network is disconnected."
+          },
+          "defaultRationale": "The overview says the Agent-based installer is for disconnected environments, and it says to prefer Assisted Installer only when you do not need that download.",
+          "alternatives": [
+            {
+              "id": "ipi",
+              "label": "Installer-provisioned infrastructure",
+              "summary": "The installer can provision from the BMC in a disconnected environment. You still supply the machines and the network.",
+              "when": { "kind": "always" }
+            },
+            {
+              "id": "upi",
+              "label": "User-provisioned infrastructure",
+              "summary": "You prepare the infrastructure yourself. This method supports a disconnected install.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/ocp-installation-overview",
+              "locator": "1.1. The OpenShift Container Platform installation",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "external-load-balancer",
+      "section": "ingress",
+      "stance": "choice",
+      "title": "Ingress load balancer",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "install-method",
+            "isAnyOf": ["ipi"]
+          },
+          "prompt": "Must ingress router performance exceed the baseline?",
+          "default": {
+            "id": "baseline",
+            "label": "Baseline performance is enough",
+            "summary": "Keep the default IngressController. No extra load balancer."
+          },
+          "defaultRationale": "The overview requires an external load balancer only when router performance must exceed the baseline.",
+          "alternatives": [
+            {
+              "id": "beyond",
+              "label": "Performance must exceed the baseline",
+              "summary": "Configure an external load balancer so ingress VIP traffic is balanced across IngressController replicas.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/index",
+              "locator": "2.1.3. Do you want to use existing components in your cluster?",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fips",
+      "section": "cryptography",
+      "stance": "choice",
+      "title": "FIPS mode",
+      "variants": [
+        {
+          "when": { "kind": "always" },
+          "prompt": "Install the cluster in FIPS mode?",
+          "default": {
+            "id": "off",
+            "label": "Leave FIPS off",
+            "summary": "Do not request FIPS mode."
+          },
+          "defaultRationale": "FIPS is optional. The overview says it cannot be turned on after the cluster boots, and the shortest path does not enable it.",
+          "alternatives": [
+            {
+              "id": "on",
+              "label": "Install in FIPS mode",
+              "summary": "Boot RHCOS in FIPS mode and use a FIPS-capable installation program. This cannot be enabled later.",
+              "when": { "kind": "always" }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installation_overview/index",
+              "locator": "Chapter 4. Support for FIPS cryptography",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

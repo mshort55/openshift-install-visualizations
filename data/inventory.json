@@ -1,0 +1,9 @@
+{
+  "decisionIds": [
+    "network-connectivity",
+    "install-method",
+    "external-load-balancer",
+    "fips"
+  ],
+  "sectionIds": ["connectivity", "method", "ingress", "cryptography"]
+}
