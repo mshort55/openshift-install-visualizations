@@ -1,6 +1,6 @@
 ---
 name: verify-openshift-install-visualizations
-description: Drive the OpenShift agent-based bare metal decision-tree web UI in a disposable Vite session and headless Chrome. Use when proving a user-visible change to the tree, a selected option, the URL hash, or Reset to defaults.
+description: Drive the OpenShift agent-based bare metal decision-tree web UI in a disposable Vite session and headless Chrome. Use when proving a user-visible change to the tree, a selected option, the URL hash, scroll position, or Clear choices.
 ---
 
 # Verify the decision tree
@@ -53,14 +53,18 @@ node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decis
 node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser click --role button --name "Static NMState"
 node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser hash
 node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser pressed --name "Static NMState"
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser attr --decision nic-layout --attr data-active
+node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser attr --decision nmstate-ethernet --attr data-active
 node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser scroll --decision host-addressing
+node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser scroll-by --y 800
+node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser scroll-y
+node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser box --role button --name "Static NMState"
+node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser search
 node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser navigate --hash "host-addressing=static"
 node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser snapshot --aria --path artifacts/verify/<feature>/<name>.aria.txt
 node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser screenshot --path artifacts/verify/<feature>/<name>.png
 ```
 
-Prefix browser, doctor, and cleanup commands with `VERIFY_RUN_DIR="$VERIFY_RUN_DIR"`. `browser hash` and `browser click` print the hash without a leading `#`. An empty line is the default walk. `browser click` prints the hash after the page applies the choice.
+Prefix browser, doctor, and cleanup commands with `VERIFY_RUN_DIR="$VERIFY_RUN_DIR"`. `browser hash` and `browser click` print the hash without a leading `#`. An empty line means no answers. `browser click` prints the hash after the page applies the choice. `browser scroll-y` prints `window.scrollY`. `browser search` prints `location.search`, which is `?view=map` in See every option and empty in Step through.
 
 The feature map is the source of which entry points to drive. A proof that uses one entry point does not cover the others listed in that feature.
 

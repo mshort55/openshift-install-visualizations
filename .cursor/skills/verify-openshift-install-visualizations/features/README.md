@@ -6,7 +6,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 
 - Launch with `node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs launch` and export the printed `VERIFY_RUN_DIR`.
 - The page URL is the `URL=` line from that launch. It is `http://127.0.0.1:<port>/` on a port chosen for this run, starting from `4173`.
-- There is no account and no seeded database. The default hash is empty, which selects the catalog defaults.
+- There is no account and no seeded database. An empty hash selects nothing.
 - Run `doctor` and require `ok`, the title `Bare metal install decisions`, and the heading `Agent-based bare metal decisions`.
 - Never drive a Vite or Chrome process that this launch did not start.
 
@@ -37,7 +37,7 @@ Each feature file starts with an H1 title and one paragraph describing the user-
 
 ## Features
 
-- [Default path](./default-path.md) covers the first page: default choices pressed, idle branches still visible, empty hash.
-- [Static addressing](./static-addressing.md) covers choosing Static NMState and the NIC layout that becomes active.
-- [Reset to defaults](./reset-defaults.md) covers the header control that clears the hash.
+- [Step through](./default-path.md) covers the first page: nothing pressed, only CPU architecture, empty hash.
+- [Static addressing](./static-addressing.md) covers See every option, choosing Static NMState, and keeping the scroll position.
+- [Clear choices](./reset-defaults.md) covers the header control that clears the hash.
 - [Shared link](./shared-link.md) covers opening a hash URL without clicking the option.

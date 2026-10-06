@@ -1,30 +1,29 @@
-# Reset to defaults
+# Clear choices
 
-Reset to defaults clears the URL hash and returns every visible choice to the catalog default, including DHCP under host addressing.
+Clear choices removes every answer from the URL hash. No option is pressed afterward. The current mode stays.
 
 ## Sub-features
 
-- `reset-clear-hash` removes `host-addressing=static` from the hash.
-- `reset-dhcp` presses DHCP again and marks NIC layout inactive.
+- `clear-hash` removes `host-addressing=static` from the hash.
+- `clear-unselected` leaves Static NMState unpressed.
 
 ## How to get to it (user POV)
 
-- Choose the `Reset to defaults` button in the page header. It is on every view of the tree.
+- Choose the `Clear choices` button in the page header.
 
 ## Driving it with verify-decisions
 
 Preconditions:
 
 - `doctor` prints `ok` and `heading Agent-based bare metal decisions`.
-- The page is already on static addressing: `browser hash` prints `host-addressing=static`. Follow [Static addressing](./static-addressing.md) first when the hash is empty.
+- The hash contains `host-addressing=static`. Follow [Static addressing](./static-addressing.md) first when the hash is empty.
 
-- **Reset.** Choose `Reset to defaults`. Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser click --role button --name "Reset to defaults"`. The command prints a blank line.
-- **DHCP is selected again.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser pressed --name "DHCP"`. It prints `true`. Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser pressed --name "Static NMState"`. It prints `false`.
-- **NIC layout is inactive again.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser attr --decision nic-layout --attr data-active`. It prints `false`.
-- **Proof.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser scroll --decision host-addressing`, `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser snapshot --aria --path artifacts/verify/reset-defaults/tree.aria.txt`, and `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser screenshot --path artifacts/verify/reset-defaults/tree.png`. The snapshot contains `button "Reset to defaults"` and `button "DHCP" pressed=true`.
+- **Clear.** Choose `Clear choices`. Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser click --role button --name "Clear choices"`. The command prints a blank line.
+- **Static is not selected.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser pressed --name "Static NMState"`. It prints `false` when that button is still on the page. In Step through the button is gone, and the command fails with `expected 1 button`.
+- **Proof.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser snapshot --aria --path artifacts/verify/reset-defaults/tree.aria.txt` and `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser screenshot --path artifacts/verify/reset-defaults/tree.png`. The snapshot contains `button "Clear choices"` and does not contain `pressed=true` on `Static NMState`.
 
 ## Gotchas
 
-- Reset only clears the hash. It does not reload the document. Wait for `browser click` to print the new hash, which is empty.
-- On the default page, Reset is a no-op. The click prints a blank line either way, so prove it from a non-default hash.
-- `NIC bond` remains on the page after reset. Check `data-active`, not the presence of that button.
+- Clear choices does not switch modes. `?view=map` remains if See every option was on.
+- On an empty hash, Clear choices prints a blank line and changes nothing.
+- Step through after a clear shows only CPU architecture.
