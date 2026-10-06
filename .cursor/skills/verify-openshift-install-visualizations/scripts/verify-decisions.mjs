@@ -568,6 +568,45 @@ async function browser(action, flags) {
     console.log(file);
     return;
   }
+  if (action === "scroll-by") {
+    const y = Number(flags.y);
+    if (!Number.isFinite(y)) throw new Error("scroll-by requires --y");
+    const top = await withPage(meta, (cdp) =>
+      evaluate(cdp, `window.scrollBy(0, ${y}); window.scrollY`),
+    );
+    console.log(top);
+    return;
+  }
+  if (action === "scroll-y") {
+    const top = await withPage(meta, (cdp) => evaluate(cdp, "window.scrollY"));
+    console.log(top);
+    return;
+  }
+  if (action === "box") {
+    const role = flags.role;
+    const name = flags.name;
+    if (!role || !name) throw new Error("box requires --role and --name");
+    const value = await withPage(meta, (cdp) =>
+      evaluate(
+        cdp,
+        `(() => {
+          ${FIND}
+          const found = matches(${JSON.stringify(role)}, ${JSON.stringify(name)});
+          if (found.length !== 1) return { error: "expected 1 " + ${JSON.stringify(role)} };
+          const rect = found[0].getBoundingClientRect();
+          return { top: Math.round(rect.top), scrollY: window.scrollY };
+        })()`,
+      ),
+    );
+    if (!value || value.error) throw new Error(value?.error ?? "box failed");
+    console.log(`${value.scrollY} ${value.top}`);
+    return;
+  }
+  if (action === "search") {
+    const value = await withPage(meta, (cdp) => evaluate(cdp, "location.search"));
+    console.log(value);
+    return;
+  }
   if (action === "screenshot") {
     if (!flags.path) throw new Error("screenshot requires --path");
     const file = path.resolve(repoRoot, flags.path);
@@ -593,6 +632,10 @@ const usage = `usage:
   VERIFY_RUN_DIR=... verify-decisions.mjs browser pressed --name "..."
   VERIFY_RUN_DIR=... verify-decisions.mjs browser attr --decision <id> --attr <name>
   VERIFY_RUN_DIR=... verify-decisions.mjs browser scroll --decision <id>
+  VERIFY_RUN_DIR=... verify-decisions.mjs browser scroll-by --y <pixels>
+  VERIFY_RUN_DIR=... verify-decisions.mjs browser scroll-y
+  VERIFY_RUN_DIR=... verify-decisions.mjs browser box --role button --name "..."
+  VERIFY_RUN_DIR=... verify-decisions.mjs browser search
   VERIFY_RUN_DIR=... verify-decisions.mjs browser navigate --hash <hash-without-#>
   VERIFY_RUN_DIR=... verify-decisions.mjs browser snapshot --aria --path <repo-relative>
   VERIFY_RUN_DIR=... verify-decisions.mjs browser screenshot --path <repo-relative>

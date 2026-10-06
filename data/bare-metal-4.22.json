@@ -2,13 +2,38 @@
   "release": "4.22",
   "platform": "bare-metal",
   "sections": [
-    { "id": "platform", "title": "Platform and topology" },
-    { "id": "access", "title": "Images and proxy" },
-    { "id": "boot", "title": "Boot media" },
-    { "id": "network", "title": "Host and cluster networks" },
-    { "id": "cluster", "title": "Cluster settings" },
-    { "id": "exposure", "title": "Load balancing and host records" },
-    { "id": "operate", "title": "Ready for applications" }
+    {
+      "id": "platform",
+      "title": "Platform and topology"
+    },
+    {
+      "id": "access",
+      "title": "Images and proxy"
+    },
+    {
+      "id": "boot",
+      "title": "Boot media"
+    },
+    {
+      "id": "network",
+      "title": "Host and cluster networks"
+    },
+    {
+      "id": "cluster",
+      "title": "Cluster settings"
+    },
+    {
+      "id": "exposure",
+      "title": "Load balancing and host records"
+    },
+    {
+      "id": "operate",
+      "title": "Ready for applications"
+    },
+    {
+      "id": "day-2",
+      "title": "Day-2 storage"
+    }
   ],
   "decisions": [
     {
@@ -18,12 +43,15 @@
       "title": "CPU architecture",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Which architecture are the hosts?",
           "default": {
             "id": "amd64",
             "label": "x86_64",
-            "summary": "amd64. Every machine pool must use the same architecture."
+            "summary": "amd64. Every machine pool must use the same architecture.",
+            "example": "compute.architecture: amd64"
           },
           "defaultRationale": "The agent-based parameter table lists amd64, arm64, ppc64le, and s390x, and mixed architectures are not supported.",
           "alternatives": [
@@ -31,19 +59,28 @@
               "id": "arm64",
               "label": "ARM 64-bit",
               "summary": "arm64 for every pool.",
-              "when": { "kind": "always" }
+              "example": "compute.architecture: arm64",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "ppc64le",
               "label": "IBM Power",
               "summary": "ppc64le for every pool.",
-              "when": { "kind": "always" }
+              "example": "compute.architecture: ppc64le",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "s390x",
               "label": "IBM Z or LinuxONE",
               "summary": "s390x. ISO boot is only supported on KVM. z/VM and LPAR boot with PXE.",
-              "when": { "kind": "always" }
+              "example": "compute.architecture: s390x",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -63,12 +100,15 @@
       "title": "Platform",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Which platform value will install-config.yaml use for these bare metal hosts?",
           "default": {
             "id": "baremetal",
             "label": "baremetal",
-            "summary": "platform.baremetal. Day-2 provisioning fields can be set now so you do not have to add them later."
+            "summary": "platform.baremetal. Day-2 provisioning fields can be set now so you do not have to add them later.",
+            "example": "platform:\n  baremetal:"
           },
           "defaultRationale": "The parameter guide lists baremetal as a platform. Its bare metal table is not used to boot the agent ISO, but it is there for the cluster after installation.",
           "alternatives": [
@@ -76,7 +116,10 @@
               "id": "none",
               "label": "none",
               "summary": "platform.none. You provide API and ingress load balancers yourself, except on single-node OpenShift.",
-              "when": { "kind": "always" }
+              "example": "platform:\n  none: {}",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -96,12 +139,15 @@
       "title": "Cluster topology",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "How many control plane and compute nodes will the cluster have?",
           "default": {
             "id": "ha",
             "label": "High availability with workers",
-            "summary": "3 control plane nodes and the default of 3 workers. controlPlane.replicas may also be 4 or 5."
+            "summary": "3 control plane nodes and the default of 3 workers. controlPlane.replicas may also be 4 or 5.",
+            "example": "controlPlane.replicas: 3\ncompute.replicas: 3"
           },
           "defaultRationale": "Supported control plane replica counts are 3, 4, 5, or 1. The compute replica default is 3.",
           "alternatives": [
@@ -109,19 +155,28 @@
               "id": "compact",
               "label": "Three-node compact",
               "summary": "3 control plane nodes and 0 workers. Ingress pods run on the control plane.",
-              "when": { "kind": "always" }
+              "example": "controlPlane.replicas: 3\ncompute.replicas: 0",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "sno",
               "label": "Single-node OpenShift",
               "summary": "controlPlane.replicas is 1 and there are no workers.",
-              "when": { "kind": "always" }
+              "example": "controlPlane.replicas: 1\ncompute.replicas: 0",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "arbiter",
               "label": "Two-node with an arbiter",
               "summary": "arbiter.replicas is 1. ZTP is not supported for two-node clusters with fencing.",
-              "when": { "kind": "always" }
+              "example": "arbiter.replicas: 1",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -141,12 +196,15 @@
       "title": "Network reachability",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Can the hosts pull release images from the internet?",
           "default": {
             "id": "connected",
             "label": "Connected",
-            "summary": "Hosts can reach the registries named in the pull secret."
+            "summary": "Hosts can reach the registries named in the pull secret.",
+            "example": "The sample install-config.yaml has no imageContentSources field."
           },
           "defaultRationale": "A disconnected install has to mirror the release images first. A connected install does not.",
           "alternatives": [
@@ -154,7 +212,10 @@
               "id": "disconnected",
               "label": "Disconnected or restricted",
               "summary": "Mirror the OpenShift images into a registry the hosts can reach.",
-              "when": { "kind": "always" }
+              "example": "imageContentSources:\n- mirrors:\n  - virthost.ostest.test.metalkube.org:5000/localimages/local-release-image\n  source: quay.io/openshift-release-dev/ocp-v4.0-art-dev",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -183,7 +244,8 @@
           "default": {
             "id": "connected-pull",
             "label": "Pull from the public registries",
-            "summary": "Use the pull secret from the Hybrid Cloud Console. No mirror registry."
+            "summary": "Use the pull secret from the Hybrid Cloud Console. No mirror registry.",
+            "example": "pullSecret: '{\"auths\": ...}'"
           },
           "defaultRationale": "Connected installs authenticate to the public registries with the pull secret.",
           "alternatives": [
@@ -191,7 +253,10 @@
               "id": "no-external-registry",
               "label": "Self-contained media, no external registry",
               "summary": "Technology Preview. The media includes a virtualization operator bundle and no storage operators.",
-              "when": { "kind": "always" }
+              "example": "You do not need to configure an external image registry.",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -212,7 +277,8 @@
           "default": {
             "id": "mirror",
             "label": "Mirror registry",
-            "summary": "Mirror the images, then set imageContentSources from the mirror command output."
+            "summary": "Mirror the images, then set imageContentSources from the mirror command output.",
+            "example": "imageContentSources:\n- source: quay.io/openshift-release-dev/ocp-release\n  mirrors:\n  - virthost.ostest.test.metalkube.org:5000/openshift/release-images"
           },
           "defaultRationale": "Chapter 2 says a disconnected install on infrastructure you provision must mirror the images before installation.",
           "alternatives": [
@@ -220,7 +286,10 @@
               "id": "no-external-registry",
               "label": "Self-contained media, no external registry",
               "summary": "Technology Preview. Skips the mirror registry. Storage operators are not in the bundle.",
-              "when": { "kind": "always" }
+              "example": "The installation ISO includes the OpenShift release images.",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -249,7 +318,8 @@
           "default": {
             "id": "oc-mirror",
             "label": "oc-mirror plugin v2",
-            "summary": "The supported way to mirror the release. Copy its output into imageContentSources."
+            "summary": "The supported way to mirror the release. Copy its output into imageContentSources.",
+            "example": "oc-mirror plugin v2"
           },
           "defaultRationale": "oc adm release mirror is deprecated in 4.22. The guide tells you to use oc-mirror plugin v2 instead.",
           "alternatives": [
@@ -257,7 +327,10 @@
               "id": "oc-adm-release-mirror",
               "label": "oc adm release mirror",
               "summary": "Deprecated in 4.22 and planned for removal. Still documented as a source of imageContentSources text.",
-              "when": { "kind": "always" }
+              "example": "oc adm release mirror",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -286,7 +359,8 @@
           "default": {
             "id": "additional-trust-bundle",
             "label": "additionalTrustBundle",
-            "summary": "Paste the mirror CA or self-signed certificate into additionalTrustBundle."
+            "summary": "Paste the mirror CA or self-signed certificate into additionalTrustBundle.",
+            "example": "additionalTrustBundle: |\n  -----BEGIN CERTIFICATE-----"
           },
           "defaultRationale": "The disconnected procedure says to add that certificate when the mirror is not already trusted.",
           "alternatives": [],
@@ -307,12 +381,15 @@
       "title": "Proxy or firewall",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Do the hosts reach Red Hat services directly?",
           "default": {
             "id": "direct",
             "label": "Direct",
-            "summary": "No proxy in front of the sites the cluster must reach."
+            "summary": "No proxy in front of the sites the cluster must reach.",
+            "example": "The sample install-config.yaml has no proxy field."
           },
           "defaultRationale": "The preparing steps say to configure a firewall or proxy only when one sits between the hosts and the required sites.",
           "alternatives": [
@@ -320,7 +397,10 @@
               "id": "proxied",
               "label": "Proxy or firewall",
               "summary": "The hosts go through a proxy or firewall. It must allow the sites the cluster needs.",
-              "when": { "kind": "always" }
+              "example": "If you use a firewall or proxy, you configured it to allow the sites that your cluster requires access to.",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -349,7 +429,8 @@
           "default": {
             "id": "already-trusted",
             "label": "Already trusted",
-            "summary": "No extra bundle."
+            "summary": "No extra bundle.",
+            "example": "additionalTrustBundle is omitted."
           },
           "defaultRationale": "additionalTrustBundle is how a proxy certificate is added to the nodes' trust store when one is required.",
           "alternatives": [
@@ -357,7 +438,10 @@
               "id": "additional-trust-bundle",
               "label": "Add additionalTrustBundle",
               "summary": "PEM bundle added to the nodes' trusted certificate store.",
-              "when": { "kind": "always" }
+              "example": "additionalTrustBundle: |\n  -----BEGIN CERTIFICATE-----",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -377,12 +461,15 @@
       "title": "Boot media",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "How will the hosts boot the agent?",
           "default": {
             "id": "full-iso",
             "label": "Full ISO",
-            "summary": "minimalISO is false. The ISO contains the rootfs."
+            "summary": "minimalISO is false. The ISO contains the rootfs.",
+            "example": "minimalISO: false"
           },
           "defaultRationale": "minimalISO defaults to false, so the generated image is a full ISO.",
           "alternatives": [
@@ -390,13 +477,19 @@
               "id": "minimal-iso",
               "label": "Minimal ISO",
               "summary": "minimalISO is true. The ISO does not contain the rootfs image.",
-              "when": { "kind": "always" }
+              "example": "minimalISO: true",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "pxe",
               "label": "PXE or iPXE",
               "summary": "The installer uploads PXE assets to the bootArtifactsBaseURL server.",
-              "when": { "kind": "always" }
+              "example": "bootArtifactsBaseURL: <asset_server_URL>",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -435,7 +528,8 @@
           "default": {
             "id": "kvm",
             "label": "RHEL KVM",
-            "summary": "ISO or PXE is allowed."
+            "summary": "ISO or PXE is allowed.",
+            "example": "agent.s390x.iso"
           },
           "defaultRationale": "The preparing chapter says ISO boot on s390x is only for RHEL KVM. z/VM and LPAR use PXE.",
           "alternatives": [
@@ -443,7 +537,10 @@
               "id": "zvm-or-lpar",
               "label": "z/VM or LPAR",
               "summary": "Switch the boot media to PXE. ISO boot is not supported here.",
-              "when": { "kind": "always" }
+              "example": "bootArtifactsBaseURL: <asset_server_URL>",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -472,7 +569,8 @@
           "default": {
             "id": "set-url",
             "label": "Set bootArtifactsBaseURL",
-            "summary": "URL of the server that serves the PXE assets."
+            "summary": "URL of the server that serves the PXE assets.",
+            "example": "bootArtifactsBaseURL: <asset_server_URL>"
           },
           "defaultRationale": "For an iPXE script, bootArtifactsBaseURL is the server the installer uploads PXE assets to.",
           "alternatives": [],
@@ -504,7 +602,8 @@
           "default": {
             "id": "embedded",
             "label": "Embedded public URL",
-            "summary": "Leave bootArtifactsBaseURL empty. The installer embeds a URL that needs internet access."
+            "summary": "Leave bootArtifactsBaseURL empty. The installer embeds a URL that needs internet access.",
+            "example": "minimalISO: true"
           },
           "defaultRationale": "On a connected network the embedded rootfs URL is the default when minimalISO is true.",
           "alternatives": [
@@ -512,7 +611,10 @@
               "id": "set-url",
               "label": "Set bootArtifactsBaseURL",
               "summary": "Point the minimal ISO at your own rootfs URL.",
-              "when": { "kind": "always" }
+              "example": "bootArtifactsBaseURL: <asset_server_URL>",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -543,7 +645,8 @@
           "default": {
             "id": "set-url",
             "label": "Set bootArtifactsBaseURL",
-            "summary": "The embedded URL needs the internet. A disconnected install has to provide its own rootfs URL."
+            "summary": "The embedded URL needs the internet. A disconnected install has to provide its own rootfs URL.",
+            "example": "bootArtifactsBaseURL: <asset_server_URL>"
           },
           "defaultRationale": "The embedded rootfs URL is only described as usable when the environment has an internet connection.",
           "alternatives": [],
@@ -564,12 +667,15 @@
       "title": "IP family",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Which address family will the cluster network use?",
           "default": {
             "id": "ipv4",
             "label": "IPv4",
-            "summary": "Single-stack IPv4. Do not install this on a host that is itself dual-stack."
+            "summary": "Single-stack IPv4. Do not install this on a host that is itself dual-stack.",
+            "example": "clusterNetwork.cidr: 10.128.0.0/14"
           },
           "defaultRationale": "The network section says not to install a single-stack IPv4 cluster on a dual-stack host, and it documents IPv4, IPv6, and dual-stack.",
           "alternatives": [
@@ -577,13 +683,19 @@
               "id": "ipv6",
               "label": "IPv6",
               "summary": "Single-stack IPv6. networkType stays OVNKubernetes.",
-              "when": { "kind": "always" }
+              "example": "clusterNetwork.cidr: fd01::/48",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "dual-stack",
               "label": "Dual-stack",
               "summary": "IPv4 and IPv6 on the same default-gateway NIC, listed in the same order everywhere.",
-              "when": { "kind": "always" }
+              "example": "clusterNetwork:\n- cidr: 10.128.0.0/14\n  hostPrefix: 23\n- cidr: fd00:10:128::/56\n  hostPrefix: 64\nserviceNetwork:\n- 172.30.0.0/16\n- fd00:172:16::/112",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -612,7 +724,8 @@
           "default": {
             "id": "ipv4-first",
             "label": "IPv4 before IPv6 on one NIC",
-            "summary": "Same NIC for both default gateways. The same order in clusterNetwork, serviceNetwork, and machineNetwork."
+            "summary": "Same NIC for both default gateways. The same order in clusterNetwork, serviceNetwork, and machineNetwork.",
+            "example": "clusterNetwork:\n- cidr: 10.128.0.0/14\n  hostPrefix: 23\n- cidr: fd00:10:128::/56\n  hostPrefix: 64\nserviceNetwork:\n- 172.30.0.0/16\n- fd00:172:16::/112"
           },
           "defaultRationale": "Both families must use the same default-gateway interface, and every network list must use the same family order.",
           "alternatives": [
@@ -620,7 +733,10 @@
               "id": "ipv6-first",
               "label": "IPv6 before IPv4 on one NIC",
               "summary": "Same rules, with IPv6 listed first in every network parameter.",
-              "when": { "kind": "always" }
+              "example": "If you specified the DualStackIPv6Primary parameter, you must list the IPv6 address first.",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -640,20 +756,26 @@
       "title": "Host addressing",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "How do the hosts get their IP addresses?",
           "default": {
             "id": "dhcp",
             "label": "DHCP",
-            "summary": "Leave networkConfig empty. rendezvousIP must be an address of a host that will be a control plane node."
+            "summary": "Leave networkConfig empty. rendezvousIP must be an address of a host that will be a control plane node.",
+            "example": "rendezvousIP: 192.168.111.80"
           },
           "defaultRationale": "The preparing chapter shows DHCP with an empty networkConfig and a rendezvous IP chosen before the ISO is built.",
           "alternatives": [
             {
               "id": "static",
               "label": "Static NMState",
-              "summary": "Put each host address in networkConfig. The same block can describe bonds, VLANs, and SR-IOV.",
-              "when": { "kind": "always" }
+              "summary": "Write networkConfig for each host. It is one NMState desired state. Interfaces in that state can use a static address, DHCP, or no address, and several interface types can sit in the same block.",
+              "example": "ipv4:\n  address:\n  - ip: 192.168.111.80\n    prefix-length: 23\n  dhcp: false",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -682,7 +804,8 @@
           "default": {
             "id": "control-plane-dhcp",
             "label": "A future control plane DHCP address",
-            "summary": "Set rendezvousIP before you generate the ISO. Every host checks in to the service on that address."
+            "summary": "Set rendezvousIP before you generate the ISO. Every host checks in to the service on that address.",
+            "example": "rendezvousIP: 192.168.111.80"
           },
           "defaultRationale": "With DHCP, rendezvousIP has to be known when the ISO is generated, and it has to belong to a host that will join the control plane.",
           "alternatives": [],
@@ -704,7 +827,8 @@
           "default": {
             "id": "explicit",
             "label": "Set rendezvousIP",
-            "summary": "Put the rendezvous address in agent-config.yaml."
+            "summary": "Put the rendezvous address in agent-config.yaml.",
+            "example": "rendezvousIP: 10.10.10.14"
           },
           "defaultRationale": "If you omit rendezvousIP, one address is taken from the hosts' networkConfig. You must set it when no host IP is in networkConfig.",
           "alternatives": [
@@ -712,7 +836,10 @@
               "id": "from-network-config",
               "label": "Select it from networkConfig",
               "summary": "Omit rendezvousIP and let the installer pick an address that networkConfig already has.",
-              "when": { "kind": "always" }
+              "example": "rendezvousIP is omitted.",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -726,10 +853,11 @@
       ]
     },
     {
-      "id": "nic-layout",
+      "id": "nmstate-ethernet",
       "section": "network",
       "stance": "choice",
-      "title": "NIC layout",
+      "title": "Ethernet interface",
+      "nmstate": "networkConfig",
       "variants": [
         {
           "when": {
@@ -737,37 +865,29 @@
             "decision": "host-addressing",
             "isAnyOf": ["static"]
           },
-          "prompt": "What does each host's networkConfig describe?",
+          "prompt": "Does networkConfig include an ethernet interface?",
           "default": {
-            "id": "single",
-            "label": "Single interface",
-            "summary": "One ethernet NIC, with name and macAddress filled in so they match networkConfig."
+            "id": "include",
+            "label": "Include ethernet",
+            "summary": "type ethernet. Set state to up when IPv4 and IPv6 are both disabled, or the interface can still receive a DHCP address.",
+            "example": "type: ethernet\nstate: up"
           },
-          "defaultRationale": "NMState can describe a single NIC, a bond, a VLAN, or SR-IOV. The interfaces table must match networkConfig when you provide one.",
+          "defaultRationale": "The NMState book defines ethernet as an interface type in the node desired state. Bond, VLAN, Linux bridge, VRF, and InfiniBand are other types in that same state. SR-IOV is ethernet.sr-iov on the physical function.",
           "alternatives": [
             {
-              "id": "bond",
-              "label": "NIC bond",
-              "summary": "Bond member interfaces in NMState. The preparing chapter names bonds as a supported networkConfig.",
-              "when": { "kind": "always" }
-            },
-            {
-              "id": "vlan",
-              "label": "VLAN",
-              "summary": "A VLAN interface on a parent NIC, in NMState.",
-              "when": { "kind": "always" }
-            },
-            {
-              "id": "bond-sriov",
-              "label": "Bond and SR-IOV",
-              "summary": "Dual-port NIC with a bond and ethernet.sr-iov.total-vfs, as in the agent-config example.",
-              "when": { "kind": "always" }
+              "id": "omit",
+              "label": "No ethernet interface",
+              "summary": "Leave type ethernet out of this networkConfig.",
+              "example": "No type: ethernet interface.",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
             {
-              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
-              "locator": "1.9. Example: Bonds and SR-IOV dual-NIC node network configuration",
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.9.1. Example: Ethernet interface node network configuration policy",
               "extraction": "extracted"
             }
           ]
@@ -775,36 +895,55 @@
       ]
     },
     {
-      "id": "bond-attributes",
+      "id": "interface-identifier",
       "section": "network",
       "stance": "choice",
-      "title": "Bond attributes",
+      "title": "Interface identifier",
+      "nmstate": "networkConfig",
       "variants": [
         {
           "when": {
             "kind": "answer",
-            "decision": "nic-layout",
-            "isAnyOf": ["bond", "bond-sriov"]
+            "decision": "nmstate-ethernet",
+            "isAnyOf": ["include"]
           },
-          "prompt": "Will you set bonding mode, MIImon, or QoS on that bond?",
+          "prompt": "How does NMState find that interface?",
           "default": {
-            "id": "in-network-config",
-            "label": "Only what networkConfig already says",
-            "summary": "The bond is fully described in the install-time NMState. No later br-ex change for bond attributes."
+            "id": "name",
+            "label": "Interface name",
+            "summary": "identifier name applies the configuration to the interface with that name. name is the default.",
+            "example": "identifier: name"
           },
-          "defaultRationale": "Chapter 10 lists bonding mode, MIImon, and QoS as bond attributes you can change later on br-ex, which means they are part of the bond decision now.",
+          "defaultRationale": "The NMState book lists identifier values name, mac-address, and pci-address. name is the default. A wrong MAC is an invalid argument. A PCI address uses domain:bus:device.function.",
           "alternatives": [
             {
-              "id": "tune",
-              "label": "Set mode, MIImon, or QoS",
-              "summary": "Record the bonding mode, Media Independent Interface Monitor, and QoS in the NMState bond.",
-              "when": { "kind": "always" }
+              "id": "mac-address",
+              "label": "MAC address",
+              "summary": "identifier mac-address, with mac-address set. The name can still be set, and the MAC is the primary identifier.",
+              "example": "identifier: mac-address\nmac-address: 8A:8C:92:1A:F6:98",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "pci-address",
+              "label": "PCI address",
+              "summary": "identifier pci-address, with pci-address set. The address matches the hardware slot, which stays put when the kernel name changes.",
+              "example": "identifier: pci-address\npci-address: \"0000:86:00.0\"",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
             {
-              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
-              "locator": "10.1. Creating a manifest object that includes a customized br-ex bridge",
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.12.4. Media Access Control (MAC) address",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.12.5. PCI address",
               "extraction": "extracted"
             }
           ]
@@ -812,29 +951,83 @@
       ]
     },
     {
-      "id": "vlan-id",
+      "id": "nmstate-alt-names",
       "section": "network",
       "stance": "choice",
-      "title": "VLAN id",
+      "title": "Alternative interface names",
+      "nmstate": "networkConfig",
       "variants": [
         {
           "when": {
             "kind": "answer",
-            "decision": "nic-layout",
-            "isAnyOf": ["vlan"]
+            "decision": "nmstate-ethernet",
+            "isAnyOf": ["include"]
           },
-          "prompt": "Which VLAN id goes on the parent interface?",
+          "prompt": "Will this interface carry alt-names?",
           "default": {
-            "id": "set-vlan",
-            "label": "Set the VLAN id in networkConfig",
-            "summary": "NMState VLAN on the parent NIC, and the interfaces table matches that name and MAC."
+            "id": "omit",
+            "label": "No alt-names",
+            "summary": "Use the kernel interface name only.",
+            "example": "alt-names is omitted."
           },
-          "defaultRationale": "The preparing chapter says NMState is how you apply VLANs, in the same host network definition as static addresses.",
-          "alternatives": [],
+          "defaultRationale": "alt-names are optional labels, up to 127 characters, and they can be used as bond ports, VLAN base interfaces, bridge ports, and route next hops. They cannot be set on br-ex or on interfaces associated with br-ex.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "Set alt-names",
+              "summary": "Add alt-names on the interface. Applying the same names again leaves the configuration unchanged.",
+              "example": "altname production-network",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
           "citations": [
             {
-              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
-              "locator": "1.6. About networking",
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.8. Configure alternative network interface names",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-sriov",
+      "section": "network",
+      "stance": "choice",
+      "title": "SR-IOV on the physical function",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "nmstate-ethernet",
+            "isAnyOf": ["include"]
+          },
+          "prompt": "Does this ethernet interface create SR-IOV virtual functions?",
+          "default": {
+            "id": "omit",
+            "label": "No SR-IOV",
+            "summary": "Leave ethernet.sr-iov off this interface.",
+            "example": "ethernet.sr-iov is omitted."
+          },
+          "defaultRationale": "SR-IOV is ethernet.sr-iov on a type ethernet interface. A bond is a separate type. The NMState book also describes bonding those virtual functions, which is the bond decision.",
+          "alternatives": [
+            {
+              "id": "configure",
+              "label": "Set ethernet.sr-iov",
+              "summary": "Create virtual functions on this physical function. If the SR-IOV Network Operator also manages the physical function, set externallyManaged on the SriovNetworkNodePolicy.",
+              "example": "ethernet:\n  sr-iov:\n    total-vfs: 3\n    vfs:\n    - id: 0\n      max-tx-rate: 200",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.9.6. Example: Node network configuration policy for virtual functions",
               "extraction": "extracted"
             }
           ]
@@ -846,25 +1039,599 @@
       "section": "network",
       "stance": "choice",
       "title": "SR-IOV virtual functions",
+      "nmstate": "networkConfig",
       "variants": [
         {
           "when": {
             "kind": "answer",
-            "decision": "nic-layout",
-            "isAnyOf": ["bond-sriov"]
+            "decision": "nmstate-sriov",
+            "isAnyOf": ["configure"]
           },
-          "prompt": "How many virtual functions does each physical port expose?",
+          "prompt": "Which ethernet.sr-iov fields do you set?",
           "default": {
             "id": "total-vfs",
-            "label": "Set ethernet.sr-iov.total-vfs",
-            "summary": "The documented example sets total-vfs to 2 on each of eno1 and eno2 and names the VF interfaces sriov:eno1:0 and so on."
+            "label": "Set total-vfs and the per-VF fields you need",
+            "summary": "ethernet.sr-iov.total-vfs is the number of virtual functions. Each entry in vfs can set id, max-tx-rate, trust, and vlan-id.",
+            "example": "total-vfs: 3\nvfs:\n- id: 0\n  max-tx-rate: 200"
           },
-          "defaultRationale": "Section 1.9 is an agent-config example of a bond plus SR-IOV virtual functions created in networkConfig.",
+          "defaultRationale": "The NMState virtual-function policy defines total-vfs, vfs.id, vfs.max-tx-rate, vfs.trust, and vfs.vlan-id on the physical function.",
           "alternatives": [],
           "citations": [
             {
-              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/preparing-to-install-with-agent-based-installer",
-              "locator": "1.9. Example: Bonds and SR-IOV dual-NIC node network configuration",
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.9.6. Example: Node network configuration policy for virtual functions",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-bond",
+      "section": "network",
+      "stance": "choice",
+      "title": "Bond",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "Does networkConfig include a bond?",
+          "default": {
+            "id": "omit",
+            "label": "No bond",
+            "summary": "Leave type bond out of this networkConfig.",
+            "example": "No type: bond interface."
+          },
+          "defaultRationale": "A bond is type bond with link-aggregation.port listing the subordinate interfaces. It can share a desired state with a VLAN or with SR-IOV virtual functions.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "NIC bond",
+              "summary": "type bond. Optional mtu defaults to 1500. Optional link-aggregation.options.miimon sets how often the bond link is inspected.",
+              "example": "type: bond",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.9.4. Example: Bond interface node network configuration policy",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bond-mode",
+      "section": "network",
+      "stance": "choice",
+      "title": "Bond mode",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "nmstate-bond",
+            "isAnyOf": ["include"]
+          },
+          "prompt": "Which link-aggregation.mode does the bond use?",
+          "default": {
+            "id": "active-backup",
+            "label": "active-backup",
+            "summary": "No switch configuration. This is the only bond mode that can attach an IP over InfiniBand interface. options.primary is valid in this mode.",
+            "example": "link-aggregation:\n  mode: active-backup"
+          },
+          "defaultRationale": "OpenShift supports active-backup, balance-xor, and 802.3ad. Other bond modes are not supported. active-backup does not require switch configuration.",
+          "alternatives": [
+            {
+              "id": "balance-xor",
+              "label": "balance-xor",
+              "summary": "Requires switch EtherChannel or a similar port group, plus load-balancing configuration for the traffic.",
+              "example": "link-aggregation:\n  mode: balance-xor",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "802.3ad",
+              "label": "802.3ad",
+              "summary": "Requires switch EtherChannel or a similar port group, plus load-balancing configuration for the traffic.",
+              "example": "link-aggregation:\n  mode: 802.3ad",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.9.4. Example: Bond interface node network configuration policy",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.10. Creating an IP over InfiniBand interface on nodes",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-vlan",
+      "section": "network",
+      "stance": "choice",
+      "title": "VLAN",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "Does networkConfig include a VLAN interface?",
+          "default": {
+            "id": "omit",
+            "label": "No VLAN",
+            "summary": "Leave type vlan out of this networkConfig.",
+            "example": "No type: vlan interface."
+          },
+          "defaultRationale": "A VLAN is type vlan. On bare metal the interface name must be parent.vlanid. Put the VLAN and its routes in the same desired state, because policy order is not guaranteed across separate manifests.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "VLAN",
+              "summary": "type vlan, with vlan.base-iface and vlan.id. The name is parent.vlanid.",
+              "example": "name: eth1.102\ntype: vlan\nvlan:\n  base-iface: eth1\n  id: 102",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.9.3. Example: VLAN interface node network configuration policy",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vlan-id",
+      "section": "network",
+      "stance": "choice",
+      "title": "VLAN id",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "nmstate-vlan",
+            "isAnyOf": ["include"]
+          },
+          "prompt": "Which VLAN id goes on the parent interface?",
+          "default": {
+            "id": "set-vlan",
+            "label": "Set vlan.id",
+            "summary": "vlan.base-iface is the parent NIC or bond. vlan.id is the tag. On bare metal the interface name is parent.vlanid.",
+            "example": "name: eth1.102\nvlan:\n  base-iface: eth1\n  id: 102"
+          },
+          "defaultRationale": "The VLAN policy sets vlan.base-iface and vlan.id. Bare metal accepts only the parent.vlanid name.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.9.3. Example: VLAN interface node network configuration policy",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-linux-bridge",
+      "section": "network",
+      "stance": "choice",
+      "title": "Linux bridge",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "Does networkConfig include a Linux bridge?",
+          "default": {
+            "id": "omit",
+            "label": "No Linux bridge",
+            "summary": "Leave type linux-bridge out of this networkConfig.",
+            "example": "No type: linux-bridge interface."
+          },
+          "defaultRationale": "A Linux bridge is type linux-bridge. bridge.port names the attached NICs. bridge.options.stp.enabled turns spanning tree on or off. This is the kernel bridge, separate from the OVN br-ex bridge.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "Linux bridge",
+              "summary": "type linux-bridge, with bridge.port and bridge.options.stp.enabled.",
+              "example": "type: linux-bridge",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.9.2. Example: Linux bridge interface node network configuration policy",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-vrf",
+      "section": "network",
+      "stance": "choice",
+      "title": "VRF",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "Does networkConfig include a VRF?",
+          "default": {
+            "id": "omit",
+            "label": "No VRF",
+            "summary": "Leave type vrf out of this networkConfig.",
+            "example": "No type: vrf interface."
+          },
+          "defaultRationale": "A VRF is type vrf. vrf.port lists the interfaces in the instance. vrf.route-table-id must be lower than 1000, because 1000 and above are reserved for OpenShift.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "VRF",
+              "summary": "type vrf, with vrf.port and vrf.route-table-id.",
+              "example": "type: vrf\nvrf:\n  route-table-id: 2",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.9.7. Example: Network interface with a VRF instance node network configuration policy",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vrf-table",
+      "section": "network",
+      "stance": "choice",
+      "title": "VRF route table",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "nmstate-vrf",
+            "isAnyOf": ["include"]
+          },
+          "prompt": "Which route table does the VRF use?",
+          "default": {
+            "id": "below-1000",
+            "label": "route-table-id below 1000",
+            "summary": "vrf.route-table-id must be lower than 1000. OpenShift reserves 1000 and above.",
+            "example": "vrf.route-table-id: 2"
+          },
+          "defaultRationale": "The VRF policy says a route table id of 1000 or higher is reserved for OpenShift Container Platform.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.9.7. Example: Network interface with a VRF instance node network configuration policy",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-infiniband",
+      "section": "network",
+      "stance": "choice",
+      "title": "IP over InfiniBand",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "Does networkConfig include an InfiniBand interface?",
+          "default": {
+            "id": "omit",
+            "label": "No InfiniBand",
+            "summary": "Leave type infiniband out of this networkConfig.",
+            "example": "No type: infiniband interface."
+          },
+          "defaultRationale": "An IPoIB interface is type infiniband, with infiniband.mode and infiniband.pkey. Attaching it to a bond is supported only in active-backup mode. The MAC is a 20-byte string when identifier is mac-address.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "InfiniBand",
+              "summary": "type infiniband. Set infiniband.pkey. None and 0xffff are the base-interface protection keys.",
+              "example": "type: infiniband\ninfiniband.mode: datagram\ninfiniband.pkey: \"0xffff\"",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.10. Creating an IP over InfiniBand interface on nodes",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ipoib-mode",
+      "section": "network",
+      "stance": "choice",
+      "title": "IPoIB mode",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "nmstate-infiniband",
+            "isAnyOf": ["include"]
+          },
+          "prompt": "Which infiniband.mode does the interface use?",
+          "default": {
+            "id": "datagram",
+            "label": "datagram",
+            "summary": "The default IPoIB mode.",
+            "example": "infiniband.mode: datagram"
+          },
+          "defaultRationale": "datagram is the default. connected is supported when you need to change the MTU so the node can reach surrounding devices.",
+          "alternatives": [
+            {
+              "id": "connected",
+              "label": "connected",
+              "summary": "Use connected when the MTU has to change for connectivity with surrounding devices.",
+              "example": "infiniband.mode: connected",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.10. Creating an IP over InfiniBand interface on nodes",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-dns",
+      "section": "network",
+      "stance": "choice",
+      "title": "DNS resolver",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "Does networkConfig set dns-resolver?",
+          "default": {
+            "id": "omit",
+            "label": "No dns-resolver",
+            "summary": "Leave DNS to DHCP or to the host default.",
+            "example": "dns-resolver is omitted."
+          },
+          "defaultRationale": "dns-resolver.config holds server, search, and options for the node. NMState stores DNS globally by default. Storing DNS on an interface can break resolution after that interface joins a bridge or a bond.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "Set dns-resolver",
+              "summary": "dns-resolver.config.server, search, and options. An empty config clears DNS options.",
+              "example": "dns-resolver:\n  config:\n    server:\n    - 192.0.2.251",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.12.6. DNS",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-routes",
+      "section": "network",
+      "stance": "choice",
+      "title": "Routes",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "Does networkConfig set routes?",
+          "default": {
+            "id": "omit",
+            "label": "No static routes",
+            "summary": "Leave routes out of this networkConfig.",
+            "example": "routes is omitted."
+          },
+          "defaultRationale": "routes.config entries set destination, next-hop-interface, next-hop-address, metric, and table-id. To replace a route, mark the old one state absent and the new one state present. state ignore leaves a route alone. br-ex cannot be the next hop unless that bridge was customized.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "Set routes",
+              "summary": "Add routes.config. The next hop must be in the same subnet as the interface address.",
+              "example": "destination: 198.51.100.0/24\nnext-hop-interface: eth1\nnext-hop-address: 192.0.2.1",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.14. Routes and route rules",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-route-rules",
+      "section": "network",
+      "stance": "choice",
+      "title": "Route rules",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "Does networkConfig set route-rules?",
+          "default": {
+            "id": "omit",
+            "label": "No route rules",
+            "summary": "Leave route-rules out of this networkConfig.",
+            "example": "route-rules is omitted."
+          },
+          "defaultRationale": "route-rules.config is policy routing. ip-from selects the source, priority orders the rule, and route-table names the table that handles the match.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "Set route-rules",
+              "summary": "route-rules.config with ip-from, priority, and route-table.",
+              "example": "ip-from: 198.51.100.0/24\npriority: 1000\nroute-table: 200",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.14. Routes and route rules",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-forwarding",
+      "section": "network",
+      "stance": "choice",
+      "title": "IPv4 forwarding",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "Does an interface set ipv4.forwarding?",
+          "default": {
+            "id": "omit",
+            "label": "Leave forwarding unset",
+            "summary": "Do not set ipv4.forwarding in this networkConfig.",
+            "example": "ipv4.forwarding is omitted."
+          },
+          "defaultRationale": "ipv4.forwarding enables IPv4 forwarding on that interface. The NMState operator configures IPv4 only. The interface can be a physical NIC, a bond, or a VLAN.",
+          "alternatives": [
+            {
+              "id": "enable",
+              "label": "Enable ipv4.forwarding",
+              "summary": "Set ipv4.enabled and ipv4.forwarding on the interface that should forward IPv4 packets.",
+              "example": "ipv4:\n  forwarding: true",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.13. Enable IP forwarding on specific interfaces",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nmstate-reserved-names",
+      "section": "network",
+      "stance": "choice",
+      "title": "Reserved interface names",
+      "nmstate": "networkConfig",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "host-addressing",
+            "isAnyOf": ["static"]
+          },
+          "prompt": "Which interface names does this networkConfig avoid?",
+          "default": {
+            "id": "avoid",
+            "label": "Avoid the reserved names",
+            "summary": "Do not use br-ext, br-int, br-local, br-nexthop, br0, ext-vxlan, ext, genev_sys_*, int, k8s-*, ovn-k8s-*, patch-br-*, tun0, or vxlan_sys_*.",
+            "example": "name: eth1"
+          },
+          "defaultRationale": "The NMState policy chapter reserves those names. An existing br-ex bridge, and interfaces associated with it, cannot be modified except through a customized br-ex manifest.",
+          "alternatives": [],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/kubernetes_nmstate/index",
+              "locator": "1.4. About the NodeNetworkConfigurationPolicy manifest file",
               "extraction": "extracted"
             }
           ]
@@ -878,12 +1645,15 @@
       "title": "Cluster network CIDRs",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Will you keep the default pod, service, and machine networks?",
           "default": {
             "id": "defaults",
             "label": "Keep the defaults",
-            "summary": "Pods 10.128.0.0/14 with hostPrefix 23, services 172.30.0.0/16, machines 10.0.0.0/16. networkType is OVNKubernetes. The join subnet stays 100.64.0.0/16."
+            "summary": "Pods 10.128.0.0/14 with hostPrefix 23, services 172.30.0.0/16, machines 10.0.0.0/16. networkType is OVNKubernetes. The join subnet stays 100.64.0.0/16.",
+            "example": "clusterNetwork.cidr: 10.128.0.0/14\nhostPrefix: 23\nserviceNetwork: 172.30.0.0/16\nmachineNetwork.cidr: 10.0.0.0/16"
           },
           "defaultRationale": "Those are the defaults in the network parameter table, and you cannot change the networking object after installation.",
           "alternatives": [
@@ -891,7 +1661,10 @@
               "id": "custom",
               "label": "Set your own CIDRs",
               "summary": "Replace clusterNetwork, serviceNetwork, or machineNetwork. They must not overlap, and machineNetwork must match the preferred NIC.",
-              "when": { "kind": "always" }
+              "example": "clusterNetwork.cidr: 172.21.0.0/16",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -920,7 +1693,8 @@
           "default": {
             "id": "checked",
             "label": "Checked",
-            "summary": "machineNetwork does not include Podman's 10.88.0.0/16 bridge. The OVN join subnet does not overlap any node network and is larger than the node count."
+            "summary": "machineNetwork does not include Podman's 10.88.0.0/16 bridge. The OVN join subnet does not overlap any node network and is larger than the node count.",
+            "example": "Do not set machineNetwork.cidr to include 10.88.0.0/16. The internalJoinSubnet default is 100.64.0.0/16."
           },
           "defaultRationale": "The preparing chapter says a machineNetwork that includes 10.88.0.0/16 fails the install. The join subnet cannot be changed later.",
           "alternatives": [],
@@ -941,12 +1715,15 @@
       "title": "FIPS mode",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Install with FIPS mode enabled?",
           "default": {
             "id": "off",
             "label": "Leave fips false",
-            "summary": "The default is false."
+            "summary": "The default is false.",
+            "example": "fips: false"
           },
           "defaultRationale": "fips defaults to false. Turning it on requires the installer to run on a RHEL host that is already in FIPS mode, and it cannot be enabled after the first boot.",
           "alternatives": [
@@ -954,7 +1731,10 @@
               "id": "on",
               "label": "fips true",
               "summary": "Run openshift-install on a FIPS-enabled RHEL host. Supported on x86_64, ppc64le, and s390x.",
-              "when": { "kind": "always" }
+              "example": "fips: true",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -974,12 +1754,15 @@
       "title": "Capability baseline",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Which optional components ship with the cluster?",
           "default": {
             "id": "vcurrent",
             "label": "vCurrent",
-            "summary": "baselineCapabilitySet defaults to vCurrent."
+            "summary": "baselineCapabilitySet defaults to vCurrent.",
+            "example": "baselineCapabilitySet: vCurrent"
           },
           "defaultRationale": "Valid baselines are None, v4.11, v4.12, and vCurrent. The default is vCurrent.",
           "alternatives": [
@@ -987,19 +1770,28 @@
               "id": "none",
               "label": "None",
               "summary": "Start with no optional capabilities and add only what you list.",
-              "when": { "kind": "always" }
+              "example": "baselineCapabilitySet: None",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "v4-11",
               "label": "v4.11",
               "summary": "The v4.11 baseline set.",
-              "when": { "kind": "always" }
+              "example": "baselineCapabilitySet: v4.11",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "v4-12",
               "label": "v4.12",
               "summary": "The v4.12 baseline set.",
-              "when": { "kind": "always" }
+              "example": "baselineCapabilitySet: v4.12",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1019,12 +1811,15 @@
       "title": "Extra capabilities",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Add capabilities beyond the baseline?",
           "default": {
             "id": "no",
             "label": "No additionalEnabledCapabilities",
-            "summary": "The baseline alone."
+            "summary": "The baseline alone.",
+            "example": "additionalEnabledCapabilities is omitted."
           },
           "defaultRationale": "additionalEnabledCapabilities is optional and extends the baseline.",
           "alternatives": [
@@ -1032,7 +1827,10 @@
               "id": "yes",
               "label": "List additionalEnabledCapabilities",
               "summary": "Name the extra optional components to install with the cluster.",
-              "when": { "kind": "always" }
+              "example": "additionalEnabledCapabilities is a string array.",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1052,12 +1850,15 @@
       "title": "Workload partitioning",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Reserve CPUs for OpenShift services?",
           "default": {
             "id": "none",
             "label": "cpuPartitioningMode None",
-            "summary": "The default. Workload partitioning stays off."
+            "summary": "The default. Workload partitioning stays off.",
+            "example": "cpuPartitioningMode: None"
           },
           "defaultRationale": "You can only enable workload partitioning at install, and you cannot turn it off later. None is the default.",
           "alternatives": [
@@ -1065,7 +1866,10 @@
               "id": "all-nodes",
               "label": "AllNodes",
               "summary": "Isolate platform workloads onto reserved CPUs on every node. This does not by itself pin your application CPUs.",
-              "when": { "kind": "always" }
+              "example": "cpuPartitioningMode: AllNodes",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1085,12 +1889,15 @@
       "title": "Hyperthreading",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Leave simultaneous multithreading enabled?",
           "default": {
             "id": "enabled",
             "label": "Enabled",
-            "summary": "The default for control plane and compute pools."
+            "summary": "The default for control plane and compute pools.",
+            "example": "hyperthreading: Enabled"
           },
           "defaultRationale": "Hyperthreading is enabled by default. Disabling it cuts machine capacity and has to be planned for.",
           "alternatives": [
@@ -1098,7 +1905,10 @@
               "id": "disabled",
               "label": "Disabled",
               "summary": "Set hyperthreading to Disabled on the control plane and compute pools.",
-              "when": { "kind": "always" }
+              "example": "hyperthreading: Disabled",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1118,12 +1928,15 @@
       "title": "SSH key",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Will you put an SSH public key in install-config.yaml?",
           "default": {
             "id": "provide",
             "label": "Provide sshKey",
-            "summary": "Needed for installation debugging and disaster recovery on a production cluster."
+            "summary": "Needed for installation debugging and disaster recovery on a production cluster.",
+            "example": "sshKey: ssh-ed25519 AAAA.."
           },
           "defaultRationale": "The parameter note says to set an SSH key on production clusters where you may need to debug the install or recover a node.",
           "alternatives": [
@@ -1131,7 +1944,10 @@
               "id": "omit",
               "label": "Omit sshKey",
               "summary": "The field is optional. You will not have that login on the hosts.",
-              "when": { "kind": "always" }
+              "example": "sshKey is omitted.",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1151,12 +1967,15 @@
       "title": "NTP sources",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Add NTP servers beyond what the hosts already use?",
           "default": {
             "id": "existing",
             "label": "No additionalNTPSources",
-            "summary": "Hosts keep the NTP configuration they already have."
+            "summary": "Hosts keep the NTP configuration they already have.",
+            "example": "additionalNTPSources is omitted."
           },
           "defaultRationale": "additionalNTPSources is optional and is added on top of NTP sources configured another way.",
           "alternatives": [
@@ -1164,7 +1983,10 @@
               "id": "extra",
               "label": "List additionalNTPSources",
               "summary": "Hostnames or IP addresses added to every cluster host.",
-              "when": { "kind": "always" }
+              "example": "additionalNTPSources is a list of hostnames or IP addresses.",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1184,12 +2006,15 @@
       "title": "Host roles",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Who assigns master and worker roles?",
           "default": {
             "id": "installer",
             "label": "Let the installer assign roles",
-            "summary": "Omit hosts.role. Roles are assigned during installation. The host count still cannot exceed controlPlane.replicas plus compute.replicas."
+            "summary": "Omit hosts.role. Roles are assigned during installation. The host count still cannot exceed controlPlane.replicas plus compute.replicas.",
+            "example": "hosts.role is omitted."
           },
           "defaultRationale": "If agent-config.yaml does not set a role, the installer assigns master or worker during the install.",
           "alternatives": [
@@ -1197,7 +2022,10 @@
               "id": "pinned",
               "label": "Pin each host's role",
               "summary": "Set hosts.role to master or worker, and set hostname if DHCP or reverse DNS is not enough.",
-              "when": { "kind": "always" }
+              "example": "role: master",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1217,12 +2045,15 @@
       "title": "Install disk",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "Which disk gets RHCOS?",
           "default": {
             "id": "discover",
             "label": "First matching disk the installer finds",
-            "summary": "Omit rootDeviceHints."
+            "summary": "Omit rootDeviceHints.",
+            "example": "rootDeviceHints is omitted."
           },
           "defaultRationale": "rootDeviceHints is optional. Without it the installer does not target a specific device.",
           "alternatives": [
@@ -1230,7 +2061,10 @@
               "id": "hint",
               "label": "Set rootDeviceHints",
               "summary": "The installer uses the first discovered device that matches every hint you set.",
-              "when": { "kind": "always" }
+              "example": "rootDeviceHints:\n  deviceName: \"/dev/sda\"",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1259,7 +2093,8 @@
           "default": {
             "id": "device-name",
             "label": "deviceName by path",
-            "summary": "Prefer /dev/disk/by-path/... The hint must match exactly."
+            "summary": "Prefer /dev/disk/by-path/... The hint must match exactly.",
+            "example": "deviceName: /dev/disk/by-path/<device_path>"
           },
           "defaultRationale": "The hint table says to prefer the by-path device name. Hints can be combined, and the device must match all of them.",
           "alternatives": [
@@ -1267,31 +2102,46 @@
               "id": "wwn",
               "label": "wwn",
               "summary": "Unique storage identifier. If udevadm prints ID_WWN_WITH_EXTENSION, use that value.",
-              "when": { "kind": "always" }
+              "example": "wwn is the ID_WWN_WITH_EXTENSION value when udevadm prints one.",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "serial",
               "label": "serialNumber",
               "summary": "Exact serial number.",
-              "when": { "kind": "always" }
+              "example": "serialNumber matches the device serial number exactly.",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "hctl",
               "label": "hctl",
               "summary": "SCSI address such as 0:0:0:0. Exact match.",
-              "when": { "kind": "always" }
+              "example": "hctl: 0:0:0:0",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "model-vendor",
               "label": "model or vendor",
               "summary": "A substring match on the model or the vendor name.",
-              "when": { "kind": "always" }
+              "example": "model is a vendor-specific device identifier and can be a substring.",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "size-or-rotational",
               "label": "minSizeGigabytes or rotational",
               "summary": "Minimum size in gigabytes, or whether the disk must be rotational.",
-              "when": { "kind": "always" }
+              "example": "rotational: true",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1314,7 +2164,11 @@
           "when": {
             "kind": "all",
             "of": [
-              { "kind": "answer", "decision": "platform", "isAnyOf": ["none"] },
+              {
+                "kind": "answer",
+                "decision": "platform",
+                "isAnyOf": ["none"]
+              },
               {
                 "kind": "answer",
                 "decision": "topology",
@@ -1326,7 +2180,8 @@
           "default": {
             "id": "shared",
             "label": "One load balancer",
-            "summary": "The documented example uses one HAProxy for API ports 6443 and 22623 and ingress ports 80 and 443. A compact cluster must send ingress to the control plane nodes."
+            "summary": "The documented example uses one HAProxy for API ports 6443 and 22623 and ingress ports 80 and 443. A compact cluster must send ingress to the control plane nodes.",
+            "example": "bind *:6443"
           },
           "defaultRationale": "platform none requires you to provision API and ingress load balancers before installation, except for single-node OpenShift. Production clusters can split them.",
           "alternatives": [
@@ -1334,7 +2189,10 @@
               "id": "split",
               "label": "Separate API and ingress balancers",
               "summary": "Scale the API and application ingress load balancers independently. API balancing stays layer 4 and stateless.",
-              "when": { "kind": "always" }
+              "example": "bind *:6443\nbind *:22623\nbind *:443\nbind *:80",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1363,7 +2221,8 @@
           "default": {
             "id": "managed",
             "label": "Managed",
-            "summary": "The default. The cluster runs DHCP and TFTP for the provisioning network."
+            "summary": "The default. The cluster runs DHCP and TFTP for the provisioning network.",
+            "example": "provisioningNetwork: Managed"
           },
           "defaultRationale": "provisioningNetwork defaults to Managed. These fields are for after the agent install, so setting them now avoids a day-2 edit.",
           "alternatives": [
@@ -1371,7 +2230,10 @@
               "id": "disabled",
               "label": "Disabled",
               "summary": "No provisioning network. Later hosts are added with virtual media, and BMCs must be reachable on the bare-metal network.",
-              "when": { "kind": "always" }
+              "example": "provisioningNetwork: Disabled",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1400,7 +2262,8 @@
           "default": {
             "id": "two-ips",
             "label": "Two addresses on the bare-metal network",
-            "summary": "Provide two bare-metal IPs for the provisioning services. Day-2 provisioning is virtual media only."
+            "summary": "Provide two bare-metal IPs for the provisioning services. Day-2 provisioning is virtual media only.",
+            "example": "You must provide two IP addresses on the bare-metal network."
           },
           "defaultRationale": "When provisioningNetwork is Disabled, the table requires those two addresses, and virtual media is the only day-2 provisioning method.",
           "alternatives": [],
@@ -1430,7 +2293,8 @@
           "default": {
             "id": "later",
             "label": "Leave them for day 2",
-            "summary": "platform.baremetal.hosts is not used to boot the agent ISO."
+            "summary": "platform.baremetal.hosts is not used to boot the agent ISO.",
+            "example": "platform.baremetal.hosts is omitted."
           },
           "defaultRationale": "The bare metal table says these fields are not used for the initial provision. They exist so you can set them at install time instead of coming back later.",
           "alternatives": [
@@ -1438,7 +2302,10 @@
               "id": "now",
               "label": "Set them in install-config.yaml now",
               "summary": "Record bootMACAddress, BMC address URL, username, and password. Set disableCertificateVerification when the BMC certificate is self-signed. The address URL includes the protocol, for example redfish.",
-              "when": { "kind": "always" }
+              "example": "bmc.address: redfish+http://10.10.10.1:8000/redfish/v1/Systems/1234",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1458,12 +2325,15 @@
       "title": "br-ex bridge",
       "variants": [
         {
-          "when": { "kind": "always" },
+          "when": {
+            "kind": "always"
+          },
           "prompt": "After installation, do you keep the default OVS br-ex bridge?",
           "default": {
             "id": "default",
             "label": "Keep the default bridge",
-            "summary": "One NIC and the standard OVS settings. OpenShift configures br-ex for you."
+            "summary": "One NIC and the standard OVS settings. OpenShift configures br-ex for you.",
+            "example": "OpenShift Container Platform automatically configures the br-ex bridge."
           },
           "defaultRationale": "Chapter 10 says the default bridge is for a single NIC and standard OVS settings. Customizing it is a post-install step.",
           "alternatives": [
@@ -1471,7 +2341,10 @@
               "id": "custom",
               "label": "Custom NodeNetworkConfigurationPolicy",
               "summary": "Override br-ex for MTU, DNS, bond attributes, or LLDP. Copy the full install NMState into the policy or the node can lose its network.",
-              "when": { "kind": "always" }
+              "example": "kind: NodeNetworkConfigurationPolicy\nname: br-ex\ntype: ovs-bridge",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1500,7 +2373,8 @@
           "default": {
             "id": "install",
             "label": "Install the NMState Operator",
-            "summary": "Required before the NodeNetworkConfigurationPolicy. The policy's primary IP cannot be changed afterward."
+            "summary": "Required before the NodeNetworkConfigurationPolicy. The policy's primary IP cannot be changed afterward.",
+            "example": "Kubernetes NMState Operator"
           },
           "defaultRationale": "Chapter 10 lists the NMState Operator as a prerequisite for the br-ex policy.",
           "alternatives": [],
@@ -1519,6 +2393,7 @@
       "section": "operate",
       "stance": "choice",
       "title": "Why customize br-ex",
+      "nmstate": "nncp",
       "variants": [
         {
           "when": {
@@ -1530,7 +2405,8 @@
           "default": {
             "id": "mtu",
             "label": "MTU",
-            "summary": "Change the maximum transmission unit."
+            "summary": "Change the maximum transmission unit.",
+            "example": "You need to modify the maximum transmission unit (MTU) for your cluster."
           },
           "defaultRationale": "The post-install chapter lists MTU, DNS, bond attributes, and LLDP as the reasons to replace the default bridge.",
           "alternatives": [
@@ -1538,19 +2414,28 @@
               "id": "dns",
               "label": "DNS",
               "summary": "Update DNS values in the NMState policy.",
-              "when": { "kind": "always" }
+              "example": "dns-resolver.config.server: 192.0.2.251",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "bond",
               "label": "Bond mode, MIImon, or QoS",
               "summary": "Change attributes of a bond that backs br-ex.",
-              "when": { "kind": "always" }
+              "example": "miimon: '140'",
+              "when": {
+                "kind": "always"
+              }
             },
             {
               "id": "lldp",
               "label": "LLDP",
               "summary": "Enable Link Layer Discovery Protocol to troubleshoot the switch port.",
-              "when": { "kind": "always" }
+              "example": "You need to enable Link Layer Discovery Protocol (LLDP) to discover and troubleshoot switch connectivity.",
+              "when": {
+                "kind": "always"
+              }
             }
           ],
           "citations": [
@@ -1564,10 +2449,10 @@
       ]
     },
     {
-      "id": "app-storage",
+      "id": "install-operators",
       "section": "operate",
       "stance": "choice",
-      "title": "Application storage",
+      "title": "Operators on the self-contained ISO",
       "variants": [
         {
           "when": {
@@ -1575,18 +2460,964 @@
             "decision": "release-source",
             "isAnyOf": ["no-external-registry"]
           },
-          "prompt": "The self-contained media does not include a storage operator. What will applications use for persistent volumes?",
+          "prompt": "Which operators does the rendezvous console install with the cluster?",
           "default": {
-            "id": "bring-your-own",
-            "label": "Configure storage yourself",
-            "summary": "Install a storage operator after the cluster exists and create the StorageClass applications will claim."
+            "id": "virtualization-bundle",
+            "label": "Virtualization bundle",
+            "summary": "Select Virtualization in the Bundles section. This installs the operators the console recommends for virtual machines. This installation method is Technology Preview, and the bundle includes no storage operators.",
+            "example": "Virtualization"
           },
-          "defaultRationale": "Chapter 5 says that installation method ships no storage operators and you must configure storage separately before virtualized or other workloads can use persistent volumes.",
-          "alternatives": [],
+          "defaultRationale": "Chapter 5 says to select Virtualization in the Bundles section when you want the operators recommended for virtual machines. The same chapter says the bundle includes no storage operators.",
+          "alternatives": [
+            {
+              "id": "single-operators",
+              "label": "Single operators",
+              "summary": "Select operators one by one in the Single Operators section. Some of those operators can be installed only as part of the Virtualization bundle. The 4.22 agent chapter does not print their names.",
+              "example": "Single Operators",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
           "citations": [
             {
               "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
-              "locator": "5.1. Installation method advantages",
+              "locator": "5.4. Configuring cluster details and choosing Operators to install",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "custom-manifests",
+      "section": "operate",
+      "stance": "choice",
+      "title": "Custom manifests",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "Will you add extra manifests in the openshift directory?",
+          "default": {
+            "id": "omit",
+            "label": "No extra manifests",
+            "summary": "install-config.yaml and agent-config.yaml are enough. Extra manifests are optional.",
+            "example": "The openshift directory is omitted."
+          },
+          "defaultRationale": "Chapter 4 says additional manifests are optional. The installer does not validate them, and a bad manifest can leave the cluster unusable.",
+          "alternatives": [
+            {
+              "id": "add",
+              "label": "Add manifests in the openshift directory",
+              "summary": "Put the files in <installation_directory>/openshift. The agent installer applies them when it creates the image. The most common kind is a MachineConfig. Chapter 8 also installs named operators from Subscription files in that directory.",
+              "example": "<installation_directory>/openshift\n\nkind: MachineConfig\nname: 10-br-ex-worker\npath: /etc/nmstate/openshift/worker-0.yml\n\nkind: Subscription\nname: multicluster-engine\nchannel: stable-2.3\n\nkind: Subscription\nname: local-storage-operator\ninstallPlanApproval: Automatic",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "4.5.1. Creating a directory to contain additional manifests",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/installing_an_on-premise_cluster_with_the_agent-based_installer/index",
+              "locator": "8.3. Preparing an Agent-based cluster deployment for the multicluster engine for Kubernetes Operator while connected",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "storage-class",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 storage class",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "After installation, which storage class will applications claim?",
+          "default": {
+            "id": "lvm",
+            "label": "LVM Storage",
+            "summary": "LVM Storage creates this class for device class vg1. The default reclaim policy is Delete and binding waits for the pod.",
+            "example": "kind: StorageClass\nmetadata:\n  name: lvms-vg1\nprovisioner: topolvm.io\nreclaimPolicy: Delete\nvolumeBindingMode: WaitForFirstConsumer\nallowVolumeExpansion: true\nparameters:\n  topolvm.io/device-class: vg1\n  csi.storage.k8s.io/fstype: xfs"
+          },
+          "defaultRationale": "The local storage chapter says device class vg1 creates the class lvms-vg1 with provisioner topolvm.io. This is a postinstallation choice. The cluster already runs on node disk.",
+          "alternatives": [
+            {
+              "id": "lso",
+              "label": "Local Storage Operator",
+              "summary": "The operator creates the class named local-sc. Local volumes are static, so the class uses the no-provisioner provisioner and does not create disks.",
+              "example": "kind: StorageClass\nmetadata:\n  name: local-sc\nprovisioner: kubernetes.io/no-provisioner",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "odf",
+              "label": "OpenShift Data Foundation",
+              "summary": "A bare metal Data Foundation cluster creates these classes. Ceph RBD is the block class you can set as the default. The bare metal guide also lists ocs-storagecluster-ceph-rgw.",
+              "example": "kind: StorageClass\nmetadata:\n  name: ocs-storagecluster-ceph-rbd\nprovisioner: openshift-storage.rbd.csi.ceph.com\nreclaimPolicy: Delete\nvolumeBindingMode: Immediate\nallowVolumeExpansion: true\n\nkind: StorageClass\nmetadata:\n  name: ocs-storagecluster-cephfs\nprovisioner: openshift-storage.cephfs.csi.ceph.com\nreclaimPolicy: Delete\nvolumeBindingMode: Immediate\nallowVolumeExpansion: true\n\nkind: StorageClass\nmetadata:\n  name: openshift-storage.noobaa.io\nprovisioner: openshift-storage.noobaa.io/obc\nreclaimPolicy: Delete\nvolumeBindingMode: Immediate\nallowVolumeExpansion: false",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "hostpath",
+              "label": "hostPath for a test",
+              "summary": "The virtualization storage chapter creates this Hostpath Provisioner class. The local storage overview says upstream HostPath Provisioner is not recommended, and a hostPath volume is for a single-node test.",
+              "example": "kind: StorageClass\nmetadata:\n  name: hostpath-csi\nprovisioner: kubevirt.io.hostpath-provisioner\nreclaimPolicy: Delete\nvolumeBindingMode: WaitForFirstConsumer\nparameters:\n  storagePool: my-storage-pool",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/storage/persistent-storage-using-local-storage",
+              "locator": "5.4.7.3. Sample LVM cluster configuration with storage class option",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/storage/using-container-storage-interface-csi",
+              "locator": "6.12.4.2. Static provisioning across subscriptions for Azure File by creating a PV and PVC",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.22/html/managing_and_allocating_storage_resources/storage-classes_rhodf",
+              "locator": "2.2. Storage class with single replica",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.22/html-single/deploying_openshift_data_foundation_using_bare_metal_infrastructure/index",
+              "locator": "3.4. Verifying that the specific storage classes exist",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/virtualization/storage",
+              "locator": "10.6.1.2. Creating a storage class for the CSI driver with the storagePools stanza",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/postinstallation_configuration/post-install-storage-configuration",
+              "locator": "Chapter 8. Postinstallation storage configuration",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "array-storage",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 external storage",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "After installation, will applications also use an external storage class?",
+          "default": {
+            "id": "omit",
+            "label": "No external storage class",
+            "summary": "The day-2 class above is enough. An external class is optional.",
+            "example": "No external StorageClass."
+          },
+          "defaultRationale": "The postinstallation chapter says the cluster operates on ephemeral node storage until you configure persistent storage.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "Add an external storage class",
+              "summary": "You can add more than one. The virtualization chapter creates a SAN class from the LUNs you select. The CSI chapter creates an SMB class for a file share.",
+              "example": "kind: StorageClass\nmetadata:\n  name: filesystem1\nprovisioner: spectrumscale.csi.ibm.com\n\nkind: StorageClass\nmetadata:\n  name: samba\nprovisioner: smb.csi.k8s.io",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/virtualization/storage",
+              "locator": "10.13.7. Creating a file system with Fusion Access for SAN",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/storage/using-container-storage-interface-csi",
+              "locator": "6.21.6. Dynamic provisioning for CIFS/SMB",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "array-san",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "SAN storage class",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "array-storage",
+            "isAnyOf": ["include"]
+          },
+          "prompt": "After installation, will you add the SAN storage class?",
+          "default": {
+            "id": "omit",
+            "label": "No SAN storage class",
+            "summary": "Leave the SAN class out. OpenShift does not ship a Fibre Channel or iSCSI StorageClass.",
+            "example": "No spectrumscale.csi.ibm.com class."
+          },
+          "defaultRationale": "The virtualization chapter creates this class only after you build a file system from the LUNs you select.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "Include the SAN storage class",
+              "summary": "The class name is the file system name. The provisioner is spectrumscale.csi.ibm.com and volBackendFs matches that file system.",
+              "example": "kind: StorageClass\napiVersion: storage.k8s.io/v1\nmetadata:\n  name: filesystem1\nprovisioner: spectrumscale.csi.ibm.com\nparameters:\n  volBackendFs: filesystem1\nreclaimPolicy: Delete\nallowVolumeExpansion: true\nvolumeBindingMode: Immediate",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/virtualization/storage",
+              "locator": "10.13.7. Creating a file system with Fusion Access for SAN",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "array-smb",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "SMB storage class",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "array-storage",
+            "isAnyOf": ["include"]
+          },
+          "prompt": "After installation, will you add the SMB storage class?",
+          "default": {
+            "id": "omit",
+            "label": "No SMB storage class",
+            "summary": "Leave the SMB class out. The book does not print an NFS StorageClass.",
+            "example": "No smb.csi.k8s.io class."
+          },
+          "defaultRationale": "The CSI chapter creates this class when you want a share provisioned from an SMB server. NFS in the storage book is a static volume, not a storage class.",
+          "alternatives": [
+            {
+              "id": "include",
+              "label": "Include the SMB storage class",
+              "summary": "The bound claim in the chapter uses the class name samba. The book leaves the server and share as placeholders and stores the credentials in the smbcreds secret.",
+              "example": "kind: StorageClass\nmetadata:\n  name: samba\nprovisioner: smb.csi.k8s.io\nparameters:\n  source: //<hostname>/<shares>\n  csi.storage.k8s.io/provisioner-secret-name: smbcreds\n  csi.storage.k8s.io/provisioner-secret-namespace: samba-server\n  csi.storage.k8s.io/node-stage-secret-name: smbcreds\n  csi.storage.k8s.io/node-stage-secret-namespace: samba-server\nreclaimPolicy: Delete\nvolumeBindingMode: Immediate",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/storage/using-container-storage-interface-csi",
+              "locator": "6.21.6. Dynamic provisioning for CIFS/SMB",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "registry-storage",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 image registry",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "After installation, where does the internal image registry store images?",
+          "default": {
+            "id": "removed",
+            "label": "Leave the registry Removed",
+            "summary": "Bare metal does not provision registry storage. The operator stays Removed until you configure storage.",
+            "example": "managementState: Removed"
+          },
+          "defaultRationale": "On platforms with no shareable object storage, the Image Registry Operator bootstraps as Removed so the install can finish.",
+          "alternatives": [
+            {
+              "id": "emptydir",
+              "label": "emptyDir for a non-production cluster",
+              "summary": "All images are lost if the registry pod restarts. This cannot be used with more than one replica.",
+              "example": "spec.storage.emptyDir: {}",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "pvc",
+              "label": "Persistent volume claim",
+              "summary": "Set managementState to Managed and leave spec.storage.pvc.claim blank. The operator creates the image-registry-storage claim. One replica uses ReadWriteOnce and the Recreate rollout. Plan for at least 100Gi. Two or more replicas need ReadWriteMany.",
+              "example": "storage:\n  pvc:\n    claim:\nmanagementState: Managed\nPVC name created: image-registry-storage",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "odf-rgw",
+              "label": "Data Foundation Ceph RGW",
+              "summary": "Create an ObjectBucketClaim on ocs-storagecluster-ceph-rgw, then point the registry at that bucket. The registry book recommends object storage ahead of a file claim.",
+              "example": "kind: ObjectBucketClaim\nname: rgwbucket\nnamespace: openshift-storage\nstorageClassName: ocs-storagecluster-ceph-rgw\ngenerateBucketName: rgwbucket\nsecret: image-registry-private-configuration-user\nregion: us-east-1",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "odf-noobaa",
+              "label": "Data Foundation NooBaa",
+              "summary": "Create an ObjectBucketClaim on openshift-storage.noobaa.io. The route used for the endpoint is s3 in openshift-storage.",
+              "example": "kind: ObjectBucketClaim\nname: noobaatest\nnamespace: openshift-storage\nstorageClassName: openshift-storage.noobaa.io\ngenerateBucketName: noobaatest\nsecret: image-registry-private-configuration-user\nregion: us-east-1",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "odf-cephfs",
+              "label": "Data Foundation CephFS claim",
+              "summary": "CephFS is a ReadWriteMany file claim. The registry book says not to use a PVC for the registry when Ceph RGW or NooBaa is available.",
+              "example": "kind: PersistentVolumeClaim\nname: registry-storage-pvc\nnamespace: openshift-image-registry\naccessModes: ReadWriteMany\nstorage: 100Gi\nstorageClassName: ocs-storagecluster-cephfs\nclaim: registry-storage-pvc",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/registry/index",
+              "locator": "3.6.1. Image registry removed during installation",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/registry/index",
+              "locator": "3.6.3.1. Configuring registry storage for bare metal and other manual installations",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/registry/index",
+              "locator": "3.6.3.2. Configuring storage for the image registry in non-production clusters",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/registry/index",
+              "locator": "3.6.3.4. Configuring the Image Registry Operator to use Ceph RGW storage with Red Hat OpenShift Data Foundation",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/registry/index",
+              "locator": "3.6.3.5. Configuring the Image Registry Operator to use Noobaa storage with Red Hat OpenShift Data Foundation",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html-single/registry/index",
+              "locator": "3.6.4. Configuring the Image Registry Operator to use CephFS storage with Red Hat OpenShift Data Foundation",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "monitoring-storage",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 monitoring storage",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "After installation, will platform metrics and alerts survive a pod restart?",
+          "default": {
+            "id": "ephemeral",
+            "label": "Leave monitoring on ephemeral storage",
+            "summary": "A new cluster reports PrometheusDataPersistenceNotConfigured. Metrics and alert silences are lost when the pods restart.",
+            "example": "PrometheusDataPersistenceNotConfigured"
+          },
+          "defaultRationale": "Core monitoring starts without a volume claim. On a multi-node cluster the monitoring book says you must add persistent storage for Prometheus and Alertmanager.",
+          "alternatives": [
+            {
+              "id": "persist",
+              "label": "Persistent claims for Prometheus and Alertmanager",
+              "summary": "Add volumeClaimTemplate under prometheusK8s and alertmanagerMain in cluster-monitoring-config. Prometheus cannot use a raw block volume. If storageClassName is omitted, the default storage class is used.",
+              "example": "kind: ConfigMap\nname: cluster-monitoring-config\nnamespace: openshift-monitoring\nprometheusK8s.volumeClaimTemplate\nstorageClassName: my-storage-class\nstorage: 40Gi\nalertmanagerMain.volumeClaimTemplate",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/monitoring_stack_for_red_hat_openshift/4.22/html-single/configuring_core_platform_monitoring/index",
+              "locator": "3.1. Configuring persistent storage",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/monitoring_stack_for_red_hat_openshift/4.22/html-single/configuring_core_platform_monitoring/index",
+              "locator": "3.1.2. Configuring a persistent volume claim",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "user-workload-monitoring",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 user project monitoring",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "After installation, will you monitor user projects?",
+          "default": {
+            "id": "omit",
+            "label": "Platform monitoring only",
+            "summary": "User project monitoring stays off. Remove any custom Prometheus instances before you enable it later.",
+            "example": "enableUserWorkload is absent"
+          },
+          "defaultRationale": "User workload monitoring is optional. The cluster administrator enables it in cluster-monitoring-config.",
+          "alternatives": [
+            {
+              "id": "enable",
+              "label": "Enable user project monitoring",
+              "summary": "Set enableUserWorkload to true. On a multi-node cluster, Prometheus, Alertmanager, and Thanos Ruler in the user workload stack also need persistent claims.",
+              "example": "kind: ConfigMap\nname: cluster-monitoring-config\nnamespace: openshift-monitoring\nenableUserWorkload: true",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/monitoring_stack_for_red_hat_openshift/4.22/html/configuring_user_workload_monitoring/preparing-to-configure-the-monitoring-stack-uwm",
+              "locator": "1.2.1. Enabling monitoring for user-defined projects",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "user-workload-storage",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 user monitoring storage",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "user-workload-monitoring",
+            "isAnyOf": ["enable"]
+          },
+          "prompt": "After you enable user project monitoring, where do those metrics live?",
+          "default": {
+            "id": "ephemeral",
+            "label": "Leave user monitoring on ephemeral storage",
+            "summary": "The user workload stack starts without a volume claim.",
+            "example": "No volumeClaimTemplate in user-workload-monitoring-config"
+          },
+          "defaultRationale": "The user workload chapter says a multi-node cluster must give Prometheus, Alertmanager, and Thanos Ruler persistent storage.",
+          "alternatives": [
+            {
+              "id": "persist",
+              "label": "Persistent claim for Thanos Ruler",
+              "summary": "The printed sample is Thanos Ruler at 10Gi. Use the same volumeClaimTemplate shape for Prometheus and Alertmanager in user-workload-monitoring-config.",
+              "example": "kind: ConfigMap\nname: user-workload-monitoring-config\nnamespace: openshift-user-workload-monitoring\nthanosRuler.volumeClaimTemplate\nstorageClassName: my-storage-class\nstorage: 10Gi",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/monitoring_stack_for_red_hat_openshift/4.22/html/configuring_user_workload_monitoring/storing-and-recording-data-uwm",
+              "locator": "3.1.2. Configuring a persistent volume claim",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "user-alert-routing",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 user alert routing",
+      "variants": [
+        {
+          "when": {
+            "kind": "answer",
+            "decision": "user-workload-monitoring",
+            "isAnyOf": ["enable"]
+          },
+          "prompt": "After you enable user project monitoring, where do user alerts go?",
+          "default": {
+            "id": "platform",
+            "label": "Platform Alertmanager",
+            "summary": "User alerts use the platform Alertmanager until you enable user routing.",
+            "example": "enableUserAlertmanagerConfig is absent"
+          },
+          "defaultRationale": "If the dedicated user Alertmanager is omitted, user-defined alerts are routed to the platform Alertmanager.",
+          "alternatives": [
+            {
+              "id": "platform-config",
+              "label": "Let users route through the platform Alertmanager",
+              "summary": "Set enableUserAlertmanagerConfig so users can create AlertmanagerConfig objects against the platform instance.",
+              "example": "alertmanagerMain:\n  enableUserAlertmanagerConfig: true",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "dedicated",
+              "label": "Dedicated Alertmanager for user projects",
+              "summary": "Start a separate Alertmanager in the user workload stack and let users define their own routes.",
+              "example": "alertmanager:\n  enabled: true\n  enableAlertmanagerConfig: true",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/monitoring_stack_for_red_hat_openshift/4.22/html/configuring_user_workload_monitoring/preparing-to-configure-the-monitoring-stack-uwm",
+              "locator": "1.3. Enabling alert routing for user-defined projects",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "logging-store",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 log store",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "After installation, which log store will the cluster use?",
+          "default": {
+            "id": "omit",
+            "label": "No log store",
+            "summary": "Logging is not part of the install. Cluster logs stay with the node until you install a log store.",
+            "example": "No LokiStack"
+          },
+          "defaultRationale": "The postinstallation storage table lists Loki and Elasticsearch as optional log stores you configure after the cluster exists.",
+          "alternatives": [
+            {
+              "id": "loki",
+              "label": "Loki on object storage",
+              "summary": "Loki is the current log store. Log chunks and indices go to S3-compatible object storage named in a secret. storageClassName is the block class for Loki internal volumes, not the object store. Block and file storage are not the log store.",
+              "example": "apiVersion: loki.grafana.com/v1\nkind: LokiStack\nname: logging-loki\nnamespace: openshift-logging\nsize: 1x.small\nstorage.secret.name: logging-loki-s3\nstorage.secret.type: s3\nstorageClassName: <storage_class_name>\ntenants.mode: openshift-logging",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "elasticsearch",
+              "label": "Elasticsearch on block storage",
+              "summary": "The OpenShift Elasticsearch Operator is deprecated. Block storage is recommended. Object storage is not supported. NFS is not supported for this log store.",
+              "example": "Elasticsearch log store on block storage",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/postinstallation_configuration/post-install-storage-configuration",
+              "locator": "Chapter 8. Postinstallation storage configuration",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/red_hat_openshift_logging/6.6/html/install/creating-the-lokistack",
+              "locator": "Chapter 8. Creating the LokiStack",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alert-receiver",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 alert notifications",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "After installation, where do firing alerts go?",
+          "default": {
+            "id": "console",
+            "label": "Alerting UI only",
+            "summary": "Firing alerts show in the web console. Nothing is sent to an external system until you add a receiver.",
+            "example": "Alerts are displayed on the Alerting UI"
+          },
+          "defaultRationale": "The postinstallation overview says firing alerts are displayed on the Alerting UI by default.",
+          "alternatives": [
+            {
+              "id": "external",
+              "label": "Send alerts to an external receiver",
+              "summary": "You can add one or more receivers. The documented receiver types are PagerDuty, Webhook, Email, Slack, and Microsoft Teams. The watchdog alert fires continuously so you can tell when delivery stops.",
+              "example": "PagerDuty\nWebhook\nEmail\nSlack\nMicrosoft Teams",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/postinstallation_configuration/post-install-configuration-overview",
+              "locator": "1.1. Postinstallation configuration tasks",
+              "extraction": "extracted"
+            },
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/postinstallation_configuration/configuring-alert-notifications",
+              "locator": "Chapter 11. Configuring alert notifications",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "identity-provider",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 identity provider",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "After installation, how will users log in besides kubeadmin?",
+          "default": {
+            "id": "none",
+            "label": "kubeadmin only",
+            "summary": "No identityProviders entry. Add a provider before you rely on the cluster for other users.",
+            "example": "No identityProviders entry"
+          },
+          "defaultRationale": "Identity providers are configured after install on the OAuth cluster object. kubeadmin exists until you add a provider and remove it.",
+          "alternatives": [
+            {
+              "id": "htpasswd",
+              "label": "HTPasswd",
+              "summary": "Validate users against an htpasswd file stored in a secret in openshift-config. The secret key must be named htpasswd.",
+              "example": "kind: OAuth\nname: cluster\ntype: HTPasswd\nmappingMethod: claim\nhtpasswd.fileData.name: htpass-secret",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "keystone",
+              "label": "Keystone",
+              "summary": "Validate users against OpenStack Keystone.",
+              "example": "type: Keystone\nmappingMethod: claim",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "ldap",
+              "label": "LDAP",
+              "summary": "Validate users against an LDAPv3 server with a simple bind. The sample attribute id is dn.",
+              "example": "type: LDAP\nmappingMethod: claim\nldap.attributes.id: dn",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "basic",
+              "label": "Basic authentication",
+              "summary": "Validate users against a remote identity provider with a basic authentication URL.",
+              "example": "name: basicidp\ntype: BasicAuth\nmappingMethod: claim",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "request-header",
+              "label": "Request header",
+              "summary": "Identify users from a header such as X-Remote-User, usually set by an authenticating proxy. This provider cannot be combined with HTPasswd, Keystone, LDAP, or basic authentication.",
+              "example": "type: RequestHeader\nX-Remote-User",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "github",
+              "label": "GitHub",
+              "summary": "Use a GitHub or GitHub Enterprise OAuth application.",
+              "example": "name: githubidp\ntype: GitHub\nmappingMethod: claim",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "gitlab",
+              "label": "GitLab",
+              "summary": "Use GitLab OAuth. GitLab 11.1 and later can use OpenID Connect instead.",
+              "example": "type: GitLab\nmappingMethod: claim",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "google",
+              "label": "Google",
+              "summary": "Use Google OpenID Connect.",
+              "example": "type: Google\nmappingMethod: claim",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "oidc",
+              "label": "OpenID Connect",
+              "summary": "Use an OpenID Connect provider with the Authorization Code Flow.",
+              "example": "name: oidcidp\ntype: OpenID\nmappingMethod: claim",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/authentication_and_authorization/configuring-identity-providers",
+              "locator": "Chapter 7. Configuring identity providers",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "infra-nodes",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 infrastructure nodes",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "After installation, will infrastructure workloads move onto dedicated nodes?",
+          "default": {
+            "id": "omit",
+            "label": "Keep workloads on the existing nodes",
+            "summary": "Do not add the infra role. Registry, monitoring, and ingress keep their current placement.",
+            "example": "No node-role.kubernetes.io/infra label"
+          },
+          "defaultRationale": "Infrastructure nodes are optional. The postinstallation chapter uses them when you want to move infrastructure resources off the application nodes.",
+          "alternatives": [
+            {
+              "id": "label",
+              "label": "Label infrastructure nodes",
+              "summary": "Label the compute nodes that should run infrastructure workloads, then taint them so only pods that tolerate the taint are scheduled there.",
+              "example": "oc label node <node-name> node-role.kubernetes.io/infra=\"\"\noc adm taint nodes node1 node-role.kubernetes.io/infra=reserved:NoSchedule",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/postinstallation_configuration/post-install-cluster-tasks",
+              "locator": "4.6.2. Creating an infrastructure node",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "update-channel",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 update channel",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "Which update channel will this cluster follow?",
+          "default": {
+            "id": "stable",
+            "label": "stable-4.22",
+            "summary": "A new cluster starts on the stable channel. Releases arrive after the fast channel, once regression data has been collected.",
+            "example": "stable-4.22"
+          },
+          "defaultRationale": "Newly installed clusters default to using stable channels.",
+          "alternatives": [
+            {
+              "id": "fast",
+              "label": "fast-4.22",
+              "summary": "Production clusters may use fast. Releases arrive when the errata is published.",
+              "example": "fast-4.22",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "eus",
+              "label": "eus-4.y",
+              "summary": "The eus channel is offered for even-numbered minors, including 4.22, and is meant for Control Plane Only updates between EUS versions.",
+              "example": "eus-4.y",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "candidate",
+              "label": "candidate-4.22",
+              "summary": "You can switch to candidate at any time. Some releases on this channel are unsupported.",
+              "example": "candidate-4.22",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "empty",
+              "label": "Empty channel",
+              "summary": "Use an empty channel when the cluster cannot reach an update recommendation service, such as a restricted network with no local service.",
+              "example": "empty channel",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/updating_clusters/understanding-openshift-updates-1",
+              "locator": "1.3.1. Overview of update channels",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "etcd-encryption",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 etcd encryption",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "After installation, will etcd encrypt secret and config map values?",
+          "default": {
+            "id": "identity",
+            "label": "Leave etcd unencrypted",
+            "summary": "The identity type is the default. Values in etcd are stored without encryption.",
+            "example": "spec.encryption.type: identity"
+          },
+          "defaultRationale": "By default, etcd data is not encrypted. Encryption is an extra step after the cluster exists.",
+          "alternatives": [
+            {
+              "id": "aesgcm",
+              "label": "AES-GCM",
+              "summary": "Encrypt secrets, config maps, routes, and OAuth tokens with AES-GCM. Keep the encryption keys with any etcd backup.",
+              "example": "spec.encryption.type: aesgcm",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "aescbc",
+              "label": "AES-CBC",
+              "summary": "Encrypt the same resources with AES-CBC and PKCS#7 padding. Keys rotate every 7 days.",
+              "example": "spec.encryption.type: aescbc",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/postinstallation_configuration/post-install-cluster-tasks",
+              "locator": "4.12.3. Enabling etcd encryption",
+              "extraction": "extracted"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "worker-latency",
+      "section": "day-2",
+      "stance": "choice",
+      "title": "Day-2 worker latency profile",
+      "variants": [
+        {
+          "when": {
+            "kind": "always"
+          },
+          "prompt": "Which worker latency profile fits the network between control plane and compute?",
+          "default": {
+            "id": "default",
+            "label": "Default",
+            "summary": "Kubelet posts node status every 10s. The controller manager waits 40s before marking a node unhealthy.",
+            "example": "Default"
+          },
+          "defaultRationale": "The Default profile is the starting configuration. Change it only when network latency is higher than usual.",
+          "alternatives": [
+            {
+              "id": "medium",
+              "label": "MediumUpdateAverageReaction",
+              "summary": "Use this when latency is slightly higher than usual. Kubelet updates every 20s and the controller manager waits 2m.",
+              "example": "workerLatencyProfile: MediumUpdateAverageReaction",
+              "when": {
+                "kind": "always"
+              }
+            },
+            {
+              "id": "low",
+              "label": "LowUpdateSlowReaction",
+              "summary": "Use this when latency is extremely high. Move from Default to MediumUpdateAverageReaction first. A direct change from Default to this profile is not supported.",
+              "example": "workerLatencyProfile: LowUpdateSlowReaction",
+              "when": {
+                "kind": "always"
+              }
+            }
+          ],
+          "citations": [
+            {
+              "url": "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/postinstallation_configuration/post-install-cluster-tasks",
+              "locator": "4.4.2. Using and changing worker latency profiles",
               "extraction": "extracted"
             }
           ]

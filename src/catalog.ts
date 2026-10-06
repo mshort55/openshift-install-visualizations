@@ -40,6 +40,7 @@ export interface Option {
   readonly id: OptionId;
   readonly label: string;
   readonly summary: string;
+  readonly example: string;
 }
 
 export interface Alternative extends Option {
@@ -57,11 +58,14 @@ export interface Variant {
 
 export type Stance = "fact" | "choice";
 
+export type NmstateDocument = "networkConfig" | "nncp";
+
 export interface Decision {
   readonly id: DecisionId;
   readonly section: SectionId;
   readonly stance: Stance;
   readonly title: string;
+  readonly nmstate: NmstateDocument | null;
   readonly variants: readonly [Variant, ...Variant[]];
 }
 
@@ -156,6 +160,7 @@ type WireOption = {
   readonly id: string;
   readonly label: string;
   readonly summary: string;
+  readonly example: string;
 };
 
 type WireAlternative = WireOption & { readonly when: WireGuard };
@@ -185,6 +190,7 @@ type WireDecision = {
   readonly section: string;
   readonly stance: Stance;
   readonly title: string;
+  readonly nmstate?: NmstateDocument | undefined;
   readonly variants: readonly [WireVariant, ...WireVariant[]];
 };
 
@@ -214,7 +220,12 @@ const guardSchema: z.ZodType<WireGuard> = z.lazy(() =>
   ]),
 );
 
-const optionSchema = z.object({ id: text, label: text, summary: text });
+const optionSchema = z.object({
+  id: text,
+  label: text,
+  summary: text,
+  example: text,
+});
 
 const citationSchema = z.object({
   url: text,
@@ -236,6 +247,7 @@ const decisionSchema = z.object({
   section: text,
   stance: z.union([z.literal("fact"), z.literal("choice")]),
   title: text,
+  nmstate: z.union([z.literal("networkConfig"), z.literal("nncp")]).optional(),
   variants: z.tuple([variantSchema]).rest(variantSchema),
 });
 
@@ -494,6 +506,7 @@ function toCatalog(raw: WireCatalog): Catalog {
       section: brand<"SectionId">(decision.section),
       stance: decision.stance,
       title: decision.title,
+      nmstate: decision.nmstate ?? null,
       variants: mapNonEmpty(decision.variants, (variant) => ({
         when: toGuard(variant.when),
         prompt: variant.prompt,
@@ -501,12 +514,14 @@ function toCatalog(raw: WireCatalog): Catalog {
           id: brand<"OptionId">(variant.default.id),
           label: variant.default.label,
           summary: variant.default.summary,
+          example: variant.default.example,
         },
         defaultRationale: variant.defaultRationale,
         alternatives: variant.alternatives.map((alternative) => ({
           id: brand<"OptionId">(alternative.id),
           label: alternative.label,
           summary: alternative.summary,
+          example: alternative.example,
           when: toGuard(alternative.when),
         })),
         citations: mapNonEmpty(variant.citations, (citation) => ({
@@ -655,6 +670,7 @@ function offered(
       id: alternative.id,
       label: alternative.label,
       summary: alternative.summary,
+      example: alternative.example,
       isDefault: false,
     });
   }
@@ -718,6 +734,35 @@ export function walk(catalog: Catalog, answers: Answers): Walk {
     sections: catalog.sections.filter((section) => used.has(section.id)),
     dormant,
   };
+}
+
+export function pruneAnswers(catalog: Catalog, answers: Answers): Answers {
+  const kept = new Map<DecisionId, OptionId>();
+  for (const decision of catalog.decisions) {
+    const variant = decision.variants.find((item) => holds(item.when, kept));
+    if (!variant) continue;
+    const stored = answers.get(decision.id);
+    if (stored === undefined) continue;
+    const offered = new Set<string>([variant.default.id]);
+    for (const alternative of variant.alternatives) {
+      if (holds(alternative.when, kept)) offered.add(alternative.id);
+    }
+    if (offered.has(stored)) kept.set(decision.id, stored);
+  }
+  return kept;
+}
+
+export function encodeSelection(catalog: Catalog, answers: Answers): string {
+  const kept = pruneAnswers(catalog, answers);
+  const parts: string[] = [];
+  for (const decision of catalog.decisions) {
+    const option = kept.get(decision.id);
+    if (option === undefined) continue;
+    parts.push(
+      `${encodeURIComponent(decision.id)}=${encodeURIComponent(option)}`,
+    );
+  }
+  return parts.join("&");
 }
 
 export function encodeAnswers(current: Walk): string {
