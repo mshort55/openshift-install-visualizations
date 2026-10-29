@@ -59,6 +59,8 @@ function useTimelineExpansion(route: Route) {
   const detailOpen = (id: string) => opened.has(`detail:${id}`);
   const recordOpen = (id: string) => opened.has(`records:${id}`);
   const methodOpen = (id: string) => opened.has(`methods:${id}`);
+  const comparisonOpen = () =>
+    methodIds.has(route.topic) || opened.has("comparison:approach");
   const setKeys = (keys: string[], expand: boolean) => {
     setOpened((current) => {
       const next = new Set(current);
@@ -75,7 +77,7 @@ function useTimelineExpansion(route: Route) {
       `topic:${id}`,
       `detail:${id}`,
       `records:${id}`,
-      ...(id === "approach" ? [`methods:${id}`] : []),
+      ...(id === "approach" ? [`methods:${id}`, "comparison:approach"] : []),
     ]),
   ];
   const scopeOpen = (stageIds: string[], topicIds: string[]) =>
@@ -85,7 +87,7 @@ function useTimelineExpansion(route: Route) {
         topicOpen(id) &&
         detailOpen(id) &&
         recordOpen(id) &&
-        (id !== "approach" || methodOpen(id)),
+        (id !== "approach" || (methodOpen(id) && comparisonOpen())),
     );
   const setScope = (stageIds: string[], topicIds: string[], expand: boolean) =>
     setKeys(scopeKeys(stageIds, topicIds), expand);
@@ -95,6 +97,7 @@ function useTimelineExpansion(route: Route) {
     detailOpen,
     recordOpen,
     methodOpen,
+    comparisonOpen,
     scopeOpen,
     setScope,
     setKeys,
@@ -305,10 +308,12 @@ function About({ onClose }: { onClose: () => void }) {
         <span className="eyebrow">An explorer for Red Hat engineers</span>
         <h3>See the work through the customer’s eyes.</h3>
         <p>
-          This map brings together installation explanations, reported customer
-          difficulties and possible improvements. Follow the timeline, then open
-          a stage and step to reveal more detail. Switch perspectives to explore
-          the same step’s problems and possible improvements.
+          How it works follows the OCP 4.22 Agent-based Installer on bare metal,
+          using the local CLI workflow as the main path. Open variations for
+          other boot options and installation without an external registry.
+          Follow the timeline, then open a stage and step to reveal more detail.
+          Switch perspectives to explore the same step’s problems and possible
+          improvements.
         </p>
         <div className="about-lenses">
           {lenses.map((lens, i) => (
@@ -328,10 +333,12 @@ function About({ onClose }: { onClose: () => void }) {
           does not track a live cluster or certify a configuration.
         </p>
         <p>
-          Historical reports, adjacent platforms, lab accounts and acceptance
-          requirements retain their labels. The corpus is particularly rich in
-          virtualization readiness; it does not establish the needs of every
-          workload. A research gap does not mean the workflow has no problems.
+          Customer problems and improvement opportunities include reports from
+          other installation methods. Their original scopes and historical
+          labels remain visible; they do not all describe Agent-based installs.
+          The corpus is particularly rich in virtualization readiness; it does
+          not establish the needs of every workload. A research gap does not
+          mean the workflow has no problems.
         </p>
         <p>
           Ideas are candidates to investigate. Existing capabilities, unresolved
@@ -402,7 +409,11 @@ function LensTabs({ route, navigate }: { route: Route; navigate: Navigate }) {
           </button>
         ))}
       </div>
-      <span className="perspective-hint">One journey. Three perspectives.</span>
+      <span className="perspective-hint">
+        {route.lens === "process"
+          ? "From preparation to operational handover."
+          : "Reports retain their original method and context."}
+      </span>
     </div>
   );
 }
@@ -457,7 +468,7 @@ function MethodComparison({
         <h2 id="method-comparison-title">
           Compare bare-metal installation methods
         </h2>
-        <span>Choose a method to see its distinct steps</span>
+        <span>Compare responsibilities and workflows</span>
       </div>
       <div className="method-options">
         {methods.map((method) => (
@@ -471,6 +482,9 @@ function MethodComparison({
             onClick={() => navigate({ topic: method.id, lens: "process" })}
           >
             <strong>{method.title}</strong>
+            {method.id === "agent-based" && (
+              <span className="eyebrow">The path used in this journey</span>
+            )}
             <span>{method.summary}</span>
             <span className="method-option-action">
               {selected?.id === method.id ? "Selected" : "View steps"}
@@ -649,17 +663,46 @@ function TimelineStep({
                   </>
                 ) : route.lens === "process" ? (
                   <>
-                    {(topic.id !== "approach" ||
-                      selected ||
-                      expansion.methodOpen(topic.id)) && (
-                      <Process topic={topic} navigate={navigate} />
-                    )}
+                    <Process topic={topic} navigate={navigate} />
                     {topic.id === "approach" && (
-                      <MethodComparison
-                        route={route}
-                        navigate={navigate}
-                        showAll={expansion.methodOpen(topic.id)}
-                      />
+                      <details
+                        className="step-context method-orientation"
+                        open={expansion.comparisonOpen()}
+                        onToggle={(event) => {
+                          const open = event.currentTarget.open;
+                          expansion.setKeys(["comparison:approach"], open);
+                          if (!open) {
+                            expansion.setKeys(["methods:approach"], false);
+                            if (methodIds.has(route.topic))
+                              navigate(
+                                { topic: "approach", lens: "process" },
+                                true,
+                              );
+                          }
+                        }}
+                      >
+                        <summary>
+                          Optional: compare bare-metal installation methods
+                        </summary>
+                        <ExpandAllButton
+                          expanded={expansion.methodOpen(topic.id)}
+                          label="installation-method comparison"
+                          onClick={() => {
+                            const wasOpen = expansion.methodOpen(topic.id);
+                            expansion.setKeys(["methods:approach"], !wasOpen);
+                            if (wasOpen && methodIds.has(route.topic))
+                              navigate(
+                                { topic: "approach", lens: "process" },
+                                true,
+                              );
+                          }}
+                        />
+                        <MethodComparison
+                          route={route}
+                          navigate={navigate}
+                          showAll={expansion.methodOpen(topic.id)}
+                        />
+                      </details>
                     )}
                   </>
                 ) : (
@@ -943,7 +986,7 @@ function Process({ topic, navigate }: { topic: Topic; navigate: Navigate }) {
         <div className="subheading">
           <h2>
             {topic.id === "approach"
-              ? "Plan the bare-metal deployment"
+              ? "Plan the deployment"
               : "Understand the process"}
           </h2>
           <span>
@@ -959,23 +1002,16 @@ function Process({ topic, navigate }: { topic: Topic; navigate: Navigate }) {
               <div>
                 <h3>{step.title}</h3>
                 <p>{step.detail}</p>
+                {step.command && (
+                  <pre className="process-command">
+                    <code>{step.command}</code>
+                  </pre>
+                )}
               </div>
             </li>
           ))}
         </ol>
       </section>
-      {topic.id === "managed-dns" && (
-        <div className="scenario-note">
-          <Icon name="network" />
-          <div>
-            <strong>One concrete network example</strong>
-            <p>
-              Three control-plane nodes and two workers, one machine LAN,
-              managed VIPs and a full Agent ISO.
-            </p>
-          </div>
-        </div>
-      )}
       <div className="next-perspective">
         <div>
           <Icon name="warning" size={18} />
@@ -1417,11 +1453,12 @@ export function App() {
           <h1 id="page-title" tabIndex={-1}>
             OpenShift on bare metal.
             <br />
-            <span>The complete installation journey.</span>
+            <span>The installation journey.</span>
           </h1>
           <p>
-            Follow the customer from the first deployment decision to a usable
-            workload and operational handover.
+            Follow a customer from planning to useful workloads and operational
+            handover. This journey uses the local Agent-based Installer workflow
+            on bare metal. Expand a step for details and supported variations.
           </p>
         </section>
         <div className="timeline-controls">

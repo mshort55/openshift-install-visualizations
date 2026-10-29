@@ -14,11 +14,11 @@ export const stages: JourneyStage[] = [
   {
     id: "choose-approach",
     phase: "pre-installation",
-    title: "Choose the deployment approach",
+    title: "Plan the deployment",
     topics: ["approach", "hardware"],
     summaries: {
       process:
-        "Match the installation method and available hardware to the intended workload.",
+        "Choose the cluster layout and confirm hardware and workload requirements.",
       problems:
         "Fixed site constraints and uncertain hardware fit make the starting path hard to choose.",
       opportunities:
@@ -32,7 +32,7 @@ export const stages: JourneyStage[] = [
     topics: ["networking", "content"],
     summaries: {
       process:
-        "Prepare networks, host access, configuration and the content needed to boot machines.",
+        "Prepare site services, configuration, image access, and boot media.",
       problems:
         "Network assumptions, restricted content and physical handoffs can leave prerequisites unfinished.",
       opportunities:
@@ -47,7 +47,7 @@ export const stages: JourneyStage[] = [
     topics: ["handoffs"],
     summaries: {
       process:
-        "Confirm owners, approvals and prerequisites before starting an installation attempt.",
+        "Review configuration, host identities, target disks, and image access before booting hosts.",
       problems:
         "The installation owner depends on specialists and approvals beyond their control.",
       opportunities:
@@ -61,7 +61,7 @@ export const stages: JourneyStage[] = [
     topics: ["hosts"],
     summaries: {
       process:
-        "Bring the prepared hosts into the installation and follow their progress.",
+        "Boot the installation media and follow host discovery, validation, and installation.",
       problems:
         "Unclear host progress and limited observation of physical execution make diagnosis difficult.",
       opportunities:
@@ -75,7 +75,7 @@ export const stages: JourneyStage[] = [
     topics: ["bootstrap", "progress", "recovery"],
     summaries: {
       process:
-        "Establish the control plane, interpret progress and correct a blocked attempt.",
+        "Follow the rendezvous host through bootstrap, monitor installation, and diagnose blocked progress.",
       problems:
         "Quiet intervals, late dependency failures and repeated setup obscure the path forward.",
       opportunities:
@@ -90,7 +90,7 @@ export const stages: JourneyStage[] = [
     topics: ["completion"],
     summaries: {
       process:
-        "Confirm the base cluster is installed and identify the work still needed for the workload.",
+        "Verify installation completion, cluster health, and the remaining workload tasks.",
       problems:
         "An installed cluster can look finished while workload dependencies remain incomplete.",
       opportunities:

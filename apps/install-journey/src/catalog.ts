@@ -91,7 +91,9 @@ export function routeHref(route: Route): string {
 /** Invalid or out-of-scope items fall back to their topic rather than showing an unrelated record. */
 export function parseRoute(hash: string): Route {
   const [path, query] = hash.replace(/^#\/?/, "").split("?");
-  const topic = path && topicById.has(path) ? path : "journey";
+  const topicId =
+    path === "managed-dns" || path === "dns-consumers" ? "dns" : path;
+  const topic = topicId && topicById.has(topicId) ? topicId : "journey";
   const params = new URLSearchParams(query);
   const value = params.get("view");
   const lens: Lens =
@@ -137,7 +139,9 @@ export function searchJourney(query: string): SearchResult[] {
           topic.outcome,
           topic.owners,
           topic.scope,
-          ...topic.flow.map((step) => `${step.title} ${step.detail}`),
+          ...topic.flow.map(
+            (step) => `${step.title} ${step.detail} ${step.command ?? ""}`,
+          ),
         ].join(" "),
         context:
           ancestorsOf(topic.id)

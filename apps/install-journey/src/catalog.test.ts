@@ -107,12 +107,11 @@ describe("journey content integrity", () => {
         (idea) => idea.id === "storage-outcome",
       ),
     ).toHaveLength(1);
-    expect(ancestorsOf("managed-dns").map((topic) => topic.id)).toEqual([
+    expect(ancestorsOf("dns").map((topic) => topic.id)).toEqual([
       "journey",
       "pre-installation",
       "networking",
       "dns",
-      "managed-dns",
     ]);
   });
 });
@@ -166,6 +165,24 @@ describe("shareable navigation and discovery", () => {
   });
 
   test("malformed and legacy links preserve valid topics without unrelated records", () => {
+    for (const topic of ["managed-dns", "dns-consumers"]) {
+      expect(parseRoute(`#/${topic}`)).toEqual({
+        topic: "dns",
+        lens: "process",
+      });
+      expect(parseRoute(`#/${topic}?view=problems&item=owner-wait`)).toEqual({
+        topic: "dns",
+        lens: "problems",
+        item: "owner-wait",
+      });
+      expect(
+        parseRoute(`#/${topic}?view=opportunities&item=precise-handoffs`),
+      ).toEqual({
+        topic: "dns",
+        lens: "opportunities",
+        item: "precise-handoffs",
+      });
+    }
     expect(parseRoute("#/missing?view=unknown&item=missing&tour=NaN")).toEqual({
       topic: "journey",
       lens: "process",
@@ -195,7 +212,7 @@ describe("shareable navigation and discovery", () => {
     ).toBe(true);
     expect(
       searchJourney("dns workstation").some(
-        (result) => result.route.topic === "dns-consumers",
+        (result) => result.route.topic === "dns",
       ),
     ).toBe(true);
     expect(searchJourney("     ")).toEqual([]);

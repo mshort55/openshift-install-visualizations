@@ -1,6 +1,6 @@
-# OpenShift Installation Journey
+# OpenShift Bare-metal Installation Journey
 
-A standalone learning app for Red Hat engineers exploring the complete bare-metal customer experience. A vertical timeline maps nine stages across preparation, installation and post-installation. Stages expand into steps, customer problems and candidate improvements. It includes 37 topics, 19 representative problem records and 15 engineering hypotheses.
+A standalone learning app for Red Hat engineers exploring the installation customer experience on bare metal, using the Agent-based Installer as the main path. A vertical timeline maps nine stages across preparation, installation and post-installation. Stages expand into steps, customer problems and candidate improvements. It includes 38 topics, 19 representative problem records and 15 engineering hypotheses.
 
 Install the repository dependencies once from the repository root, then start this app:
 
@@ -27,9 +27,11 @@ A sticky phase navigator and perspective selector stay available while reading. 
 
 The timeline shows typical progression. Local notes explain parallel preparation, retry loops and continuing operations. Installer methods are labeled as alternatives rather than successive tasks. The same vertical layout adapts to mobile screens.
 
-The **Choose the deployment approach** step compares four installation methods in one place. Selecting a method reveals its distinct process steps in **How it works**. **Customer problems** and **Improvement opportunities** show the shared findings once at the approach level. Existing method links and search results open the corresponding comparison choice.
+The **Plan the deployment** step provides an optional, collapsed comparison of four installation methods. Selecting a method reveals its distinct process steps for orientation; the timeline continues to follow the standard local Agent CLI workflow. **How it works** includes expandable sections for cluster and host configuration, full/minimal ISO and PXE boot options, and the separate local-web-interface workflow that installs without an external registry. **Customer problems** and **Improvement opportunities** show the shared findings once at the approach level. Existing method links and search results open the corresponding comparison choice. Comparison expansion is independent of outcome/context expansion and participates in every applicable Expand all control. Commands appear within the relevant expanded process steps. DNS preparation, external-record timing, and access checks are consolidated in **DNS and cluster access**; links to the former DNS subsections open this section.
 
 Content lives in `src/data/topics.ts` and `src/data/evidence.ts`. The ordered stage groups and their perspective summaries live in `src/data/stages.ts`. Every detailed topic belongs to one stage through its existing parent hierarchy. Each topic has an outcome, owners and a scoped explanation. Customer problems describe the situation, consequence and limits of the available evidence without naming customers. Opportunities connect to those problems and explain existing capabilities, an intervention, an investigation and useful observations. Neither the displayed order nor the number of records is a severity or prevalence score.
+
+The main process follows the OCP 4.22 Agent-based Installer. The hero and About dialog state this scope. Shared tasks use general wording; installer-specific behavior, configuration, and commands retain their precise terminology. Customer reports retain their original installation-method and evidence labels. Workload and operations sections describe the work that follows installation.
 
 Content reflects research assembled in 2026 and uses an OCP 4.22 technical baseline. Preserve the distinction between historical experience, acceptance requirements, adjacent-platform evidence, documented capabilities and hypotheses when editing it. Do not store customer names, source documents, reference registries or citation identifiers in the app.
 

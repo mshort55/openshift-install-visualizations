@@ -4,6 +4,7 @@ export type Lens = "process" | "problems" | "opportunities";
 export interface FlowStep {
   title: string;
   detail: string;
+  command?: string;
 }
 
 /** A topic has one navigational parent in the installation journey. */

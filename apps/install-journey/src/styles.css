@@ -831,27 +831,6 @@ button {
   border-radius: 6px;
   margin-bottom: 26px;
 }
-.scenario-note {
-  display: flex;
-  gap: 12px;
-  background: #edf3fa;
-  border: 1px solid #d4e1f2;
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 20px;
-  color: #4b6995;
-}
-.scenario-note strong {
-  font-size: 12px;
-}
-.scenario-note p {
-  font-size: 11px;
-  line-height: 1.8;
-  margin: 5px 0 10px;
-}
-.scenario-note a:hover {
-  text-decoration: underline;
-}
 .toast {
   position: fixed;
   bottom: 26px;
@@ -1849,6 +1828,9 @@ button {
 .method-comparison .subheading {
   gap: 12px;
 }
+.method-comparison .subheading > span {
+  white-space: normal;
+}
 .method-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1914,6 +1896,22 @@ button {
   border-top: 1px solid var(--line);
   margin-top: 24px;
   padding-top: 14px;
+}
+
+.method-orientation .method-comparison {
+  padding: 16px;
+}
+
+.process-command {
+  margin: 12px 0 0;
+  padding: 12px;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.8rem;
 }
 .step-context > summary {
   cursor: pointer;

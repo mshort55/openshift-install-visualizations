@@ -5,29 +5,30 @@ export const topics: Topic[] = [
     id: "journey",
     parent: null,
     phase: null,
-    title: "The complete installation journey",
+    title: "The installation journey",
     summary:
-      "From the infrastructure a customer has to a platform they can use, demonstrate and hand over.",
+      "Follow a customer from planning physical servers through installation, useful workloads, and operational handover.",
     question: "What does it take to make OpenShift useful?",
     outcome:
       "The intended workload is usable and its operating requirements are demonstrated.",
     owners: "Platform, infrastructure, security and application teams",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "OCP 4.22 Agent-based installation on bare metal. The main path uses the local CLI and generated boot media; supported variations open within the relevant step.",
     flow: [
       {
-        title: "Prepare the environment",
+        title: "Prepare the deployment",
         detail:
-          "Agree the outcome, fit the existing site, and verify prerequisites.",
+          "Agree the workload, prepare infrastructure and configuration, and arrange how the hosts will boot.",
       },
       {
-        title: "Create the cluster",
+        title: "Install with the local service",
         detail:
-          "Install the hosts, establish the control plane, and understand progress.",
+          "Boot the Agent media. A service on one control-plane host validates the hosts and coordinates installation.",
       },
       {
-        title: "Make it useful",
+        title: "Enable workloads and hand over",
         detail:
-          "Enable workloads, verify readiness, and transfer operational ownership.",
+          "Configure workload dependencies, demonstrate readiness, and transfer operational ownership.",
       },
     ],
   },
@@ -42,22 +43,23 @@ export const topics: Topic[] = [
     outcome:
       "Ready to begin: inputs, infrastructure, access and owners are established.",
     owners: "Platform team + network, storage, security and hardware owners",
-    scope: "Preparation · includes media and host discovery",
+    scope:
+      "Prepare infrastructure, configuration, images, and boot access. Host discovery begins after the machines boot.",
     flow: [
       {
-        title: "Agree the intended outcome",
+        title: "Plan the deployment",
         detail:
-          "Choose a workload, deployment approach and feasible infrastructure.",
+          "Choose a supported cluster layout and confirm the hardware and storage fit the intended workload.",
       },
       {
-        title: "Prepare in parallel",
+        title: "Prepare infrastructure and inputs",
         detail:
-          "Network, hardware, content and access work often involve different teams.",
+          "Configure site services, make images accessible, and prepare cluster and host configuration.",
       },
       {
-        title: "Verify the handoffs",
+        title: "Confirm readiness before booting",
         detail:
-          "Distinguish tested readiness from approvals, assumptions and pending work.",
+          "Review host identities, installation disks, access, and ownership before starting the hosts.",
       },
     ],
   },
@@ -72,21 +74,23 @@ export const topics: Topic[] = [
     outcome:
       "Base cluster installed, with expected nodes, services and access checked.",
     owners: "Installation owner + infrastructure owners when dependencies fail",
-    scope: "Execution · from installation start to base-cluster handoff",
+    scope:
+      "Standard Agent CLI workflow: boot media, local validation and installation, bootstrap, and cluster verification.",
     flow: [
       {
-        title: "Install the hosts",
+        title: "Boot and validate hosts",
         detail:
-          "The selected method provisions or installs RHCOS and initial configuration.",
+          "Hosts boot the Agent media and register with the local installation service. Installation starts once the required hosts pass validation.",
       },
       {
         title: "Establish the control plane",
-        detail: "Bootstrap services give way to the running cluster.",
+        detail:
+          "The rendezvous host temporarily provides bootstrap services, then reboots and joins the cluster.",
       },
       {
         title: "Verify completion",
         detail:
-          "Check installation completion, expected node readiness and cluster health.",
+          "Check installation completion, expected nodes, cluster health, and access.",
       },
     ],
   },
@@ -102,7 +106,8 @@ export const topics: Topic[] = [
       "Workload usable → customer-specific readiness demonstrated → operations owned.",
     owners:
       "Platform + application, virtualization, security and operations teams",
-    scope: "Initial workload readiness, acceptance and later operations",
+    scope:
+      "Workload enablement and operations after installation. Storage, networking, identity, and application requirements determine the remaining work.",
     flow: [
       {
         title: "Enable the workload",
@@ -125,31 +130,31 @@ export const topics: Topic[] = [
     id: "approach",
     parent: "pre-installation",
     phase: "pre-installation",
-    title: "Choose the deployment approach",
+    title: "Plan the deployment",
     summary:
-      "Match installer ownership and cluster shape to the customer’s constraints.",
-    question: "Who will provision the hosts, and where will installation run?",
+      "Match the cluster layout, site preparation, and boot process to the customer’s requirements.",
+    question: "What must this site prepare for installation?",
     outcome:
-      "A supported cluster layout and installation method that meet application needs and site constraints, with clear responsibility for preparing infrastructure and booting hosts.",
+      "A supported deployment with a suitable cluster layout, accessible installation content, and clear ownership of configuration and host booting.",
     owners:
       "Platform architect and installation owner, with input from application owners and hardware, networking, storage, and security teams.",
     scope:
-      "This decision covers installing OpenShift on bare metal. Available choices depend on the OpenShift version, cluster layout, connectivity, and access to host management. Each installation method automates different tasks and leaves specific infrastructure preparation to the customer.",
+      "The main journey follows the standard local Agent CLI workflow on bare metal. Installation-method comparisons provide optional orientation; they do not change the timeline’s installation path.",
     flow: [
       {
         title: "Identify requirements and limits",
         detail:
-          "Establish what the applications need, how much downtime is acceptable, and what hardware and network access the site provides.",
+          "Establish application needs, availability requirements, connectivity, and access to the physical servers.",
       },
       {
-        title: "Choose the cluster layout",
+        title: "Choose a supported cluster layout",
         detail:
-          "Decide how many machines the cluster needs and where its control plane and application workloads will run. Match the layout to available hardware, capacity needs, and availability requirements.",
+          "Examples include a single node running everything, three nodes sharing control-plane and application work, or separate control-plane and worker nodes. Match a supported layout to available hardware, availability needs, and workload capacity.",
       },
       {
-        title: "Choose the installation method",
+        title: "Plan configuration and host booting",
         detail:
-          "Select a method that supports the planned layout and environment. Confirm which setup tasks it automates and which the customer must handle, including preparing infrastructure and booting hosts.",
+          "Agree who prepares the cluster and host settings, makes images accessible, and boots the servers. Choose a supported ISO or network-boot workflow.",
       },
     ],
   },
@@ -286,12 +291,12 @@ export const topics: Topic[] = [
     owners:
       "Platform architect, hardware and storage teams, and application owners. Involve networking and procurement teams when connectivity or purchases are needed.",
     scope:
-      "Requirements depend on the OpenShift version, cluster layout, installation method, and intended workloads. Plan capacity for both OpenShift services and applications, and verify that the storage integration supports the required features.",
+      "Check OCP 4.22 Agent-based requirements for the selected architecture and cluster layout, plus the capacity and integrations required by workloads.",
     flow: [
       {
         title: "Check hardware compatibility",
         detail:
-          "Inventory the servers, processors, memory, disks, and network adapters. Check support for the selected OpenShift release and installation method, including firmware and boot requirements.",
+          "Inventory servers, processors, memory, disks, network adapters, and firmware. Check support for the selected release and identify the interfaces and disks that installation will use.",
       },
       {
         title: "Size the cluster and workloads",
@@ -311,29 +316,29 @@ export const topics: Topic[] = [
     phase: "pre-installation",
     title: "Networking and shared services",
     summary:
-      "Prepare the networks and shared services required by the selected installation method.",
+      "Prepare the network paths and shared services needed for installation.",
     question: "Which connections and services must already work?",
     outcome:
-      "The required networks, DNS, time services, and access paths are configured and verified for the selected installation method.",
+      "Hosts can reach one another, the rendezvous service, required images, DNS, and time servers, with cluster endpoint networking planned.",
     owners:
       "Network, DNS, IP address management, and security teams, together with the installation owner.",
     scope:
-      "The installation method determines which network services the customer prepares and which the installer manages. Agree this division before configuring the site.",
+      "Agent installations using platform: baremetal can use managed cluster endpoints. With platform: none, the customer provides DNS and load balancing.",
     flow: [
       {
-        title: "Define the network requirements",
+        title: "Define the network paths",
         detail:
-          "Identify host networks, DNS, time servers, and required service endpoints. Include load balancing where the installation method requires the customer to provide it.",
+          "Identify host networks, the rendezvous host, image sources, DNS, time servers, and access from the installation workstation.",
       },
       {
-        title: "Assign the work",
+        title: "Prepare site services and endpoint networking",
         detail:
-          "Agree who configures switches, routes, DNS, and access rules, and which settings belong in the installation configuration.",
+          "Assign switch, route, DNS, firewall, and address changes to their owners. Record the API and application endpoint settings for the chosen platform configuration.",
       },
       {
-        title: "Verify the paths",
+        title: "Verify access before booting",
         detail:
-          "Verify connectivity, name resolution, certificate trust, and time-service access from the hosts and workstations that need them.",
+          "Check the available paths, name resolution, trust, and time services. Verify rendezvous-service connectivity when hosts boot.",
       },
     ],
   },
@@ -350,22 +355,22 @@ export const topics: Topic[] = [
     owners:
       "IP address management and network teams, with the installation owner.",
     scope:
-      "Address allocation and host network configuration depend on the installer and network design. Check machine, pod, and service ranges against the existing site network.",
+      "Pod and service ranges are internal to OpenShift. Check all network ranges for overlap. Hosts can use DHCP or static addresses.",
     flow: [
       {
-        title: "Allocate addresses",
+        title: "Agree the network plan",
         detail:
-          "Reserve host addresses and any required API and application virtual IPs. Check machine, pod, and service address ranges for conflicts with one another and the site network.",
+          "Work with the network/IPAM team to confirm host subnets, VLANs, gateways, DNS, and routing. Reserve required cluster virtual IPs and check that host and cluster network ranges don’t overlap.",
       },
       {
-        title: "Choose DHCP or static",
+        title: "Choose how nodes get IP addresses",
         detail:
-          "Arrange stable DHCP assignments or static settings supplied through the selected installer. Include the required gateways and DNS servers.",
+          "Arrange DHCP reservations for stable addresses, or allocate static addresses to configure in agent-config.yaml.",
       },
       {
-        title: "Match the physical network",
+        title: "Prepare the network and configure hosts",
         detail:
-          "Align host settings with switch ports, VLANs, MTU and return routes.",
+          "The network team prepares switches and upstream connectivity. The installation owner supplies host settings that match, including interfaces, VLANs, gateways, and DNS.",
       },
     ],
   },
@@ -375,91 +380,29 @@ export const topics: Topic[] = [
     phase: "pre-installation",
     title: "DNS and cluster access",
     summary:
-      "Prepare name resolution for cluster hosts, required services, and access to the cluster API and applications.",
-    question: "Who needs to resolve which name, and when?",
-    outcome:
-      "Nodes, installation workstations, and users can resolve the required names and reach the corresponding services.",
-    owners: "DNS owner, installation owner, and cluster administrator.",
-    scope:
-      "Required DNS records and when they must exist depend on the installation configuration. Agent-based installations using platform: none require the documented DNS records before installation.",
-    flow: [
-      {
-        title: "Resolve dependencies",
-        detail:
-          "Hosts need usable resolution for the registry, mirror and site services they use.",
-      },
-      {
-        title: "Resolve cluster endpoints",
-        detail:
-          "Configure the required records for the cluster API, application routes, and node names. Confirm which records must resolve from hosts and which must resolve from client networks.",
-      },
-      {
-        title: "Verify client access",
-        detail:
-          "Check name resolution and network access for the API, web console, and authentication routes from the workstations that will use them.",
-      },
-    ],
-  },
-  {
-    id: "managed-dns",
-    parent: "dns",
-    phase: "pre-installation",
-    title: "Example: DNS for Agent-based bare metal",
-    summary:
-      "Identify the DNS requirements for a five-node Agent-based cluster and the workstations used to access it.",
+      "Prepare name resolution for installation and access to the finished cluster.",
     question:
-      "Which names must resolve from the hosts and administrator’s workstation?",
+      "Which DNS settings are needed before installation, and which can be completed later?",
     outcome:
-      "The example identifies the names and addresses needed by cluster hosts and administrators, with DNS responsibilities agreed.",
-    owners: "Installation owner and DNS team.",
+      "Installation dependencies resolve, and cluster access works before handover.",
+    owners: "DNS team, installation owner, and cluster administrator.",
     scope:
-      "Example configuration: OCP 4.22 Agent-based Installer, platform: baremetal, managed networking, three control-plane nodes, and two workers. Confirm the DNS requirements for this configuration before installation.",
+      "External DNS deferral applies to cluster-managed networking. With platform: none, prepare the required external records before installation. External access typically uses api.<cluster>.<domain> and *.apps.<cluster>.<domain>.",
     flow: [
       {
-        title: "Establish names and endpoint addresses",
+        title: "Define names and prepare host DNS",
         detail:
-          "Record the cluster name, base domain, explicit node hostnames, API and application virtual IPs, and rendezvous address. Agree which DNS records the site team must provide.",
+          "Agree the cluster name, base domain, and endpoint addresses. Configure the DNS servers hosts will use to resolve installation dependencies.",
       },
       {
-        title: "Check resolution from cluster hosts",
+        title: "Plan external DNS timing",
         detail:
-          "Verify the names required by the installation configuration, including registries and site services. Check the DNS server and network path each host will use.",
+          "With cluster-managed networking, prepare external API and application records before installation or complete them afterward. Assign an owner for deferred work so it is ready before user access is needed.",
       },
       {
-        title: "Check administrator access",
+        title: "Verify access as services become available",
         detail:
-          "Verify API, console, and authentication name resolution from the administrator’s workstation. Confirm the corresponding services are reachable when they become available.",
-      },
-    ],
-  },
-  {
-    id: "dns-consumers",
-    parent: "dns",
-    phase: "pre-installation",
-    title: "Check DNS from each access point",
-    summary:
-      "The node, installation workstation and eventual user may use different resolvers and paths.",
-    question: "Where should a DNS check run?",
-    outcome:
-      "DNS and connection checks succeed from the nodes, installation workstation, and intended user network.",
-    owners: "DNS owner and platform team.",
-    scope:
-      "These three access points provide a practical troubleshooting model. Record the requested name, DNS server, returned address, and network path for each check.",
-    flow: [
-      {
-        title: "Node → dependencies",
-        detail:
-          "Check the names and paths used for content and shared services.",
-      },
-      {
-        title: "Installation workstation → API",
-        detail:
-          "Ensure the monitoring workstation resolves and reaches the cluster API.",
-      },
-      {
-        title: "User → applications",
-        detail:
-          "Check API, ingress and authentication route resolution from the intended access network.",
+          "The monitoring workstation must resolve and reach the cluster API. Before handover, verify API, console, and application access from the user network.",
       },
     ],
   },
@@ -467,31 +410,31 @@ export const topics: Topic[] = [
     id: "routing",
     parent: "networking",
     phase: "pre-installation",
-    title: "Firewalls, trust and time",
+    title: "Firewall, proxy, and time",
     summary:
-      "Make required traffic and shared services work across the actual security boundaries.",
+      "Prepare network access, any required proxy settings, and time services before booting hosts.",
     question: "Which source needs to reach which destination?",
     outcome:
-      "Required connections work, hosts trust the certificates they encounter, and their clocks are synchronized.",
+      "Network access, proxy and certificate settings where needed, and time sources are prepared.",
     owners:
       "Network and security teams, the installation owner, and the team responsible for time services.",
     scope:
-      "Required traffic depends on the installation method and connectivity model. Account for both temporary installation services and connections needed by the running cluster.",
+      "Existing network rules may already permit the required traffic. Agent installation also needs TCP 8090 from installation hosts to the rendezvous host during discovery and bootstrap.",
     flow: [
       {
-        title: "Identify both ends",
+        title: "Confirm firewall access",
         detail:
-          "Describe source, destination, protocol, port, purpose and installation versus ongoing use.",
+          "If firewalls restrict traffic, ask the network team to allow communication between cluster hosts, access to DNS and time servers, image downloads from registries and their download endpoints, and administrator access to the cluster API and console.",
       },
       {
-        title: "Configure proxies and certificate trust",
+        title: "Configure a proxy, if the site requires one",
         detail:
-          "Set proxy addresses and exclusions, provide required trusted certificates, and account for registry redirects. Verify access from the hosts that will use these services.",
+          "Some sites require outbound HTTP/HTTPS traffic—such as image downloads, update checks, and access to Red Hat services—to pass through a corporate proxy. Provide its address and identify destinations that should bypass it, such as internal registries and cluster endpoints. Add CA certificates where required services use certificates the hosts don’t already trust.",
       },
       {
-        title: "Verify connections and clock synchronization",
+        title: "Prepare time synchronization",
         detail:
-          "Test the required connections from cluster hosts as well as administration workstations. Configure reachable time servers and verify that the hosts’ clocks are synchronized.",
+          "Confirm which time servers the hosts will use and ensure the network allows access to them.",
       },
     ],
   },
@@ -501,29 +444,29 @@ export const topics: Topic[] = [
     phase: "pre-installation",
     title: "Host management and boot access",
     summary:
-      "Prepare the management access and media-delivery path needed to start each physical server.",
+      "Arrange how the customer will boot physical servers with the prepared installation media.",
     question: "How will the prepared image reach each physical server?",
     outcome:
       "The installation team can use the selected boot mechanism, with working credentials, permissions, and access to the required media.",
     owners:
       "Hardware team and installation owner, with networking and security teams where access crosses controlled boundaries.",
     scope:
-      "Installer-provisioned infrastructure requires access to each host’s baseboard management controller (BMC). Other workflows can use alternative boot mechanisms. A dedicated management network is a site-design choice.",
+      "The customer arranges booting through supported physical media, BMC virtual media, or PXE. The standard Agent workflow does not require a separate provisioner or bootstrap machine.",
     flow: [
       {
-        title: "Choose the boot path",
+        title: "Choose the boot mechanism",
         detail:
-          "Use a supported local, virtual-media or network-boot mechanism for the selected workflow.",
+          "Choose physical or virtual media for an ISO, or prepare a network-boot service for PXE. Confirm support on the intended hardware.",
       },
       {
-        title: "Prepare management access",
+        title: "Prepare boot access",
         detail:
-          "For BMC-based booting, verify the controller’s address, credentials, permissions, and supported boot options. Check access to the media source required by the selected mechanism.",
+          "Verify operator access, permissions, firmware settings, and media-source connectivity. For BMC virtual media, confirm controller credentials and supported options.",
       },
       {
-        title: "Verify actual media delivery",
+        title: "Verify media delivery",
         detail:
-          "Verify that the selected mechanism can mount or serve the intended image. Confirm media-source reachability and boot settings in addition to management login access.",
+          "Confirm that each server can receive the intended boot image and that the team knows how to start it and observe the host console.",
       },
     ],
   },
@@ -533,28 +476,61 @@ export const topics: Topic[] = [
     phase: "pre-installation",
     title: "Content, configuration and media",
     summary:
-      "Prepare the right inputs, images and tools for the customer’s connectivity model.",
+      "Prepare the installer, cluster and host settings, and required images.",
     question: "Can every required artifact reach the place it will be used?",
     outcome:
-      "Compatible tools, configuration, credentials, and installation images are available wherever the selected workflow needs them.",
+      "Reviewed configuration, matching tools, credentials, and images are ready to generate and deliver the boot media.",
     owners: "Installation owner, registry administrator, and security team.",
     scope:
-      "Connected, proxied, mirrored, and supported self-contained workflows require different preparation. Confirm how the selected workflow obtains images and authenticates to their source.",
+      "The main path uses install-config.yaml and agent-config.yaml with locally generated media. Disconnected image mirroring and installation without an external registry are explained as separate variations.",
     flow: [
       {
-        title: "Match the tools, configuration, and images",
+        title: "Obtain matching tools and credentials",
         detail:
-          "Match the OpenShift release, CPU architecture, installer tools, configuration, credentials, and required images to the selected installation method.",
+          "Prepare the Agent-capable openshift-install binary, oc CLI, target release and architecture, pull secret, and SSH public key.",
       },
       {
-        title: "Make images and tools accessible",
+        title: "Prepare configuration and image access",
         detail:
-          "Prepare permitted direct access, a proxy, a mirror registry, or a supported self-contained workflow. Verify registry authentication and certificate trust wherever images will be retrieved.",
+          "Describe the cluster in install-config.yaml and host settings in agent-config.yaml. Check image access, mirror mappings where needed, registry credentials, and certificate trust.",
       },
       {
-        title: "Prepare the boot handoff",
+        title: "Generate and hand over boot assets",
         detail:
-          "Prepare the boot assets required by the selected method. Agree where they will be stored, who will deliver them, and how each host will be started.",
+          "Keep reviewed inputs and the installation directory. Generate the selected media and agree how it will reach the hosts.",
+      },
+    ],
+  },
+  {
+    id: "configuration",
+    parent: "content",
+    phase: "pre-installation",
+    title: "Prepare cluster and host configuration",
+    summary:
+      "Describe the cluster and identify how each physical host will participate.",
+    question:
+      "Does the configuration identify the right hosts, roles, networks, and installation disks?",
+    outcome:
+      "Reviewed configuration identifies the intended cluster, hosts, network settings, and target disks, with copies retained before media generation.",
+    owners:
+      "Installation owner, platform architect, hardware team, and network team.",
+    scope:
+      "The main workflow uses install-config.yaml and agent-config.yaml. Advanced manifest-based inputs are an optional supported variation.",
+    flow: [
+      {
+        title: "Describe the cluster",
+        detail:
+          "In install-config.yaml, set the cluster identity, layout, platform, network ranges, pull secret, SSH key, and image-access configuration.",
+      },
+      {
+        title: "Identify hosts and their settings",
+        detail:
+          "In agent-config.yaml, identify hosts by interface MAC addresses and set hostnames, roles, network configuration, and rootDeviceHints for target disks where needed. Match VLANs, bonds, and MTU settings to the physical network.",
+      },
+      {
+        title: "Confirm rendezvous and retain inputs",
+        detail:
+          "Ensure the rendezvous address identifies a control-plane host. Specify it when using DHCP; static configuration can let the installer select it. Review the inputs with infrastructure owners and keep protected copies before generating media.",
       },
     ],
   },
@@ -564,29 +540,62 @@ export const topics: Topic[] = [
     phase: "pre-installation",
     title: "Disconnected preparation",
     summary:
-      "Plan content movement and local usability across restricted environments.",
+      "Mirror required images and make installation tools and instructions usable inside the restricted site.",
     question: "What must be available without online access?",
     outcome:
       "The site can obtain all required installation content locally, with a defined process for adding workloads and receiving updates.",
     owners:
       "Registry or content administrator, security team, and local installation operator.",
     scope:
-      "An ordinary Agent ISO does not contain all required installation images. Installation without an external registry is a specific documented workflow; confirm its supported configurations and included content before choosing it.",
+      "The standard disconnected Agent workflow uses a reachable mirror registry. The expandable installation-without-an-external-registry variation has different media and configuration steps.",
     flow: [
       {
-        title: "Map the boundaries",
+        title: "Plan transfers and local services",
         detail:
-          "Describe isolated zones, permitted transfers, approval steps and local endpoints.",
+          "Identify the connected preparation environment, approved transfer process, local registry, DNS, time services, and responsible teams.",
       },
       {
-        title: "Prepare complete content",
+        title: "Mirror and configure required images",
         detail:
-          "Prepare the release images, required Operators, workload images, and supporting tools. After transfer, verify local image access, credentials, certificate trust, and tool availability.",
+          "Mirror the release and required Operator and workload images. Configure mirror mappings, credentials, and certificate trust, then verify access from the site.",
       },
       {
-        title: "Plan continuity",
+        title: "Prepare for ongoing use",
         detail:
-          "Keep instructions available offline and agree how additional workloads and future updates will be transferred, approved, and made available at the site.",
+          "Retain local tools and offline instructions. Agree how additional images and future updates will be approved, transferred, and published.",
+      },
+    ],
+  },
+  {
+    id: "self-contained",
+    parent: "disconnected",
+    phase: "pre-installation",
+    title: "Variation: install without an external registry",
+    summary:
+      "Use the documented self-contained media and local web interface when that workflow fits the deployment.",
+    question:
+      "Does the bundled media and its supported configuration fit this site?",
+    outcome:
+      "The team understands the bundled content, local configuration steps, credential handoff, and remaining workload dependencies.",
+    owners:
+      "Installation owner, hardware team, and platform or virtualization team.",
+    scope:
+      "This variation uses downloaded media and an interactive local web interface. Its bundled Operators focus on virtualization; additional Operators and a storage solution may still be needed.",
+    flow: [
+      {
+        title: "Check coverage and obtain media",
+        detail:
+          "Confirm the supported release and configuration, included images and Operators, and remaining workload needs. Download the installation ISO.",
+      },
+      {
+        title: "Boot rendezvous and configure locally",
+        detail:
+          "Boot the designated rendezvous host, use its local web interface to configure the cluster, and boot the remaining hosts with the media.",
+      },
+      {
+        title: "Save credentials and start installation",
+        detail:
+          "Review hosts and network settings, download the cluster credentials, and explicitly start installation. Follow the transition to the installed cluster’s console.",
       },
     ],
   },
@@ -596,29 +605,65 @@ export const topics: Topic[] = [
     phase: "pre-installation",
     title: "Prepare and deliver boot media",
     summary:
-      "Prepare the boot assets and configuration each host needs, then arrange delivery and boot instructions.",
+      "Create boot assets from reviewed configuration and arrange delivery to the intended hosts.",
     question:
       "Are the correct boot assets ready for each host, and who will start it?",
     outcome:
       "The correct boot assets and configuration are ready for the intended hosts, with clear instructions and responsibility for starting them.",
     owners: "Installation owner and hardware owner.",
     scope:
-      "Assisted and Agent-based workflows use discovery media. User-provisioned infrastructure uses installation media and Ignition configuration, while installer-provisioned infrastructure automates host provisioning. Actual host booting is covered in the next installation stage.",
+      "These steps use a full Agent ISO. Minimal ISO and PXE options add boot-file hosting requirements. A full Agent ISO still needs access to the release images; the separate self-contained workflow packages them differently.",
     flow: [
       {
-        title: "Preserve configuration and protect credentials",
+        title: "Preserve the reviewed inputs",
         detail:
-          "Retain the reviewed site configuration for troubleshooting or regeneration. Protect pull secrets, access credentials, and boot assets that contain sensitive configuration.",
+          "Keep copies of the configuration and protect pull secrets, generated credentials, and media containing sensitive settings. Retain the installation directory for monitoring.",
       },
       {
-        title: "Prepare the selected boot assets",
+        title: "Create the Agent image",
         detail:
-          "Generate or obtain the ISO, network boot files, and host configuration required by the selected method. Confirm the release, architecture, and intended hosts, and resolve preparation errors.",
+          "Generate the ISO for the selected release and architecture. Check generation errors before distributing it. Expand Boot options for minimal ISO and PXE differences.",
+        command:
+          "openshift-install --dir <installation-directory> agent create image",
       },
       {
-        title: "Confirm delivery and boot instructions",
+        title: "Confirm the boot handoff",
         detail:
-          "Arrange how the assets will be mounted or served to each host. Identify the hosts and intended installation disks, and agree who will start them and check their progress.",
+          "Identify the hosts and installation disks, arrange media delivery, and assign who will boot the servers and observe validation.",
+      },
+    ],
+  },
+  {
+    id: "boot-options",
+    parent: "media",
+    phase: "pre-installation",
+    title: "Boot options: full ISO, minimal ISO, and PXE",
+    summary:
+      "Choose how hosts receive the installation environment and any additional boot files.",
+    question: "Which boot files must be delivered or hosted at this site?",
+    outcome:
+      "The chosen boot mechanism has the files and reachable services needed to start each host.",
+    owners:
+      "Installation owner, hardware team, and network or boot-service administrator.",
+    scope:
+      "These options change delivery of the standard Agent boot environment. Release-image access is still required; self-contained installation is a separate variation.",
+    flow: [
+      {
+        title: "Boot from a full ISO",
+        detail:
+          "Generate the standard Agent ISO and deliver it through supported physical or virtual media. The root filesystem is included in the ISO.",
+      },
+      {
+        title: "Host the root filesystem for a minimal ISO",
+        detail:
+          "A minimal ISO retrieves its root filesystem from a URL. Make that source reachable from the booting hosts, particularly at restricted sites.",
+      },
+      {
+        title: "Serve network boot files for PXE",
+        detail:
+          "Generate Agent PXE assets, configure the boot-file service, and confirm the hosts can retrieve the files over the site network.",
+        command:
+          "openshift-install --dir <installation-directory> agent create pxe-files",
       },
     ],
   },
@@ -627,28 +672,30 @@ export const topics: Topic[] = [
     parent: "pre-installation",
     phase: "pre-installation",
     title: "Owners and prerequisite readiness",
-    summary: "Make cross-team work visible, specific and verifiable.",
+    summary:
+      "Confirm configuration, site services, and ownership before booting the installation media.",
     question:
       "Who can complete each dependency, and how will we know it is ready?",
     outcome:
-      "Technical checks, approvals and remaining owner actions are distinguishable.",
+      "The team has reviewed the configuration, identified the hosts and disks, verified image access, and agreed who will boot and monitor the installation.",
     owners: "Installation owner + infrastructure and security owners",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "In the standard Agent workflow, the local service can start installation once the required hosts pass validation. Complete preparation and approval before booting installation media.",
     flow: [
       {
-        title: "Identify the owner",
+        title: "Confirm people and access",
         detail:
-          "Name who can allocate addresses, change switches, supply storage or approve access.",
+          "Assign configuration, network, registry, hardware, and installation owners. Confirm access to host consoles and the monitoring workstation.",
       },
       {
-        title: "Make a precise request",
+        title: "Review the installation inputs",
         detail:
-          "Provide the inputs, purpose, expected result and how it will be checked.",
+          "Check host identities, roles, target disks, rendezvous address, network settings, image access, and retained configuration.",
       },
       {
-        title: "Verify and record",
+        title: "Agree readiness to boot",
         detail:
-          "Record actual check results separately from assurances or pending approvals.",
+          "Resolve missing prerequisites and approvals. Confirm who will start the hosts, follow progress, and respond if validation fails.",
       },
     ],
   },
@@ -656,29 +703,30 @@ export const topics: Topic[] = [
     id: "hosts",
     parent: "installation",
     phase: "installation",
-    title: "Install the hosts",
+    title: "Boot and install the hosts",
     summary:
-      "Follow the transition from prepared media to the installed operating system.",
+      "Boot the prepared media and follow host discovery, validation, and operating-system installation.",
     question: "Are the expected hosts installing onto the intended disks?",
     outcome:
       "Expected hosts are installed and reboot into the intended system.",
-    owners: "Installation owner + host provisioning mechanism",
-    scope: "Bare-metal journey · method and workload dependent",
+    owners: "Installation owner and hardware team.",
+    scope:
+      "Standard Agent CLI workflow. Hosts register with the local Assisted Service on the rendezvous host; installation starts after required hosts and validations are ready.",
     flow: [
       {
-        title: "Confirm identity and readiness",
+        title: "Boot the media and check host readiness",
         detail:
-          "Discovery and readiness checks precede core installation; exact start behavior varies by method.",
+          "Start the intended hosts from the Agent media. Check host identity, connectivity, roles, and target disks against the reviewed configuration.",
       },
       {
-        title: "Write the system",
+        title: "Follow validation and installation",
         detail:
-          "The selected path applies the operating system and initial configuration to the intended disks.",
+          "The local service checks readiness and coordinates writing the operating system and configuration. Investigate failed checks through the host console and installation logs.",
       },
       {
-        title: "Reboot into the installed system",
+        title: "Follow host reboots",
         detail:
-          "Check boot overrides and media so hosts do not return to the installation environment.",
+          "Check that hosts boot from their installed disks and continue joining the cluster. Adjust boot overrides or mounted media if they would restart the installation environment.",
       },
     ],
   },
@@ -688,27 +736,27 @@ export const topics: Topic[] = [
     phase: "installation",
     title: "Bootstrap and control-plane handoff",
     summary:
-      "Understand how a temporary installation environment brings up the lasting control plane.",
+      "Follow the rendezvous host’s temporary bootstrap role as the cluster control plane becomes operational.",
     question: "What is running now, and what should take over next?",
     outcome: "The permanent control plane can sustain the running cluster.",
-    owners: "Installer services + installation owner",
+    owners: "Installation owner and platform team.",
     scope:
-      "Method-dependent · bootstrap architecture differs across installer families",
+      "One control-plane host runs the local installation service and temporarily provides bootstrap. It later reboots and joins the cluster; there is no separate bootstrap machine to retire.",
     flow: [
       {
-        title: "Start the temporary services",
+        title: "Start the local service",
         detail:
-          "The location depends on the method: a separate bootstrap machine or an installation host.",
+          "The rendezvous host runs the Assisted Service and coordinates the other installation hosts.",
       },
       {
-        title: "Bring up the control plane",
+        title: "Establish the control plane",
         detail:
-          "Hosts and services establish the cluster and its core configuration.",
+          "The hosts install and start the services needed for the cluster to manage itself. Track bootstrap progress from the installation workstation.",
       },
       {
-        title: "Complete the transition",
+        title: "Follow the rendezvous host’s transition",
         detail:
-          "Retire temporary resources where required, then continue cluster initialization checks.",
+          "The rendezvous host reboots and joins the cluster. Continue monitoring until the whole installation completes.",
       },
     ],
   },
@@ -722,22 +770,27 @@ export const topics: Topic[] = [
     outcome:
       "The operator understands the current phase, affected host and available evidence.",
     owners: "Installation owner + support when needed",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "Agent monitoring uses the retained installation directory and access to the cluster API. Host-console checks and installation logs help explain failures before the cluster is available.",
     flow: [
       {
-        title: "Locate the phase",
+        title: "Check bootstrap progress",
         detail:
-          "Identify the current host or cluster stage and last observed progress.",
+          "Use the Agent bootstrap wait command to observe the control-plane transition. A monitoring timeout needs investigation of the actual host and cluster state.",
+        command:
+          "openshift-install --dir <installation-directory> agent wait-for bootstrap-complete --log-level=info",
       },
       {
-        title: "Interpret the evidence",
+        title: "Follow installation completion",
         detail:
-          "Separate normal transitions, quiet periods, failed checks and monitoring errors.",
+          "Continue monitoring through cluster initialization. Check the reported failure or missing prerequisite if installation does not complete.",
+        command:
+          "openshift-install --dir <installation-directory> agent wait-for install-complete --log-level=info",
       },
       {
-        title: "Choose the next action",
+        title: "Collect diagnostics for the current phase",
         detail:
-          "Use diagnostics appropriate to the live installation environment or the running cluster.",
+          "Before bootstrap completes, collect agent-gather logs from the rendezvous host and affected hosts as needed. Once the API is available, use the generated kubeconfig and oc adm must-gather for cluster diagnostics.",
       },
     ],
   },
@@ -753,22 +806,22 @@ export const topics: Topic[] = [
       "The next action follows the failure and preserves relevant inputs and diagnostics.",
     owners: "Installation owner + affected infrastructure owner",
     scope:
-      "CLI example · Agent-based 4.22; recovery steps depend on the failure",
+      "Recovery depends on the failed phase. A connectivity correction, a repeated monitoring command, and a new installation attempt have different effects.",
     flow: [
       {
-        title: "Preserve the evidence",
+        title: "Preserve the failure details",
         detail:
-          "Capture the failed stage, logs, configuration context and affected endpoint or host.",
+          "Record the host, phase, error, and configuration. Gather diagnostics before rebooting or overwriting installation assets.",
       },
       {
-        title: "Distinguish monitoring from installation",
+        title: "Correct a live dependency where supported",
         detail:
-          "A wait timeout alone does not establish that installation stopped; inspect the reason.",
+          "For a release-image connectivity failure, the Agent console can help correct network settings and repeat checks. Re-running a wait command observes progress; it does not restart installation.",
       },
       {
-        title: "Plan the correction",
+        title: "Decide whether to continue or regenerate",
         detail:
-          "Rerunning a wait differs from a new installation. Changed media inputs need regenerated artifacts and a planned new attempt.",
+          "Check whether the corrected attempt can proceed. If configuration embedded in the media must change, regenerate the affected assets and plan the next attempt for the failed phase.",
       },
     ],
   },
@@ -783,22 +836,23 @@ export const topics: Topic[] = [
     outcome:
       "Installation completion, expected hosts, core services and access are checked.",
     owners: "Installation owner + receiving platform team",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "Installation completion establishes the base-cluster milestone. Application storage, identity integration, workload setup, and acceptance checks may still remain.",
     flow: [
       {
-        title: "Check completion",
+        title: "Confirm installation completion",
         detail:
-          "Use the selected installer’s completion signal and inspect failures.",
+          "Use agent wait-for install-complete from the retained installation directory. Investigate reported errors before accepting completion.",
       },
       {
-        title: "Check the expected cluster",
+        title: "Verify the expected cluster",
         detail:
-          "Verify node readiness, cluster version and Operator health against the intended handoff state.",
+          "Check node readiness, cluster version, Operator health, and API and console access against the planned layout.",
       },
       {
-        title: "Transfer access and remaining work",
+        title: "Hand over credentials and remaining tasks",
         detail:
-          "Securely hand over access and identify the workload configuration and acceptance work still ahead.",
+          "Securely transfer access from the generated auth files. Identify remaining storage, network, identity, workload, and acceptance work.",
       },
     ],
   },
@@ -813,7 +867,8 @@ export const topics: Topic[] = [
     outcome:
       "A representative workload demonstrates the required storage behavior.",
     owners: "Storage owner + platform and workload teams",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "After installation, configure the chosen application-storage solution and validate it with a workload.",
     flow: [
       {
         title: "Connect the storage",
@@ -843,7 +898,8 @@ export const topics: Topic[] = [
     outcome:
       "Physical links and the selected storage integration are available and compatible.",
     owners: "Storage + network + hardware owners",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "Physical storage requirements follow the selected storage system and workloads. Confirm the planned connections again from the installed hosts.",
     flow: [
       {
         title: "Identify the storage path",
@@ -873,7 +929,8 @@ export const topics: Topic[] = [
     outcome:
       "The workload can obtain the intended storage using a supported configuration.",
     owners: "Storage owner + platform administrator",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "Driver, storage class, and profile requirements depend on the storage provider and workload. Cluster installation does not establish application-storage readiness.",
     flow: [
       {
         title: "Install the applicable integration",
@@ -903,7 +960,8 @@ export const topics: Topic[] = [
     outcome:
       "Required persistence, migration or maintenance behavior is demonstrated.",
     owners: "Workload owner + storage and platform teams",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "Validate the required workload operations against the selected storage configuration after cluster installation.",
     flow: [
       {
         title: "Name the operation",
@@ -932,7 +990,8 @@ export const topics: Topic[] = [
     question: "Can this workload reach the network it needs?",
     outcome: "Connectivity works from the intended workload and project.",
     owners: "Network owner + platform and workload teams",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "Host networking establishes installation connectivity. Workload attachments and advanced network requirements need their own supported configuration.",
     flow: [
       {
         title: "Describe the connection",
@@ -942,7 +1001,7 @@ export const topics: Topic[] = [
       {
         title: "Map the layers",
         detail:
-          "Relate physical interfaces and VLANs to applicable cluster configuration and workload attachments.",
+          "Relate physical interfaces and VLANs to supported cluster configuration and workload attachments. Confirm any advanced host-network requirements during installation preparation.",
       },
       {
         title: "Check in context",
@@ -962,12 +1021,13 @@ export const topics: Topic[] = [
     outcome:
       "Identity, permissions and policies work for the intended workload and tenant.",
     owners: "Identity/security owner + platform and application teams",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "Begin with securely retained installation credentials, then establish the receiving team’s identity integration and permissions.",
     flow: [
       {
         title: "Connect identity",
         detail:
-          "Establish the chosen identity integration and group-to-role mapping.",
+          "Use the generated cluster credentials to establish the chosen identity provider and group-to-role mapping. Securely transfer ongoing access to the receiving team.",
       },
       {
         title: "Scope the permissions",
@@ -993,12 +1053,13 @@ export const topics: Topic[] = [
     outcome:
       "The intended container, VM or other selected workload performs its representative task.",
     owners: "Platform + application or virtualization team",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "The installed components depend on the installation workflow and configuration. Verify the actual cluster before adding workload dependencies.",
     flow: [
       {
         title: "Identify dependencies",
         detail:
-          "Work back from the intended outcome to the necessary components and integrations.",
+          "Check which components are already installed, then identify the storage, networking, Operators, and application configuration needed for the intended task.",
       },
       {
         title: "Configure the whole path",
@@ -1025,7 +1086,8 @@ export const topics: Topic[] = [
       "Required behavior is demonstrated, remaining limits are known, and an owner accepts the handoff.",
     owners:
       "Receiving operations team + platform, workload and security owners",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "Handover follows installation and workload enablement. Acceptance conditions belong to the customer’s intended operations.",
     flow: [
       {
         title: "Agree acceptance conditions",
@@ -1040,7 +1102,7 @@ export const topics: Topic[] = [
       {
         title: "Transfer the operating knowledge",
         detail:
-          "Hand over procedures, access, support routes, configuration and responsibilities.",
+          "Hand over reviewed installation configuration, diagnostics, operating procedures, access, support routes, and responsibilities.",
       },
     ],
   },
@@ -1055,12 +1117,13 @@ export const topics: Topic[] = [
     outcome:
       "Ongoing ownership covers updates, configuration, diagnostics and recovery.",
     owners: "Operations + platform and component owners",
-    scope: "Later operations · connected to initial design and handover",
+    scope:
+      "Ongoing operations include cluster changes, image availability, diagnostics, and recovery.",
     flow: [
       {
         title: "Retain the deployment knowledge",
         detail:
-          "Maintain reviewed configuration, ownership and secure references to required credentials.",
+          "Retain reviewed installation inputs, configuration, and ownership records, with secure access to required credentials.",
       },
       {
         title: "Manage change as a whole",
@@ -1085,7 +1148,8 @@ export const topics: Topic[] = [
     outcome:
       "A tested update plan covers core software, integrations and required content.",
     owners: "Platform + storage/network/Operator and content owners",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "Cluster updates use supported OpenShift update procedures. Maintain compatible Operators, integrations, and mirrored content where required.",
     flow: [
       {
         title: "Identify the dependency set",
@@ -1115,7 +1179,8 @@ export const topics: Topic[] = [
     outcome:
       "A tested recovery path covers the required service and its dependencies.",
     owners: "Operations + workload, storage and security owners",
-    scope: "Bare-metal journey · method and workload dependent",
+    scope:
+      "Retained installation inputs can support reconstruction. Cluster-state restoration and workload-data recovery require their own tested procedures.",
     flow: [
       {
         title: "Define what must recover",
@@ -1125,7 +1190,7 @@ export const topics: Topic[] = [
       {
         title: "Include the dependencies",
         detail:
-          "Account for external storage, credentials, retained configuration and access.",
+          "Account for cluster state, workload data, external storage, credentials, and access. Retain installation configuration for reconstruction without treating installation media as a data backup.",
       },
       {
         title: "Exercise the plan",
