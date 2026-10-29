@@ -1,0 +1,13 @@
+{
+  "extends": ["../../biome.json"],
+  "root": false,
+  "overrides": [
+    {
+      "includes": ["src/styles.css"],
+      "linter": { "rules": { "style": { "noDescendingSpecificity": "off" } } }
+    }
+  ],
+  "files": {
+    "includes": ["src/**", "*.json", "*.ts", "*.html", "!**/dist", "!**/public"]
+  }
+}

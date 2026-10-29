@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import rawCatalog from "../data/bare-metal-4.22.json";
 import { parseCatalog } from "./catalog";
+import rawCatalog from "./data/bare-metal-4.22.json";
 import "./styles.css";
 import { App } from "./ui";
 

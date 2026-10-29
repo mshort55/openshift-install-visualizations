@@ -5,7 +5,7 @@ description: Drive the OpenShift agent-based bare metal decision-tree web UI in 
 
 # Verify the decision tree
 
-The app is one client-rendered page. State lives in the URL hash. There is no login, no seed data, and no second product surface.
+The decision-tree app in `apps/install-decisions/` is one client-rendered page. State lives in the URL hash. It has no login or seed data. The independent journey explorer is outside this skill’s scope.
 
 Run every command from the repository root. Paths below are relative to that root. The harness resolves them from its own location, so a different working directory still targets this repo, but keep the root so the printed paths match.
 
@@ -25,7 +25,7 @@ Start a disposable instance:
 node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs launch
 ```
 
-Launch picks a free Vite port starting at `4173` and a free Chrome DevTools port starting at `9333`, starts `npm run dev -- --host 127.0.0.1 --port <port> --strictPort`, downloads Chrome for Testing `154.0.8037.92` headless shell for this machine's architecture on first use (cache: `.cursor/skills/verify-openshift-install-visualizations/cache/`), and opens the app. It is ready when it prints:
+Launch picks a free Vite port starting at `4173` and a free Chrome DevTools port starting at `9333`, starts `npm run app:decisions -- --host 127.0.0.1 --port <port> --strictPort`, downloads Chrome for Testing `154.0.8037.92` headless shell for this machine's architecture on first use (cache: `.cursor/skills/verify-openshift-install-visualizations/cache/`), and opens the app. It is ready when it prints:
 
 ```text
 VERIFY_RUN_DIR=/tmp/verify-openshift-install-visualizations-<id>

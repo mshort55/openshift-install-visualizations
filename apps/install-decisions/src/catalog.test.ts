@@ -1,6 +1,4 @@
 import { expect, test } from "vitest";
-import rawCatalog from "../data/bare-metal-4.22.json";
-import inventory from "../data/inventory.json";
 import {
   audit,
   decodeAnswers,
@@ -13,6 +11,8 @@ import {
   walk,
   withAnswer,
 } from "./catalog";
+import rawCatalog from "./data/bare-metal-4.22.json";
+import inventory from "./data/inventory.json";
 import { decisionTree, type TreeDecision } from "./tree";
 
 function load() {
