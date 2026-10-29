@@ -15,6 +15,8 @@ export interface Topic {
   parent: string | null;
   phase: PhaseId | null;
   title: string;
+  /** Applicability label shown beside the title, including while collapsed. */
+  condition?: string;
   summary: string;
   question: string;
   outcome: string;

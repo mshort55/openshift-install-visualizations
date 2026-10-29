@@ -613,7 +613,12 @@ function TimelineStep({
             }}
           >
             <span className="step-number">{number}</span>
-            <span className="step-title">{topic.title}</span>
+            <span className="step-title">
+              {topic.title}
+              {topic.condition && (
+                <span className="step-condition">{topic.condition}</span>
+              )}
+            </span>
             {route.lens !== "process" && (
               <span className="step-count">
                 {records.length}{" "}

@@ -462,7 +462,7 @@ export const topics: Topic[] = [
     phase: "pre-installation",
     title: "Content, configuration and media",
     summary:
-      "Prepare tools, cluster and host configuration, image access, and boot media. Expand disconnected preparation when the site needs local installation content.",
+      "Prepare tools, cluster and host configuration, image access, and boot media. Follow the preparation steps below, or explore the self-contained installation alternative.",
     question: "Can every required artifact reach the place it will be used?",
     outcome:
       "Reviewed configuration, matching tools, credentials, and images are ready to generate and deliver the boot media.",
@@ -514,63 +514,31 @@ export const topics: Topic[] = [
     parent: "content",
     phase: "pre-installation",
     title: "Disconnected preparation",
+    condition: "For disconnected environments",
     summary:
-      "Mirror required images and make installation tools and instructions usable inside the restricted site.",
+      "Prepare a local image registry so installation can obtain its images without accessing public registries. The self-contained installation alternative uses bundled media instead.",
     question: "What must be available without online access?",
     outcome:
-      "The site can obtain all required installation content locally, with a defined process for adding workloads and receiving updates.",
+      "Required images are available in the site registry, and installation is configured to use them.",
     owners:
-      "Registry or content administrator, security team, and local installation operator.",
+      "Registry administrator, installation owner, and security or transfer-approval team.",
     scope:
-      "The standard disconnected Agent workflow uses a reachable mirror registry. The expandable installation-without-an-external-registry variation has different media and configuration steps.",
+      "This is the mirror-registry installation path. Assign an owner to refresh images for future updates and new workloads.",
     flow: [
       {
-        title: "Plan transfers and local services",
+        title: "Prepare the registry and transfer path",
         detail:
-          "Identify the connected preparation environment, approved transfer process, local registry, DNS, time services, and responsible teams.",
+          "Provide a registry reachable from the installation environment. Arrange internet access for downloading images and an approved way to transfer them into the site.",
       },
       {
-        title: "Mirror and configure required images",
+        title: "Copy the required images",
         detail:
-          "Mirror the release and required Operator and workload images. Configure mirror mappings, credentials, and certificate trust, then verify access from the site.",
+          "Use oc-mirror v2 to copy the selected OpenShift release into the registry. Include Operator and application images needed for the planned workloads.",
       },
       {
-        title: "Prepare for ongoing use",
+        title: "Configure installation to use the registry",
         detail:
-          "Retain local tools and offline instructions. Agree how additional images and future updates will be approved, transferred, and published.",
-      },
-    ],
-  },
-  {
-    id: "self-contained",
-    parent: "disconnected",
-    phase: "pre-installation",
-    title: "Variation: install without an external registry",
-    summary:
-      "Use the documented self-contained media and local web interface when that workflow fits the deployment.",
-    question:
-      "Does the bundled media and its supported configuration fit this site?",
-    outcome:
-      "The team understands the bundled content, local configuration steps, credential handoff, and remaining workload dependencies.",
-    owners:
-      "Installation owner, hardware team, and platform or virtualization team.",
-    scope:
-      "This variation uses downloaded media and an interactive local web interface. Its bundled Operators focus on virtualization; additional Operators and a storage solution may still be needed.",
-    flow: [
-      {
-        title: "Check coverage and obtain media",
-        detail:
-          "Confirm the supported release and configuration, included images and Operators, and remaining workload needs. Download the installation ISO.",
-      },
-      {
-        title: "Boot rendezvous and configure locally",
-        detail:
-          "Boot the designated rendezvous host, use its local web interface to configure the cluster, and boot the remaining hosts with the media.",
-      },
-      {
-        title: "Save credentials and start installation",
-        detail:
-          "Review hosts and network settings, download the cluster credentials, and explicitly start installation. Follow the transition to the installed cluster’s console.",
+          "Add mirror locations, registry pull credentials, and certificate trust to install-config.yaml before generating boot media.",
       },
     ],
   },
@@ -643,34 +611,41 @@ export const topics: Topic[] = [
     ],
   },
   {
-    id: "handoffs",
-    parent: "pre-installation",
+    id: "self-contained",
+    parent: "content",
     phase: "pre-installation",
-    title: "Owners and prerequisite readiness",
+    title: "Variation: install without an external registry",
+    condition: "Optional alternative",
     summary:
-      "Confirm configuration, site services, and ownership before booting the installation media.",
+      "Install through a local web interface using self-contained media tailored for virtualization deployments. General OpenShift clusters are also supported, but additional Operators and storage must be arranged separately. Works in connected or disconnected environments. Generally available from OCP 4.22.18; Technology Preview in OCP 4.21.",
     question:
-      "Who can complete each dependency, and how will we know it is ready?",
+      "Does the bundled media and its supported configuration fit this site?",
     outcome:
-      "The team has reviewed the configuration, identified the hosts and disks, verified image access, and agreed who will boot and monitor the installation.",
-    owners: "Installation owner + infrastructure and security owners",
+      "The cluster is installed, access credentials are saved, and the team has a plan for storage, additional Operators, and updates.",
+    owners:
+      "Installation owner, hardware team, and platform or virtualization team.",
     scope:
-      "In the standard Agent workflow, the local service can start installation once the required hosts pass validation. Complete preparation and approval before booting installation media.",
+      "The bundled Operators focus on virtualization and include no storage Operators. Configure storage separately and obtain other Operators as needed. After installation, you can configure an external registry and use it for cluster updates.",
     flow: [
       {
-        title: "Confirm people and access",
+        title: "Obtain the media and check included content",
         detail:
-          "Assign configuration, network, registry, hardware, and installation owners. Confirm access to host consoles and the monitoring workstation.",
+          "Download the ISO through Hybrid Cloud Console’s Assisted Installer flow using the disconnected-environment option. It includes the OpenShift release images and virtualization Operator bundle.",
       },
       {
-        title: "Review the installation inputs",
+        title: "Start the rendezvous host and local interface",
         detail:
-          "Check host identities, roles, target disks, rendezvous address, network settings, image access, and retained configuration.",
+          "Boot the ISO and designate exactly one rendezvous host. Open its installation-console URL; boot remaining hosts with its IP address. Virtual media can take hours; physical media can reduce installation time.",
       },
       {
-        title: "Agree readiness to boot",
+        title: "Configure the cluster and review hosts",
         detail:
-          "Resolve missing prerequisites and approvals. Confirm who will start the hosts, follow progress, and respond if validation fails.",
+          "Enter cluster identity and pull secret, then select Operators. Confirm hosts are Ready and review roles, disks, and networking, including API and ingress addresses for cluster-managed networking.",
+      },
+      {
+        title: "Save credentials and start installation",
+        detail:
+          "Download and securely save credentials before selecting Install cluster. The rendezvous host reboots and its installation console becomes unavailable; credentials can no longer be retrieved there. Use the cluster console after installation completes.",
       },
     ],
   },

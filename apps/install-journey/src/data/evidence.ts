@@ -19,7 +19,7 @@ export const problems: Problem[] = [
   },
   {
     id: "owner-wait",
-    topics: ["handoffs", "networking", "dns"],
+    topics: ["networking", "dns"],
     title: "The installation owner cannot complete every prerequisite",
     summary:
       "Progress depends on specialists and approvals outside the installer.",
@@ -313,7 +313,7 @@ export const opportunities: Opportunity[] = [
   },
   {
     id: "precise-handoffs",
-    topics: ["handoffs", "dns", "routing", "networking"],
+    topics: ["dns", "routing", "networking"],
     title: "Make prerequisite requests precise and testable",
     summary:
       "Give infrastructure owners the exact request and the evidence needed to close it.",

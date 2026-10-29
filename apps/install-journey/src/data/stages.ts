@@ -41,20 +41,6 @@ export const stages: JourneyStage[] = [
     note: "Work can run in parallel across infrastructure, network and platform teams.",
   },
   {
-    id: "verify-readiness",
-    phase: "pre-installation",
-    title: "Verify readiness to begin",
-    topics: ["handoffs"],
-    summaries: {
-      process:
-        "Review configuration, host identities, target disks, and image access before booting hosts.",
-      problems:
-        "The installation owner depends on specialists and approvals beyond their control.",
-      opportunities:
-        "Make prerequisite requests testable and distinguish waiting for an owner from a failed check.",
-    },
-  },
-  {
     id: "install-hosts",
     phase: "installation",
     title: "Boot and install the hosts",
