@@ -10,6 +10,8 @@ export interface FlowStep {
 /** A topic has one navigational parent in the installation journey. */
 export interface Topic {
   id: string;
+  /** Groups introduce child tasks; other topics present their own process and context. */
+  kind?: "group";
   parent: string | null;
   phase: PhaseId | null;
   title: string;
@@ -18,6 +20,7 @@ export interface Topic {
   outcome: string;
   owners: string;
   scope: string;
+  /** Empty for groups whose process is explained by their child tasks. */
   flow: FlowStep[];
 }
 

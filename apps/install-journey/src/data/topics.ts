@@ -312,35 +312,20 @@ export const topics: Topic[] = [
   },
   {
     id: "networking",
+    kind: "group",
     parent: "pre-installation",
     phase: "pre-installation",
     title: "Networking and shared services",
     summary:
-      "Prepare the network paths and shared services needed for installation.",
+      "Prepare network settings, shared services, and boot access with the responsible teams. Work can run in parallel; checks from installation hosts happen after they boot.",
     question: "Which connections and services must already work?",
     outcome:
-      "Hosts can reach one another, the rendezvous service, required images, DNS, and time servers, with cluster endpoint networking planned.",
+      "Network settings, service requirements, and boot access are prepared, with remaining work assigned to owners.",
     owners:
       "Network, DNS, IP address management, and security teams, together with the installation owner.",
     scope:
-      "Agent installations using platform: baremetal can use managed cluster endpoints. With platform: none, the customer provides DNS and load balancing.",
-    flow: [
-      {
-        title: "Define the network paths",
-        detail:
-          "Identify host networks, the rendezvous host, image sources, DNS, time servers, and access from the installation workstation.",
-      },
-      {
-        title: "Prepare site services and endpoint networking",
-        detail:
-          "Assign switch, route, DNS, firewall, and address changes to their owners. Record the API and application endpoint settings for the chosen platform configuration.",
-      },
-      {
-        title: "Verify access before booting",
-        detail:
-          "Check the available paths, name resolution, trust, and time services. Verify rendezvous-service connectivity when hosts boot.",
-      },
-    ],
+      "Preparation can run in parallel across teams. Checks from the installation hosts happen after they boot.",
+    flow: [],
   },
   {
     id: "addressing",
@@ -472,34 +457,19 @@ export const topics: Topic[] = [
   },
   {
     id: "content",
+    kind: "group",
     parent: "pre-installation",
     phase: "pre-installation",
     title: "Content, configuration and media",
     summary:
-      "Prepare the installer, cluster and host settings, and required images.",
+      "Prepare tools, cluster and host configuration, image access, and boot media. Expand disconnected preparation when the site needs local installation content.",
     question: "Can every required artifact reach the place it will be used?",
     outcome:
       "Reviewed configuration, matching tools, credentials, and images are ready to generate and deliver the boot media.",
     owners: "Installation owner, registry administrator, and security team.",
     scope:
       "The main path uses install-config.yaml and agent-config.yaml with locally generated media. Disconnected image mirroring and installation without an external registry are explained as separate variations.",
-    flow: [
-      {
-        title: "Obtain matching tools and credentials",
-        detail:
-          "Prepare the Agent-capable openshift-install binary, oc CLI, target release and architecture, pull secret, and SSH public key.",
-      },
-      {
-        title: "Prepare configuration and image access",
-        detail:
-          "Describe the cluster in install-config.yaml and host settings in agent-config.yaml. Check image access, mirror mappings where needed, registry credentials, and certificate trust.",
-      },
-      {
-        title: "Generate and hand over boot assets",
-        detail:
-          "Keep reviewed inputs and the installation directory. Generate the selected media and agree how it will reach the hosts.",
-      },
-    ],
+    flow: [],
   },
   {
     id: "configuration",
@@ -507,7 +477,7 @@ export const topics: Topic[] = [
     phase: "pre-installation",
     title: "Prepare cluster and host configuration",
     summary:
-      "Describe the cluster and identify how each physical host will participate.",
+      "Gather the tools and credentials, then describe the cluster and identify how each physical host will participate.",
     question:
       "Does the configuration identify the right hosts, roles, networks, and installation disks?",
     outcome:
@@ -518,9 +488,14 @@ export const topics: Topic[] = [
       "The main workflow uses install-config.yaml and agent-config.yaml. Advanced manifest-based inputs are an optional supported variation.",
     flow: [
       {
+        title: "Prepare tools and credentials",
+        detail:
+          "Prepare the Agent-capable openshift-install binary and oc CLI for the target release and architecture, plus a pull secret and SSH public key.",
+      },
+      {
         title: "Describe the cluster",
         detail:
-          "In install-config.yaml, set the cluster identity, layout, platform, network ranges, pull secret, SSH key, and image-access configuration.",
+          "In install-config.yaml, set the cluster identity, layout, platform, network ranges, pull secret, SSH key, and image-access configuration. Verify registry access, credentials, and certificate trust.",
       },
       {
         title: "Identify hosts and their settings",
@@ -858,6 +833,7 @@ export const topics: Topic[] = [
   },
   {
     id: "storage",
+    kind: "group",
     parent: "post-installation",
     phase: "post-installation",
     title: "Enable workload storage",
@@ -869,23 +845,7 @@ export const topics: Topic[] = [
     owners: "Storage owner + platform and workload teams",
     scope:
       "After installation, configure the chosen application-storage solution and validate it with a workload.",
-    flow: [
-      {
-        title: "Connect the storage",
-        detail:
-          "Verify physical connectivity and the suitability of the selected integration.",
-      },
-      {
-        title: "Configure the integration",
-        detail:
-          "Set up the applicable driver, storage class and workload-specific configuration.",
-      },
-      {
-        title: "Demonstrate the behavior",
-        detail:
-          "Test provisioning, persistence and any required migration or maintenance behavior.",
-      },
-    ],
+    flow: [],
   },
   {
     id: "physical-storage",
@@ -1108,34 +1068,19 @@ export const topics: Topic[] = [
   },
   {
     id: "operations",
+    kind: "group",
     parent: "post-installation",
     phase: "post-installation",
     title: "Sustain the environment",
     summary:
-      "Keep the delivered platform usable as versions, content, workloads and people change.",
+      "Keep the platform usable through updates and tested recovery. Maintain reviewed configuration, ownership records, support access, and operating knowledge as the environment changes.",
     question: "Can the team maintain and recreate what it now depends on?",
     outcome:
       "Ongoing ownership covers updates, configuration, diagnostics and recovery.",
     owners: "Operations + platform and component owners",
     scope:
       "Ongoing operations include cluster changes, image availability, diagnostics, and recovery.",
-    flow: [
-      {
-        title: "Retain the deployment knowledge",
-        detail:
-          "Retain reviewed installation inputs, configuration, and ownership records, with secure access to required credentials.",
-      },
-      {
-        title: "Manage change as a whole",
-        detail:
-          "Consider networking, storage, Operators and content alongside core cluster updates.",
-      },
-      {
-        title: "Maintain operational confidence",
-        detail:
-          "Keep recovery procedures, support access and team knowledge current.",
-      },
-    ],
+    flow: [],
   },
   {
     id: "upgrades",
@@ -1190,7 +1135,7 @@ export const topics: Topic[] = [
       {
         title: "Include the dependencies",
         detail:
-          "Account for cluster state, workload data, external storage, credentials, and access. Retain installation configuration for reconstruction without treating installation media as a data backup.",
+          "Account for cluster state, workload data, external storage, and secure access to required credentials. Retain reviewed installation inputs for reconstruction without treating installation media as a data backup.",
       },
       {
         title: "Exercise the plan",

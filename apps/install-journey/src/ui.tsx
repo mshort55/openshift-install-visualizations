@@ -46,6 +46,10 @@ function stageTopics(stage: JourneyStage): string[] {
   return stage.topics.flatMap((id) => visibleTopics(descendantsOf(id)));
 }
 
+function hasContext(id: string): boolean {
+  return topicById.get(id)?.kind !== "group";
+}
+
 function useTimelineExpansion(route: Route) {
   const [opened, setOpened] = useState<Set<string>>(() => new Set());
   const selectedStage = stageForTopic(route.topic)?.id ?? route.stage;
@@ -75,7 +79,7 @@ function useTimelineExpansion(route: Route) {
     ...stageIds.map((id) => `stage:${id}`),
     ...topicIds.flatMap((id) => [
       `topic:${id}`,
-      `detail:${id}`,
+      ...(hasContext(id) ? [`detail:${id}`] : []),
       `records:${id}`,
       ...(id === "approach" ? [`methods:${id}`, "comparison:approach"] : []),
     ]),
@@ -85,7 +89,7 @@ function useTimelineExpansion(route: Route) {
     topicIds.every(
       (id) =>
         topicOpen(id) &&
-        detailOpen(id) &&
+        (!hasContext(id) || detailOpen(id)) &&
         recordOpen(id) &&
         (id !== "approach" || (methodOpen(id) && comparisonOpen())),
     );
@@ -536,6 +540,7 @@ function TimelineStep({
       methodIds.has(route.topic) &&
       route.lens !== "process");
   const children = childrenOf(topic.id);
+  const isGroup = topic.kind === "group";
   const topicIds = visibleTopics(descendantsOf(topic.id));
   const allOpen = expansion.scopeOpen([], topicIds);
   const records =
@@ -555,6 +560,40 @@ function TimelineStep({
     : { topic: topic.parent ?? stage.phase, lens: route.lens };
   const selectedWithin = ancestorsOf(route.topic).some(
     (ancestor) => ancestor.id === topic.id,
+  );
+  const context = hasContext(topic.id) && (
+    <details
+      className="step-context"
+      open={expansion.detailOpen(topic.id)}
+      onToggle={(event) =>
+        expansion.setKeys([`detail:${topic.id}`], event.currentTarget.open)
+      }
+    >
+      <summary>Outcome, people and context</summary>
+      <Context topic={topic} />
+    </details>
+  );
+  const nestedSteps = children.length > 0 && topic.id !== "approach" && (
+    <div className="nested-steps">
+      <p className="eyebrow">
+        {isGroup
+          ? "Explore the steps in this area"
+          : "Optional details and variations"}
+      </p>
+      <ol>
+        {children.map((child, index) => (
+          <TimelineStep
+            key={child.id}
+            topic={child}
+            route={route}
+            navigate={navigate}
+            stage={stage}
+            number={`${number}.${index + 1}`}
+            expansion={expansion}
+          />
+        ))}
+      </ol>
+    </div>
   );
   return (
     <li className={`timeline-step ${open ? "step-open" : ""}`}>
@@ -597,25 +636,8 @@ function TimelineStep({
         {open && (
           <div className="step-body">
             <p className="step-summary">{topic.summary}</p>
-            {children.length > 0 && topic.id !== "approach" && (
-              <div className="nested-steps">
-                <p className="eyebrow">Explore the steps in this area</p>
-                <ol>
-                  {children.map((child, index) => (
-                    <TimelineStep
-                      key={child.id}
-                      topic={child}
-                      route={route}
-                      navigate={navigate}
-                      stage={stage}
-                      number={`${number}.${index + 1}`}
-                      expansion={expansion}
-                    />
-                  ))}
-                </ol>
-              </div>
-            )}
-            {open && (
+            {isGroup && nestedSteps}
+            {(!isGroup || route.lens !== "process") && (
               <div className="step-detail">
                 {problem || opportunity ? (
                   <>
@@ -714,19 +736,8 @@ function TimelineStep({
                     showAll={expansion.recordOpen(topic.id)}
                   />
                 )}
-                <details
-                  className="step-context"
-                  open={expansion.detailOpen(topic.id)}
-                  onToggle={(event) =>
-                    expansion.setKeys(
-                      [`detail:${topic.id}`],
-                      event.currentTarget.open,
-                    )
-                  }
-                >
-                  <summary>Outcome, people and context</summary>
-                  <Context topic={topic} />
-                </details>
+                {!isGroup && nestedSteps}
+                {context}
               </div>
             )}
           </div>

@@ -59,7 +59,12 @@ describe("journey content integrity", () => {
         expect(topic.phase).not.toBeNull();
         expect(descendantsOf(topic.phase ?? "").has(topic.id)).toBe(true);
       }
-      expect(topic.flow.length).toBeGreaterThanOrEqual(2);
+      if (topic.kind === "group") {
+        expect(childrenOf(topic.id).length).toBeGreaterThan(0);
+        expect(topic.flow).toHaveLength(0);
+      } else {
+        expect(topic.flow.length).toBeGreaterThanOrEqual(2);
+      }
     }
   });
 
