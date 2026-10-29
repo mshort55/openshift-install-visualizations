@@ -11,11 +11,34 @@ import {
   problemsFor,
   routeHref,
   searchJourney,
+  stageForTopic,
+  stages,
   topics,
 } from "./catalog";
 
 // Content is the app's navigation model. Broken edges make otherwise valid UI routes dead ends.
 describe("journey content integrity", () => {
+  test("ordered stages cover every detailed topic exactly once in its phase", () => {
+    expect(new Set(stages.map((stage) => stage.id)).size).toBe(stages.length);
+    expect([...new Set(stages.map((stage) => stage.phase))]).toEqual(phaseIds);
+    for (const topic of topics.filter(
+      (topic) => topic.phase && topic.parent !== "journey",
+    )) {
+      const owners = stages.filter((stage) =>
+        stage.topics.some((root) => descendantsOf(root).has(topic.id)),
+      );
+      expect(owners, topic.id).toHaveLength(1);
+      expect(owners[0]?.phase).toBe(topic.phase);
+      expect(stageForTopic(topic.id)).toBe(owners[0]);
+    }
+    for (const stage of stages) {
+      for (const id of stage.topics) {
+        expect(topics.find((topic) => topic.id === id)?.parent).toBe(
+          stage.phase,
+        );
+      }
+    }
+  });
   test("every topic belongs to exactly one phase, without cycles or orphaned branches", () => {
     const byId = new Map(topics.map((topic) => [topic.id, topic]));
     expect(byId.size).toBe(topics.length);
@@ -37,8 +60,6 @@ describe("journey content integrity", () => {
         expect(descendantsOf(topic.phase ?? "").has(topic.id)).toBe(true);
       }
       expect(topic.flow.length).toBeGreaterThanOrEqual(2);
-      for (const related of topic.related ?? [])
-        expect(byId.has(related)).toBe(true);
     }
   });
 
@@ -97,6 +118,28 @@ describe("journey content integrity", () => {
 });
 
 describe("shareable navigation and discovery", () => {
+  test("expanded stages round-trip in every perspective and invalid stage links fall back to the phase", () => {
+    for (const stage of stages) {
+      for (const lens of ["process", "problems", "opportunities"] as const) {
+        const route = { topic: stage.phase, stage: stage.id, lens };
+        expect(parseRoute(routeHref(route))).toEqual(route);
+      }
+    }
+    expect(
+      parseRoute("#/pre-installation?stage=enable-dependencies&view=problems"),
+    ).toEqual({
+      topic: "pre-installation",
+      lens: "problems",
+    });
+    expect(parseRoute("#/installation?stage=missing")).toEqual({
+      topic: "installation",
+      lens: "process",
+    });
+    expect(parseRoute("#/dns?stage=enable-dependencies")).toEqual({
+      topic: "dns",
+      lens: "process",
+    });
+  });
   test("all topics and record links round-trip", () => {
     for (const topic of topics) {
       for (const lens of ["process", "problems", "opportunities"] as const) {

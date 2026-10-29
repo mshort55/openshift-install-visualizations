@@ -6,7 +6,7 @@ export interface FlowStep {
   detail: string;
 }
 
-/** A topic has one navigational parent; related topics connect it across phases. */
+/** A topic has one navigational parent in the installation journey. */
 export interface Topic {
   id: string;
   parent: string | null;
@@ -18,7 +18,6 @@ export interface Topic {
   owners: string;
   scope: string;
   flow: FlowStep[];
-  related?: string[];
 }
 
 export interface Problem {
@@ -53,4 +52,5 @@ export interface Route {
   topic: string;
   lens: Lens;
   item?: string;
+  stage?: string;
 }

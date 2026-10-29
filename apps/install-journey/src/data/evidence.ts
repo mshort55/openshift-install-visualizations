@@ -328,7 +328,7 @@ export const opportunities: Opportunity[] = [
     intervention:
       "For one supported site design, generate addresses, records and source-to-destination flow requests with owners, conditions and verification steps.",
     existing:
-      "Installer validations and documented optional dependencies already exist. Some managed-network paths can defer external cluster DNS; this is path-specific and does not remove upstream resolution or client-access work.",
+      "Installer validations and documented network prerequisites already exist. Required DNS records and their timing depend on the installation configuration; confirm them before treating a pending DNS request as safe to defer.",
     investigate:
       "Test whether complete requests reduce clarification. Keep technical verification separate from change approval and pending owner action.",
     measure:

@@ -8,6 +8,7 @@ import {
 import {
   ancestorsOf,
   childrenOf,
+  descendantsOf,
   lenses,
   opportunities,
   opportunitiesFor,
@@ -16,9 +17,13 @@ import {
   problemsFor,
   routeHref,
   searchJourney,
+  stageForTopic,
+  stages,
   topicById,
+  topics,
 } from "./catalog";
-import { Icon, PhaseIllustration } from "./icons";
+import type { JourneyStage } from "./data/stages";
+import { Icon } from "./icons";
 import type { Opportunity, Problem, Route, Topic } from "./model";
 import { useNavigation } from "./navigation";
 
@@ -31,24 +36,94 @@ const phaseOutcomes = [
   "Base cluster installed",
   "Workload usable & readiness demonstrated",
 ];
-const phasePreview = [
-  [
-    "Deployment choices & feasibility",
-    "Infrastructure, content & media",
-    "Owners & verified prerequisites",
-  ],
-  [
-    "Host installation & bootstrap",
-    "Progress & diagnostic evidence",
-    "Correction, retry & completion",
-  ],
-  [
-    "Storage, networking & access",
-    "First workload & readiness",
-    "Operational handover & continuity",
-  ],
-];
+const methodIds = new Set(childrenOf("approach").map((topic) => topic.id));
 
+function visibleTopics(ids: Set<string>): string[] {
+  return [...ids].filter((id) => !methodIds.has(id));
+}
+
+function stageTopics(stage: JourneyStage): string[] {
+  return stage.topics.flatMap((id) => visibleTopics(descendantsOf(id)));
+}
+
+function useTimelineExpansion(route: Route) {
+  const [opened, setOpened] = useState<Set<string>>(() => new Set());
+  const selectedStage = stageForTopic(route.topic)?.id ?? route.stage;
+  const selectedTopics = new Set(
+    ancestorsOf(route.topic).map((topic) => topic.id),
+  );
+  const stageOpen = (id: string) =>
+    selectedStage === id || opened.has(`stage:${id}`);
+  const topicOpen = (id: string) =>
+    selectedTopics.has(id) || opened.has(`topic:${id}`);
+  const detailOpen = (id: string) => opened.has(`detail:${id}`);
+  const recordOpen = (id: string) => opened.has(`records:${id}`);
+  const methodOpen = (id: string) => opened.has(`methods:${id}`);
+  const setKeys = (keys: string[], expand: boolean) => {
+    setOpened((current) => {
+      const next = new Set(current);
+      for (const key of keys) {
+        if (expand) next.add(key);
+        else next.delete(key);
+      }
+      return next.size === current.size ? current : next;
+    });
+  };
+  const scopeKeys = (stageIds: string[], topicIds: string[]) => [
+    ...stageIds.map((id) => `stage:${id}`),
+    ...topicIds.flatMap((id) => [
+      `topic:${id}`,
+      `detail:${id}`,
+      `records:${id}`,
+      ...(id === "approach" ? [`methods:${id}`] : []),
+    ]),
+  ];
+  const scopeOpen = (stageIds: string[], topicIds: string[]) =>
+    stageIds.every(stageOpen) &&
+    topicIds.every(
+      (id) =>
+        topicOpen(id) &&
+        detailOpen(id) &&
+        recordOpen(id) &&
+        (id !== "approach" || methodOpen(id)),
+    );
+  const setScope = (stageIds: string[], topicIds: string[], expand: boolean) =>
+    setKeys(scopeKeys(stageIds, topicIds), expand);
+  return {
+    stageOpen,
+    topicOpen,
+    detailOpen,
+    recordOpen,
+    methodOpen,
+    scopeOpen,
+    setScope,
+    setKeys,
+  };
+}
+
+type TimelineExpansion = ReturnType<typeof useTimelineExpansion>;
+
+function ExpandAllButton({
+  expanded,
+  label,
+  onClick,
+}: {
+  expanded: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="expand-all-button"
+      onClick={onClick}
+      aria-label={`${expanded ? "Collapse" : "Expand"} all in ${label}`}
+    >
+      <Icon name={expanded ? "close" : "layers"} size={15} />
+      {expanded ? "Collapse all" : "Expand all"}
+    </button>
+  );
+}
 function JourneyLink({
   to,
   navigate,
@@ -231,8 +306,9 @@ function About({ onClose }: { onClose: () => void }) {
         <h3>See the work through the customer’s eyes.</h3>
         <p>
           This map brings together installation explanations, reported customer
-          difficulties and possible improvements. Start with the whole journey,
-          then open a phase or topic to reveal more detail.
+          difficulties and possible improvements. Follow the timeline, then open
+          a stage and step to reveal more detail. Switch perspectives to explore
+          the same step’s problems and possible improvements.
         </p>
         <div className="about-lenses">
           {lenses.map((lens, i) => (
@@ -271,6 +347,7 @@ function About({ onClose }: { onClose: () => void }) {
 }
 
 function LensTabs({ route, navigate }: { route: Route; navigate: Navigate }) {
+  const { item: _item, ...selection } = route;
   return (
     <div className="perspectives">
       <div className="tabs" role="tablist" aria-label="Journey perspective">
@@ -287,7 +364,7 @@ function LensTabs({ route, navigate }: { route: Route; navigate: Navigate }) {
             onClick={() =>
               navigate(
                 {
-                  topic: route.topic,
+                  ...selection,
                   lens: lens.id,
                 },
                 true,
@@ -309,7 +386,7 @@ function LensTabs({ route, navigate }: { route: Route; navigate: Navigate }) {
               event.preventDefault();
               navigate(
                 {
-                  topic: route.topic,
+                  ...selection,
                   lens: target.id,
                 },
                 true,
@@ -330,201 +407,517 @@ function LensTabs({ route, navigate }: { route: Route; navigate: Navigate }) {
   );
 }
 
-function PhaseStrip({
-  topic,
-  route,
-  navigate,
-}: {
-  topic: Topic;
-  route: Route;
-  navigate: Navigate;
-}) {
+function PhaseStrip({ route, navigate }: { route: Route; navigate: Navigate }) {
+  const phase = topicById.get(route.topic)?.phase;
   return (
-    <nav className="phase-strip" aria-label="Installation phases">
+    <nav className="timeline-phase-nav" aria-label="Installation phases">
       <JourneyLink
         to={{ topic: "journey", lens: route.lens }}
         navigate={navigate}
-        className="all-phases"
+        className="timeline-all"
         label="Full journey"
       >
         <Icon name="map" size={17} />
         <span>Full journey</span>
       </JourneyLink>
-      <div className="strip-phases">
-        {phaseIds.map((id, index) => (
-          <JourneyLink
-            key={id}
-            to={{ topic: id, lens: route.lens }}
-            navigate={navigate}
-            className={`phase-strip-link phase-${index} ${topic.phase === id ? "current-phase" : ""}`}
-          >
-            <span className="phase-number">0{index + 1}</span>
-            <span>{phaseNames[index]}</span>
-            {topic.phase === id && (
-              <span className="sr-only"> — current phase</span>
-            )}
-          </JourneyLink>
-        ))}
-      </div>
+      {phaseIds.map((id, index) => (
+        <JourneyLink
+          key={id}
+          to={{ topic: id, lens: route.lens }}
+          navigate={navigate}
+          className={`phase-${index} ${phase === id ? "selected-phase" : ""}`}
+        >
+          <span className="phase-number">0{index + 1}</span>
+          <span>{phaseNames[index]}</span>
+          {phase === id && <span className="sr-only"> — current phase</span>}
+        </JourneyLink>
+      ))}
     </nav>
   );
 }
 
-function Breadcrumbs({
+function MethodComparison({
+  route,
+  navigate,
+  showAll,
+}: {
+  route: Route;
+  navigate: Navigate;
+  showAll: boolean;
+}) {
+  const methods = childrenOf("approach");
+  const selected = methods.find((method) => method.id === route.topic);
+  const visible = showAll ? methods : selected ? [selected] : [];
+  return (
+    <section
+      className="method-comparison"
+      aria-labelledby="method-comparison-title"
+    >
+      <div className="subheading">
+        <h2 id="method-comparison-title">
+          Compare bare-metal installation methods
+        </h2>
+        <span>Choose a method to see its distinct steps</span>
+      </div>
+      <div className="method-options">
+        {methods.map((method) => (
+          <button
+            key={method.id}
+            type="button"
+            id={`method-${method.id}`}
+            data-focus={`method-${method.id}`}
+            aria-pressed={selected?.id === method.id}
+            className="method-option"
+            onClick={() => navigate({ topic: method.id, lens: "process" })}
+          >
+            <strong>{method.title}</strong>
+            <span>{method.summary}</span>
+            <span className="method-option-action">
+              {selected?.id === method.id ? "Selected" : "View steps"}
+              <Icon name="arrow" size={15} />
+            </span>
+          </button>
+        ))}
+      </div>
+      {visible.map((method) => (
+        <div key={method.id} className="method-process">
+          <h3>{method.title}</h3>
+          <p>{method.summary}</p>
+          <ol className="process-flow">
+            {method.flow.map((step, index) => (
+              <li key={step.title}>
+                <span className="flow-number">{index + 1}</span>
+                <div>
+                  <h4>{step.title}</h4>
+                  <p>{step.detail}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function TimelineStep({
   topic,
   route,
   navigate,
-  itemTitle,
+  stage,
+  number,
+  expansion,
 }: {
   topic: Topic;
   route: Route;
   navigate: Navigate;
-  itemTitle?: string;
+  stage: JourneyStage;
+  number: string;
+  expansion: TimelineExpansion;
 }) {
-  const ancestors = ancestorsOf(topic.id);
+  const open = expansion.topicOpen(topic.id);
+  const selected =
+    route.topic === topic.id ||
+    (topic.id === "approach" &&
+      methodIds.has(route.topic) &&
+      route.lens !== "process");
+  const children = childrenOf(topic.id);
+  const topicIds = visibleTopics(descendantsOf(topic.id));
+  const allOpen = expansion.scopeOpen([], topicIds);
+  const records =
+    route.lens === "problems"
+      ? problemsFor(topic.id)
+      : opportunitiesFor(topic.id);
+  const problem =
+    selected && route.lens === "problems"
+      ? problems.find((item) => item.id === route.item)
+      : undefined;
+  const opportunity =
+    selected && route.lens === "opportunities"
+      ? opportunities.find((item) => item.id === route.item)
+      : undefined;
+  const closeRoute: Route = stage.topics.includes(topic.id)
+    ? { topic: stage.phase, stage: stage.id, lens: route.lens }
+    : { topic: topic.parent ?? stage.phase, lens: route.lens };
+  const selectedWithin = ancestorsOf(route.topic).some(
+    (ancestor) => ancestor.id === topic.id,
+  );
   return (
-    <nav className="breadcrumbs" aria-label="Breadcrumb">
-      <ol>
-        {ancestors.map((part, index) => (
-          <li key={part.id}>
-            {index > 0 && <Icon name="chevron" size={12} />}
-            {index === ancestors.length - 1 && !itemTitle ? (
-              <span aria-current="page">{part.title}</span>
-            ) : (
-              <JourneyLink
-                to={{ topic: part.id, lens: route.lens }}
-                navigate={navigate}
-              >
-                {part.id === "journey" ? "Journey" : part.title}
-              </JourneyLink>
+    <li className={`timeline-step ${open ? "step-open" : ""}`}>
+      <div className="step-heading">
+        <h4>
+          <button
+            type="button"
+            id={`step-${topic.id}`}
+            data-focus={`step-${topic.id}`}
+            aria-expanded={open}
+            aria-controls={`step-body-${topic.id}`}
+            className="step-toggle"
+            onClick={() => {
+              expansion.setKeys([`topic:${topic.id}`], !open);
+              if (open && selectedWithin) navigate(closeRoute, true);
+              else if (!open) navigate({ topic: topic.id, lens: route.lens });
+            }}
+          >
+            <span className="step-number">{number}</span>
+            <span className="step-title">{topic.title}</span>
+            {route.lens !== "process" && (
+              <span className="step-count">
+                {records.length}{" "}
+                {route.lens === "problems" ? "problems" : "ideas"}
+              </span>
             )}
-          </li>
-        ))}
-        {itemTitle && (
-          <li>
-            <Icon name="chevron" size={12} />
-            <span aria-current="page">
-              {route.lens === "problems" ? "Customer problem" : "Opportunity"}
-            </span>
-          </li>
+            <Icon name="chevron" size={17} />
+          </button>
+        </h4>
+        <ExpandAllButton
+          expanded={allOpen}
+          label={topic.title}
+          onClick={() => {
+            expansion.setScope([], topicIds, !allOpen);
+            if (allOpen && selectedWithin) navigate(closeRoute, true);
+          }}
+        />
+      </div>
+      <div id={`step-body-${topic.id}`} hidden={!open}>
+        {open && (
+          <div className="step-body">
+            <p className="step-summary">{topic.summary}</p>
+            {children.length > 0 && topic.id !== "approach" && (
+              <div className="nested-steps">
+                <p className="eyebrow">Explore the steps in this area</p>
+                <ol>
+                  {children.map((child, index) => (
+                    <TimelineStep
+                      key={child.id}
+                      topic={child}
+                      route={route}
+                      navigate={navigate}
+                      stage={stage}
+                      number={`${number}.${index + 1}`}
+                      expansion={expansion}
+                    />
+                  ))}
+                </ol>
+              </div>
+            )}
+            {open && (
+              <div className="step-detail">
+                {problem || opportunity ? (
+                  <>
+                    {expansion.recordOpen(topic.id) && (
+                      <RecordList
+                        key={`${topic.id}-${route.lens}`}
+                        topic={topic}
+                        route={route}
+                        navigate={navigate}
+                        showAll
+                      />
+                    )}
+                    <section
+                      id={`record-${route.item}`}
+                      tabIndex={-1}
+                      className="inline-record"
+                    >
+                      <JourneyLink
+                        to={{ topic: topic.id, lens: route.lens }}
+                        navigate={navigate}
+                        className="text-action"
+                      >
+                        <Icon name="back" size={16} />
+                        Back to{" "}
+                        {route.lens === "problems"
+                          ? "problems"
+                          : "opportunities"}{" "}
+                        in this step
+                      </JourneyLink>
+                      <h5>{problem?.title ?? opportunity?.title}</h5>
+                      {problem ? (
+                        <ProblemDetail
+                          problem={problem}
+                          topic={topic}
+                          navigate={navigate}
+                        />
+                      ) : opportunity ? (
+                        <OpportunityDetail
+                          opportunity={opportunity}
+                          topic={topic}
+                          navigate={navigate}
+                        />
+                      ) : null}
+                    </section>
+                  </>
+                ) : route.lens === "process" ? (
+                  <>
+                    {(topic.id !== "approach" ||
+                      selected ||
+                      expansion.methodOpen(topic.id)) && (
+                      <Process topic={topic} navigate={navigate} />
+                    )}
+                    {topic.id === "approach" && (
+                      <MethodComparison
+                        route={route}
+                        navigate={navigate}
+                        showAll={expansion.methodOpen(topic.id)}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <RecordList
+                    key={`${topic.id}-${route.lens}`}
+                    topic={topic}
+                    route={route}
+                    navigate={navigate}
+                    showAll={expansion.recordOpen(topic.id)}
+                  />
+                )}
+                <details
+                  className="step-context"
+                  open={expansion.detailOpen(topic.id)}
+                  onToggle={(event) =>
+                    expansion.setKeys(
+                      [`detail:${topic.id}`],
+                      event.currentTarget.open,
+                    )
+                  }
+                >
+                  <summary>Outcome, people and context</summary>
+                  <Context topic={topic} />
+                </details>
+              </div>
+            )}
+          </div>
         )}
-      </ol>
-    </nav>
+      </div>
+    </li>
   );
 }
 
-function Overview({ route, navigate }: { route: Route; navigate: Navigate }) {
+function Timeline({
+  route,
+  navigate,
+  expansion,
+}: {
+  route: Route;
+  navigate: Navigate;
+  expansion: TimelineExpansion;
+}) {
+  const allStageIds = stages.map((stage) => stage.id);
+  const allTopicIds = topics
+    .filter(
+      (topic) =>
+        topic.parent && topic.parent !== "journey" && !methodIds.has(topic.id),
+    )
+    .map((topic) => topic.id);
+  const allOpen = expansion.scopeOpen(allStageIds, allTopicIds);
   return (
-    <>
-      <div className="section-heading">
-        <div>
-          <span className="eyebrow">The customer journey</span>
-          <h2>Three phases. One experience.</h2>
+    <div className="journey-timeline">
+      <div className="timeline-intro">
+        <div className="timeline-intro-heading">
+          <span className="eyebrow">
+            From preparation to an operating platform
+          </span>
+          <ExpandAllButton
+            expanded={allOpen}
+            label="the journey"
+            onClick={() => {
+              expansion.setScope(allStageIds, allTopicIds, !allOpen);
+              if (allOpen)
+                navigate({ topic: "journey", lens: route.lens }, true);
+            }}
+          />
         </div>
         <p>
-          Select a phase to explore
-          <Icon name="arrow" size={16} />
+          Open a stage, then a step. Switch perspectives to see the same work
+          through a different lens.
         </p>
-      </div>
-      <div className="journey-timeline">
-        {phaseIds.map((id, index) => {
-          const topic = topicById.get(id);
-          if (!topic) return null;
-          const items =
-            route.lens === "problems" ? problemsFor(id) : opportunitiesFor(id);
-          return (
-            <JourneyLink
-              key={id}
-              to={{ topic: id, lens: route.lens }}
-              navigate={navigate}
-              className={`phase-card phase-${index}`}
-            >
-              <div className="phase-card-top">
-                <span className="phase-label">
-                  <span className="phase-number">0{index + 1}</span>{" "}
-                  {index === 0
-                    ? "Prepare"
-                    : index === 1
-                      ? "Create"
-                      : "Enable & operate"}
-                </span>
-                <span className="round-arrow">
-                  <Icon name="arrow" size={19} />
-                </span>
-              </div>
-              <PhaseIllustration phase={index} />
-              <div className="phase-card-copy">
-                <h3>{topic.title}</h3>
-                <p>{topic.summary}</p>
-                {route.lens === "process" ? (
-                  <ul className="phase-preview">
-                    {phasePreview[index]?.map((line) => (
-                      <li key={line}>
-                        <span />
-                        {line}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="phase-findings">
-                    <span className="eyebrow">
-                      {route.lens === "problems"
-                        ? "Customer experience"
-                        : "Ideas to investigate"}
-                    </span>
-                    {items.slice(0, 2).map((item) => (
-                      <p key={item.id}>
-                        <span />
-                        {item.title}
-                      </p>
-                    ))}
-                    <small>
-                      {items.length}{" "}
-                      {route.lens === "problems"
-                        ? "mapped problems"
-                        : "candidate improvements"}{" "}
-                      to explore
-                    </small>
-                  </div>
-                )}
-              </div>
-              <div className="phase-milestone">
-                <span className="milestone-dot" />
-                <span>{phaseOutcomes[index]}</span>
-              </div>
-              <div className="phase-card-action">
-                Explore{" "}
-                {route.lens === "process"
-                  ? "this phase"
-                  : route.lens === "problems"
-                    ? "customer problems"
-                    : "opportunities"}
-                <Icon name="arrow" size={17} />
-              </div>
-            </JourneyLink>
-          );
-        })}
-      </div>
-      <div className="timeline-note">
-        <Icon name="info" size={14} />
-        <span>
-          A map of the work, not a duration estimate. Preparation can run in
-          parallel; failures can lead back to earlier decisions.
+        <span className="timeline-order-note">
+          <Icon name="info" size={15} />
+          Typical progression · work can overlap and retries can return to an
+          earlier stage.
         </span>
       </div>
-    </>
+      <ol className="timeline-phases">
+        {phaseIds.map((phaseId, phaseIndex) => (
+          <li key={phaseId} className={`timeline-phase phase-${phaseIndex}`}>
+            <section aria-labelledby={`phase-${phaseId}`}>
+              <div className="timeline-phase-heading">
+                <span className="timeline-phase-marker">0{phaseIndex + 1}</span>
+                <div>
+                  <span className="eyebrow">
+                    {phaseIndex === 0
+                      ? "Prepare"
+                      : phaseIndex === 1
+                        ? "Create"
+                        : "Enable & operate"}
+                  </span>
+                  <h2 id={`phase-${phaseId}`} tabIndex={-1}>
+                    {phaseNames[phaseIndex]}
+                  </h2>
+                </div>
+                <span className="phase-outcome">
+                  <Icon name="flag" size={15} />
+                  {phaseOutcomes[phaseIndex]}
+                </span>
+                <ExpandAllButton
+                  expanded={expansion.scopeOpen(
+                    stages
+                      .filter((stage) => stage.phase === phaseId)
+                      .map((stage) => stage.id),
+                    stages
+                      .filter((stage) => stage.phase === phaseId)
+                      .flatMap(stageTopics),
+                  )}
+                  label={phaseNames[phaseIndex] ?? phaseId}
+                  onClick={() => {
+                    const phaseStages = stages.filter(
+                      (stage) => stage.phase === phaseId,
+                    );
+                    const stageIds = phaseStages.map((stage) => stage.id);
+                    const topicIds = phaseStages.flatMap(stageTopics);
+                    const fullyOpen = expansion.scopeOpen(stageIds, topicIds);
+                    expansion.setScope(stageIds, topicIds, !fullyOpen);
+                    if (
+                      fullyOpen &&
+                      topicById.get(route.topic)?.phase === phaseId
+                    )
+                      navigate({ topic: phaseId, lens: route.lens }, true);
+                  }}
+                />
+              </div>
+              <ol className="timeline-stages">
+                {stages
+                  .filter((stage) => stage.phase === phaseId)
+                  .map((stage, index) => {
+                    const open = expansion.stageOpen(stage.id);
+                    const topicIds = stageTopics(stage);
+                    const fullyOpen = expansion.scopeOpen([stage.id], topicIds);
+                    return (
+                      <li
+                        key={stage.id}
+                        className={`timeline-stage ${open ? "stage-open" : ""}`}
+                      >
+                        <span className="stage-node" aria-hidden="true" />
+                        <div className="stage-card">
+                          <div className="stage-heading">
+                            <h3>
+                              <button
+                                type="button"
+                                className="stage-toggle"
+                                id={`stage-${stage.id}`}
+                                data-focus={`stage-${stage.id}`}
+                                aria-expanded={open}
+                                aria-controls={`stage-body-${stage.id}`}
+                                onClick={() => {
+                                  expansion.setKeys(
+                                    [`stage:${stage.id}`],
+                                    !open,
+                                  );
+                                  if (
+                                    open &&
+                                    (stageForTopic(route.topic)?.id ??
+                                      route.stage) === stage.id
+                                  )
+                                    navigate(
+                                      { topic: phaseId, lens: route.lens },
+                                      true,
+                                    );
+                                  else if (!open)
+                                    navigate({
+                                      topic: phaseId,
+                                      lens: route.lens,
+                                      stage: stage.id,
+                                    });
+                                }}
+                              >
+                                <span className="stage-ordinal">
+                                  {phaseIndex + 1}.{index + 1}
+                                </span>
+                                <span className="stage-copy">
+                                  <span className="stage-title">
+                                    {stage.title}
+                                  </span>
+                                  <span className="stage-summary">
+                                    {stage.summaries[route.lens]}
+                                  </span>
+                                </span>
+                                <span className="stage-disclosure">
+                                  <span>{open ? "Close" : "Explore"}</span>
+                                  <Icon name="chevron" size={18} />
+                                </span>
+                              </button>
+                            </h3>
+                            <ExpandAllButton
+                              expanded={fullyOpen}
+                              label={stage.title}
+                              onClick={() => {
+                                expansion.setScope(
+                                  [stage.id],
+                                  topicIds,
+                                  !fullyOpen,
+                                );
+                                if (
+                                  fullyOpen &&
+                                  (stageForTopic(route.topic)?.id ??
+                                    route.stage) === stage.id
+                                )
+                                  navigate(
+                                    { topic: phaseId, lens: route.lens },
+                                    true,
+                                  );
+                              }}
+                            />
+                          </div>
+                          <div id={`stage-body-${stage.id}`} hidden={!open}>
+                            {open && (
+                              <div className="stage-body">
+                                {stage.note && (
+                                  <p className="stage-note">
+                                    <Icon name="info" size={16} />
+                                    {stage.note}
+                                  </p>
+                                )}
+                                <p className="eyebrow">Steps to explore</p>
+                                <ol className="timeline-steps">
+                                  {stage.topics.map((id, stepIndex) => {
+                                    const topic = topicById.get(id);
+                                    return topic ? (
+                                      <TimelineStep
+                                        key={id}
+                                        topic={topic}
+                                        route={route}
+                                        navigate={navigate}
+                                        stage={stage}
+                                        number={String(stepIndex + 1).padStart(
+                                          2,
+                                          "0",
+                                        )}
+                                        expansion={expansion}
+                                      />
+                                    ) : null;
+                                  })}
+                                </ol>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+              </ol>
+            </section>
+          </li>
+        ))}
+      </ol>
+      <p className="timeline-finish">
+        <Icon name="flag" size={18} />A usable workload, demonstrated readiness
+        and a team ready to operate it.
+      </p>
+    </div>
   );
 }
 
-function Context({
-  topic,
-  navigate,
-  route,
-}: {
-  topic: Topic;
-  navigate: Navigate;
-  route: Route;
-}) {
+function Context({ topic }: { topic: Topic }) {
   return (
     <aside className="context-column">
       <div className="context-card">
@@ -539,82 +932,25 @@ function Context({
         <span className="eyebrow">Context</span>
         <p className="scope-text">{topic.scope}</p>
       </div>
-      {topic.related && (
-        <div className="related">
-          <span className="eyebrow">Connected across the journey</span>
-          {topic.related.map((id) => {
-            const target = topicById.get(id);
-            return target ? (
-              <JourneyLink
-                key={id}
-                to={{ topic: id, lens: route.lens }}
-                navigate={navigate}
-              >
-                <span>
-                  <small>
-                    {target.phase
-                      ? topicById.get(target.phase)?.title
-                      : "Journey"}
-                  </small>
-                  {target.title}
-                </span>
-                <Icon name="arrow" size={16} />
-              </JourneyLink>
-            ) : null;
-          })}
-        </div>
-      )}
     </aside>
   );
 }
 
-function Process({
-  topic,
-  route,
-  navigate,
-}: {
-  topic: Topic;
-  route: Route;
-  navigate: Navigate;
-}) {
-  const children = childrenOf(topic.id);
+function Process({ topic, navigate }: { topic: Topic; navigate: Navigate }) {
   return (
     <div className="process-content">
-      {children.length > 0 && (
-        <section>
-          <div className="subheading">
-            <h2>
-              Explore this {topic.parent === "journey" ? "phase" : "area"}
-            </h2>
-            <span>{children.length} areas to understand</span>
-          </div>
-          <div className="topic-grid">
-            {children.map((child, index) => (
-              <JourneyLink
-                key={child.id}
-                to={{ topic: child.id, lens: route.lens }}
-                navigate={navigate}
-                className="topic-card"
-              >
-                <span className="topic-index">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <h3>{child.title}</h3>
-                  <p>{child.summary}</p>
-                </div>
-                <Icon name="arrow" size={18} />
-              </JourneyLink>
-            ))}
-          </div>
-        </section>
-      )}
       <section className="flow-section">
         <div className="subheading">
           <h2>
-            {children.length ? "How the pieces fit" : "Understand the process"}
+            {topic.id === "approach"
+              ? "Plan the bare-metal deployment"
+              : "Understand the process"}
           </h2>
-          <span>The essential sequence</span>
+          <span>
+            {topic.id === "approach"
+              ? "Three decisions before installation"
+              : "The essential sequence"}
+          </span>
         </div>
         <ol className="process-flow">
           {topic.flow.map((step, index) => (
@@ -653,7 +989,7 @@ function Process({
           navigate={navigate}
           className="text-action"
         >
-          Explore the evidence
+          Explore customer problems
           <Icon name="arrow" size={16} />
         </JourneyLink>
       </div>
@@ -665,10 +1001,12 @@ function RecordList({
   topic,
   route,
   navigate,
+  showAll,
 }: {
   topic: Topic;
   route: Route;
   navigate: Navigate;
+  showAll: boolean;
 }) {
   const records =
     route.lens === "problems"
@@ -676,6 +1014,7 @@ function RecordList({
       : opportunitiesFor(topic.id);
   const listKey = `${topic.id}-${route.lens}`;
   const [visible, setVisible] = useState(recordLimits.get(listKey) ?? 6);
+  const limit = showAll ? records.length : visible;
   return (
     <section className="record-section">
       <div className="subheading">
@@ -719,10 +1058,10 @@ function RecordList({
         </div>
       ) : (
         <div className="record-list">
-          {records.slice(0, visible).map((record) => (
+          {records.slice(0, limit).map((record) => (
             <JourneyLink
               key={record.id}
-              to={{ ...route, item: record.id }}
+              to={{ topic: topic.id, lens: route.lens, item: record.id }}
               navigate={navigate}
               className={`record-card ${route.lens}`}
             >
@@ -745,7 +1084,7 @@ function RecordList({
           ))}
         </div>
       )}
-      {records.length > visible && (
+      {records.length > limit && (
         <button
           type="button"
           className="secondary-button show-more"
@@ -940,8 +1279,25 @@ function OpportunityDetail({
 }
 
 export function App() {
-  const { route, navigate } = useNavigation();
-  const topic = topicById.get(route.topic) ?? topicById.get("journey");
+  const { route: savedRoute, navigate } = useNavigation();
+  const record = savedRoute.item
+    ? (savedRoute.lens === "problems" ? problems : opportunities).find(
+        (item) => item.id === savedRoute.item,
+      )
+    : undefined;
+  const recordTopic =
+    record && !stageForTopic(savedRoute.topic)
+      ? record.topics.find(
+          (id) =>
+            savedRoute.topic === "journey" ||
+            topicById.get(id)?.phase === savedRoute.topic,
+        )
+      : undefined;
+  const route: Route =
+    recordTopic && record
+      ? { topic: recordTopic, lens: savedRoute.lens, item: record.id }
+      : savedRoute;
+  const expansion = useTimelineExpansion(route);
   const [searchOpen, setSearchOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [shareStatus, setShareStatus] = useState("");
@@ -968,19 +1324,6 @@ export function App() {
       shareInput.current?.select();
     }
   }, [shareFallback]);
-  if (!topic) return null;
-  const home = topic.id === "journey";
-  const problem =
-    route.lens === "problems" && route.item
-      ? problems.find((record) => record.id === route.item)
-      : undefined;
-  const opportunity =
-    route.lens === "opportunities" && route.item
-      ? opportunities.find((record) => record.id === route.item)
-      : undefined;
-  const record = problem ?? opportunity;
-  const phaseIndex = topic.phase ? phaseIds.indexOf(topic.phase) : 0;
-  const pageTitle = record?.title ?? topic.title;
   const copyLink = async () => {
     try {
       await navigator.clipboard.writeText(
@@ -992,7 +1335,7 @@ export function App() {
     }
   };
   return (
-    <div className={`app phase-${phaseIndex}`}>
+    <div className="app timeline-app">
       <button
         type="button"
         className="skip-link"
@@ -1066,98 +1409,32 @@ export function App() {
         </div>
       </header>
       <main id="main-content" className="main-shell" tabIndex={-1}>
-        {!home && (
-          <PhaseStrip topic={topic} route={route} navigate={navigate} />
-        )}
-        {home && !record ? (
-          <section className="hero">
-            <div>
-              <span className="eyebrow hero-eyebrow">
-                <span />
-                Bare metal · The complete customer experience
-              </span>
-              <h1 id="page-title" tabIndex={-1}>
-                An installed cluster.
-                <br />
-                <span>A whole journey behind it.</span>
-              </h1>
-              <p>
-                Explore what customers need to prepare, create and use
-                OpenShift.
-                <br className="desktop-break" /> Understand the work. Find the
-                friction. Discover where we can help.
-              </p>
-            </div>
-          </section>
-        ) : (
-          <>
-            <Breadcrumbs
-              topic={topic}
-              route={route}
-              navigate={navigate}
-              {...(record ? { itemTitle: record.title } : {})}
-            />
-            <section className="topic-hero">
-              <div className="topic-kicker">
-                <span className="phase-dot" />
-                {record
-                  ? route.lens === "problems"
-                    ? "Customer problem"
-                    : "Improvement opportunity"
-                  : topic.parent === "journey"
-                    ? `Phase 0${phaseIndex + 1} · ${topic.title}`
-                    : topic.phase
-                      ? topicById.get(topic.phase)?.title
-                      : "Full journey"}
-                {record && (
-                  <span className="kicker-context">Within {topic.title}</span>
-                )}
-              </div>
-              <h1 id="page-title" tabIndex={-1}>
-                {pageTitle}
-              </h1>
-              <p>{record?.summary ?? topic.summary}</p>
-              {!record && (
-                <div className="customer-question">
-                  <Icon name="people" size={17} />
-                  <span>{topic.question}</span>
-                </div>
-              )}
-            </section>
-          </>
-        )}
-        <LensTabs route={route} navigate={navigate} />
+        <section className="timeline-hero">
+          <span className="eyebrow hero-eyebrow">
+            <span />
+            The customer experience
+          </span>
+          <h1 id="page-title" tabIndex={-1}>
+            OpenShift on bare metal.
+            <br />
+            <span>The complete installation journey.</span>
+          </h1>
+          <p>
+            Follow the customer from the first deployment decision to a usable
+            workload and operational handover.
+          </p>
+        </section>
+        <div className="timeline-controls">
+          <PhaseStrip route={route} navigate={navigate} />
+          <LensTabs route={route} navigate={navigate} />
+        </div>
         <div
           id="perspective-content"
           role="tabpanel"
           aria-labelledby={`tab-${route.lens}`}
           className="perspective-panel"
-          key={`${route.topic}-${route.lens}-${route.item ?? ""}`}
         >
-          {problem ? (
-            <ProblemDetail
-              problem={problem}
-              topic={topic}
-              navigate={navigate}
-            />
-          ) : opportunity ? (
-            <OpportunityDetail
-              opportunity={opportunity}
-              topic={topic}
-              navigate={navigate}
-            />
-          ) : home ? (
-            <Overview route={route} navigate={navigate} />
-          ) : (
-            <div className="content-layout">
-              {route.lens === "process" ? (
-                <Process topic={topic} route={route} navigate={navigate} />
-              ) : (
-                <RecordList topic={topic} route={route} navigate={navigate} />
-              )}
-              <Context topic={topic} route={route} navigate={navigate} />
-            </div>
-          )}
+          <Timeline route={route} navigate={navigate} expansion={expansion} />
         </div>
       </main>
       <footer className="site-footer">

@@ -1,8 +1,17 @@
 import { opportunities, problems } from "./data/evidence";
+import { stages } from "./data/stages";
 import { topics } from "./data/topics";
 import type { Lens, Route, Topic } from "./model";
 
-export { opportunities, problems, topics };
+export { opportunities, problems, stages, topics };
+
+/** Finds the timeline stage containing a topic, including its nested explanations. */
+export function stageForTopic(id: string) {
+  const ancestors = new Set(ancestorsOf(id).map((topic) => topic.id));
+  return stages.find((stage) =>
+    stage.topics.some((topic) => ancestors.has(topic)),
+  );
+}
 export const topicById = new Map(topics.map((topic) => [topic.id, topic]));
 export const phaseIds = [
   "pre-installation",
@@ -75,6 +84,7 @@ export function routeHref(route: Route): string {
   const params = new URLSearchParams();
   if (route.lens !== "process") params.set("view", route.lens);
   if (route.item) params.set("item", route.item);
+  if (route.stage) params.set("stage", route.stage);
   return `#/${route.topic}${params.size ? `?${params}` : ""}`;
 }
 
@@ -87,6 +97,10 @@ export function parseRoute(hash: string): Route {
   const lens: Lens =
     value === "problems" || value === "opportunities" ? value : "process";
   const route: Route = { topic, lens };
+  const stage = stages.find(
+    (stage) => stage.id === params.get("stage") && stage.phase === topic,
+  );
+  if (stage) route.stage = stage.id;
   const item = params.get("item");
   const records =
     lens === "problems"
