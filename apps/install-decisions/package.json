@@ -1,0 +1,14 @@
+{
+  "name": "openshift-install-decisions",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "app": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm run lint && npm test"
+  }
+}

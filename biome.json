@@ -2,13 +2,13 @@
   "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
   "files": {
     "includes": [
-      "src/**",
-      "data/**",
+      "apps/**",
+      "tests/**",
       "*.json",
       "*.ts",
-      "*.html",
       "!**/node_modules",
       "!**/dist",
+      "!**/public",
       "!package-lock.json"
     ]
   },

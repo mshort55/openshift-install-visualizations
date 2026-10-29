@@ -1,13 +1,16 @@
 # openshift-install-visualizations
 
-Decision tree for an OpenShift Container Platform 4.22 bare metal cluster installed with the Agent-based Installer.
+Independent web apps for understanding OpenShift bare-metal installation. Install dependencies once at the repository root with `npm ci`, then launch an app:
 
-The catalog is `data/bare-metal-4.22.json`. Nothing starts selected. Step through reveals the next decision after a choice. See every option keeps the other choices visible. After you pick one answer, the other answers to that question are greyed. A selected answer shows one example value from the Red Hat documentation. Questions marked NMState are written as NMState, in the host networkConfig or in a day-2 NodeNetworkConfigurationPolicy. Static host addressing opens the NMState sections OpenShift 4.22 documents for a node desired state. Ethernet, bond, VLAN, Linux bridge, VRF, and IP over InfiniBand can be combined. SR-IOV is a setting on the ethernet interface. DNS, routes, route rules, and IPv4 forwarding are separate sections. A disconnected network opens the mirror registry. `platform: none` opens the API and ingress load balancers. Day-2 steps such as the `br-ex` bridge stay in the tree. Every path chooses a storage class. The self-contained ISO also chooses the Virtualization bundle or single operators.
+| App | Command | Local URL | Source |
+| --- | --- | --- | --- |
+| Installation journey | `npm run app:journey` | <http://localhost:5174> | [apps/install-journey](apps/install-journey/README.md) |
+| Agent-based installation decisions | `npm run app:decisions` | <http://localhost:5173> | [apps/install-decisions](apps/install-decisions/README.md) |
 
-```bash
-npm install
-npm run check
-npm run dev
-```
+Each app owns its source, content, styles, entry point, Vite configuration and production output. Both use the repository's shared dependencies, TypeScript defaults and formatting rules. See the [app directory](apps/README.md) for the layout and conventions for another visualization.
 
-`npm run check` runs the type checker, the linters, the walk tests, and a lockfile audit. The audit reads `package-lock.json` and fails when the npm advisory database reports any vulnerability.
+`npm run build` builds both apps into their respective `apps/<name>/dist/` directories. Use `build:journey` or `build:decisions` to build one, and `preview:journey` or `preview:decisions` to serve its production output.
+
+`npm run check` runs type checking, linting, both app test suites and the shared lockfile audit. Use `check:journey` or `check:decisions` for one app's checks. The shared audit lives in `tests/audit.test.ts`, reads the root `package-lock.json`, and fails when the npm advisory database reports a vulnerability.
+
+Launch commands forward Vite options, for example `npm run app:decisions -- --port 5180 --strictPort`.

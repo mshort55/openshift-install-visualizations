@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, test } from "vitest";
-import rawCatalog from "../data/bare-metal-4.22.json";
 import { parseCatalog } from "./catalog";
+import rawCatalog from "./data/bare-metal-4.22.json";
 import { App } from "./ui";
 
 function page(view?: "path" | "map") {

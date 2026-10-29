@@ -3,4 +3,4 @@ dist
 .vite
 *.tsbuildinfo
 artifacts/verify/
-.cursor/skills/verify-openshift-install-visualizations/cache/
+.agents/skills/verify-openshift-install-visualizations/cache/

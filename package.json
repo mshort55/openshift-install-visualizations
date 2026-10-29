@@ -3,12 +3,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -p tsconfig.json --noEmit && vite build",
-    "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "app:decisions": "npm --prefix apps/install-decisions run app --",
+    "app:journey": "npm --prefix apps/install-journey run app --",
+    "build": "npm run build:decisions && npm run build:journey",
+    "build:decisions": "npm --prefix apps/install-decisions run build",
+    "build:journey": "npm --prefix apps/install-journey run build",
+    "preview:decisions": "npm --prefix apps/install-decisions run preview --",
+    "preview:journey": "npm --prefix apps/install-journey run preview --",
+    "test": "npm run test:decisions && npm run test:journey && vitest run",
+    "test:decisions": "npm --prefix apps/install-decisions test",
+    "test:journey": "npm --prefix apps/install-journey test",
+    "typecheck": "tsc --noEmit && npm --prefix apps/install-decisions run typecheck && npm --prefix apps/install-journey run typecheck",
     "lint": "biome check .",
-    "check": "npm run typecheck && npm run lint && npm test"
+    "check": "npm run typecheck && npm run lint && npm test",
+    "check:decisions": "npm --prefix apps/install-decisions run check",
+    "check:journey": "npm --prefix apps/install-journey run check"
   },
   "dependencies": {
     "react": "^19.1.1",
