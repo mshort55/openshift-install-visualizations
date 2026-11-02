@@ -77,7 +77,7 @@ export const stages: JourneyStage[] = [
     topics: ["completion"],
     summaries: {
       process:
-        "Confirm installation completes, verify nodes and Operators, and record remaining workload setup.",
+        "Confirm installation completes, verify nodes and core Cluster Operators, and record remaining Operator and workload setup.",
       problems:
         "An installed cluster can look finished while workload dependencies remain incomplete.",
       opportunities:

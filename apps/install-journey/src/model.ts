@@ -17,6 +17,13 @@ export interface ServiceFlow {
   applies: string;
 }
 
+/** A representative add-on selected for a workload or site requirement. */
+export interface OperatorExample {
+  need: string;
+  operators: string;
+  configuration: string;
+}
+
 /** A topic has one navigational parent in the installation journey. */
 export interface Topic {
   id: string;
@@ -36,6 +43,8 @@ export interface Topic {
   flow: FlowStep[];
   /** Optional service dependencies displayed in the process perspective. */
   serviceFlows?: ServiceFlow[];
+  /** Optional examples shown before the installation process and included in search. */
+  operatorExamples?: OperatorExample[];
 }
 
 export interface Problem {

@@ -256,6 +256,14 @@ describe("shareable navigation and discovery", () => {
         (result) => result.route.topic === "service-access",
       ),
     ).toBe(true);
+    for (const query of ["MetalLB", "compliance checks", "backup credentials"])
+      expect(
+        searchJourney(query).some(
+          (result) =>
+            result.route.topic === "platform-operators" &&
+            result.route.lens === "process",
+        ),
+      ).toBe(true);
     for (const result of searchJourney("storage"))
       expect(parseRoute(routeHref(result.route))).toEqual(result.route);
   });

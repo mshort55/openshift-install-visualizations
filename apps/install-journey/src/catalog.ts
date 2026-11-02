@@ -158,6 +158,9 @@ export function searchJourney(query: string): SearchResult[] {
               flow.applies,
             ].join(" "),
           ),
+          ...(topic.operatorExamples ?? []).map((example) =>
+            [example.need, example.operators, example.configuration].join(" "),
+          ),
         ].join(" "),
         context:
           ancestorsOf(topic.id)

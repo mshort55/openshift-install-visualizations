@@ -968,6 +968,44 @@ function Context({ topic }: { topic: Topic }) {
 function Process({ topic, navigate }: { topic: Topic; navigate: Navigate }) {
   return (
     <div className="process-content">
+      {topic.operatorExamples && (
+        <section className="operator-examples">
+          <div className="subheading">
+            <h2>Examples by customer need</h2>
+          </div>
+          <p>
+            Select additions for your workload and site requirements. Core
+            Cluster Operators already provide basic networking and platform
+            monitoring. Check which add-ons your installer supplied.
+          </p>
+          <section
+            className="operator-examples-table"
+            aria-label="Example Operators and configuration"
+            // biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users must be able to scroll the wide Operator table.
+            tabIndex={0}
+          >
+            <table>
+              <caption>Representative customer-installed Operators</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Customer need</th>
+                  <th scope="col">Example Operators</th>
+                  <th scope="col">Configuration still needed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topic.operatorExamples.map((example) => (
+                  <tr key={example.need}>
+                    <th scope="row">{example.need}</th>
+                    <td>{example.operators}</td>
+                    <td>{example.configuration}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        </section>
+      )}
       <section className="flow-section">
         <div className="subheading">
           <h2>

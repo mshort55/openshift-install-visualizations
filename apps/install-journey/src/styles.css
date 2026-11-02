@@ -531,14 +531,16 @@ button {
   line-height: 1.8;
   max-width: 620px;
 }
-.service-flow-table {
+.service-flow-table,
+.operator-examples-table {
   margin-top: 20px;
   max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: 9px;
 }
-.service-flow-table table {
+.service-flow-table table,
+.operator-examples-table table {
   width: 100%;
   min-width: 560px;
   border-collapse: collapse;
@@ -546,18 +548,22 @@ button {
   font-size: 13px;
   text-align: left;
 }
-.service-flow-table caption {
+.service-flow-table caption,
+.operator-examples-table caption {
   padding: 14px;
   font-weight: 700;
   text-align: left;
 }
 .service-flow-table th,
-.service-flow-table td {
+.service-flow-table td,
+.operator-examples-table th,
+.operator-examples-table td {
   padding: 12px 14px;
   border-top: 1px solid var(--line);
   vertical-align: top;
 }
-.service-flow-table thead {
+.service-flow-table thead,
+.operator-examples-table thead {
   background: var(--phase-soft);
 }
 .service-flow-table tbody th {
@@ -565,6 +571,17 @@ button {
 }
 .service-flow-table td p {
   margin-top: 6px;
+}
+.operator-examples > p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #596677;
+}
+.operator-examples-table tbody th {
+  width: 20%;
+}
+.operator-examples-table td:nth-child(2) {
+  width: 30%;
 }
 .context-column,
 .record-aside {

@@ -1218,13 +1218,13 @@ export const topics: Topic[] = [
     phase: "installation",
     title: "Verify the base cluster",
     summary:
-      "Confirm installation completion, check cluster health, and record remaining setup tasks.",
+      "Confirm the base cluster is installed and healthy, then carry remaining Operator installation, service configuration and workload checks into post-installation.",
     question: "What does “installed” establish?",
     outcome:
       "Installation completion, expected hosts, core services and access are checked.",
     owners: "Installation owner + receiving platform team",
     scope:
-      "Installation completion establishes the base-cluster milestone. Application storage, identity integration, workload setup, and acceptance checks may still remain.",
+      "Cluster installation establishes the base platform. Next, install any missing Operators, configure their services, and verify readiness with representative workloads.",
     flow: [
       {
         title: "Confirm installation completion",
@@ -1241,7 +1241,7 @@ export const topics: Topic[] = [
       {
         title: "Hand over credentials and remaining tasks",
         detail:
-          "Securely transfer access from the generated auth files. Identify any deferred external DNS and client-access checks, along with remaining storage, network, identity, workload and acceptance work.",
+          "Securely transfer access from the generated auth files. Record remaining Operator installation and configuration, deferred external DNS and client-access checks, and storage, network, identity, workload and acceptance work.",
       },
     ],
   },
@@ -1251,14 +1251,59 @@ export const topics: Topic[] = [
     phase: "post-installation",
     title: "Install and configure required Operators",
     summary:
-      "Install missing platform components and configure the services they manage.",
+      "Build on the installed cluster with the Operators and services your workloads need. Install missing components, configure their services, and verify readiness.",
     question: "Which additional components does the intended workload require?",
     outcome:
       "Required Operators and their managed services report ready, with versions and update policies recorded.",
     owners:
       "Platform team and storage, network, virtualization, or other component owners.",
     scope:
-      "Check the actual cluster before installing components. OpenShift Virtualization, specialized networking, and other additions depend on workload requirements.",
+      "Check the actual cluster before installing components; some installation methods already supply selected add-ons. Choose additional Operators according to workload and site requirements, including the selected storage provider.",
+    operatorExamples: [
+      {
+        need: "Persistent storage",
+        operators:
+          "OpenShift Data Foundation; Local Storage for a local-disk deployment",
+        configuration:
+          "Select disks, configure the storage system and storage classes, and verify volume provisioning. Components depend on your storage provider.",
+      },
+      {
+        need: "Host networking and service exposure",
+        operators: "Kubernetes NMState; MetalLB",
+        configuration:
+          "Use NMState to configure node interfaces, or MetalLB to configure address pools and advertisements for LoadBalancer services on bare metal.",
+      },
+      {
+        need: "Virtual machines",
+        operators: "OpenShift Virtualization",
+        configuration:
+          "Create the HyperConverged resource, verify readiness, and prepare VM storage and networking.",
+      },
+      {
+        need: "Centralized logging",
+        operators: "OpenShift Logging; optionally Loki",
+        configuration:
+          "Configure log collection and forwarding to an external destination or a LokiStack, with retention and reader access.",
+      },
+      {
+        need: "Application backup and restore",
+        operators: "OpenShift API for Data Protection (OADP)",
+        configuration:
+          "Configure backup storage, credentials and schedules, then verify application restoration. Prepare cluster-state recovery separately.",
+      },
+      {
+        need: "Application delivery",
+        operators: "OpenShift GitOps; OpenShift Pipelines",
+        configuration:
+          "Connect repositories and configure deployments with GitOps or build and delivery workflows with Pipelines, as required.",
+      },
+      {
+        need: "Compliance checks",
+        operators: "Compliance Operator",
+        configuration:
+          "Select profiles, configure scans, and review findings and remediation for the site's requirements.",
+      },
+    ],
     flow: [
       {
         title: "Identify missing components",
@@ -1268,7 +1313,7 @@ export const topics: Topic[] = [
       {
         title: "Install and configure",
         detail:
-          "Install the required Operators and create their configuration resources. Record selected versions and update policies. For OpenShift Virtualization, install the Operator and create its HyperConverged resource.",
+          "Install the required Operators and create or adjust their configuration resources. Record selected versions and update policies. For OpenShift Virtualization, install the Operator and create its HyperConverged resource.",
       },
       {
         title: "Verify the managed service",
