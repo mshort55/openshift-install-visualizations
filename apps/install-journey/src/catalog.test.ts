@@ -200,6 +200,30 @@ describe("shareable navigation and discovery", () => {
       topic: "dns",
       lens: "process",
     });
+    expect(parseRoute("#/storage-behavior")).toEqual({
+      topic: "storage-drivers",
+      lens: "process",
+    });
+    expect(
+      parseRoute("#/storage-behavior?view=problems&item=readiness-unproven"),
+    ).toEqual({
+      topic: "storage-drivers",
+      lens: "problems",
+      item: "readiness-unproven",
+    });
+    expect(
+      parseRoute(
+        "#/storage-behavior?view=opportunities&item=confidence-rehearsal",
+      ),
+    ).toEqual({
+      topic: "storage-drivers",
+      lens: "opportunities",
+      item: "confidence-rehearsal",
+    });
+    expect(parseRoute("#/preboot-readiness")).toEqual({
+      topic: "media",
+      lens: "process",
+    });
     expect(parseRoute("#/pre-installation?tour=0")).toEqual({
       topic: "pre-installation",
       lens: "process",
@@ -216,12 +240,22 @@ describe("shareable navigation and discovery", () => {
       ),
     ).toBe(true);
     expect(
-      searchJourney("dns workstation").some(
+      searchJourney("deferred dns").some(
         (result) => result.route.topic === "dns",
       ),
     ).toBe(true);
     expect(searchJourney("     ")).toEqual([]);
     expect(searchJourney("not-a-topic-in-this-corpus")).toEqual([]);
+    expect(
+      searchJourney("registry redirects").some(
+        (result) => result.route.topic === "service-access",
+      ),
+    ).toBe(true);
+    expect(
+      searchJourney("tang remote storage").some(
+        (result) => result.route.topic === "service-access",
+      ),
+    ).toBe(true);
     for (const result of searchJourney("storage"))
       expect(parseRoute(routeHref(result.route))).toEqual(result.route);
   });

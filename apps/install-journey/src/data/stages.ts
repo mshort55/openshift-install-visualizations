@@ -15,10 +15,10 @@ export const stages: JourneyStage[] = [
     id: "choose-approach",
     phase: "pre-installation",
     title: "Plan the deployment",
-    topics: ["approach", "hardware"],
+    topics: ["approach", "topology", "hardware", "security"],
     summaries: {
       process:
-        "Choose the cluster layout and confirm hardware and workload requirements.",
+        "Choose the release and layout; confirm hardware, workload and security requirements.",
       problems:
         "Fixed site constraints and uncertain hardware fit make the starting path hard to choose.",
       opportunities:
@@ -32,13 +32,13 @@ export const stages: JourneyStage[] = [
     topics: ["networking", "content"],
     summaries: {
       process:
-        "Prepare site services, configuration, image access, and boot media.",
+        "Choose network and image-access responsibilities, prepare services and media, and review readiness for boot.",
       problems:
         "Network assumptions, restricted content and physical handoffs can leave prerequisites unfinished.",
       opportunities:
         "Translate site requirements into clear requests and guide content and boot preparation.",
     },
-    note: "Work can run in parallel across infrastructure, network and platform teams.",
+    note: "Teams can prepare services in parallel. Distinguish agreed settings, prepared services and checks verified from the booted hosts.",
   },
   {
     id: "install-hosts",
@@ -47,12 +47,13 @@ export const stages: JourneyStage[] = [
     topics: ["hosts"],
     summaries: {
       process:
-        "Boot the installation media and follow host discovery, validation, and installation.",
+        "Boot the installation media, resolve validation failures, and monitor host installation.",
       problems:
         "Unclear host progress and limited observation of physical execution make diagnosis difficult.",
       opportunities:
         "Observe real physical installations and connect each host’s state to a useful next action.",
     },
+    note: "Host installation and bootstrap overlap.",
   },
   {
     id: "bootstrap-cluster",
@@ -61,7 +62,7 @@ export const stages: JourneyStage[] = [
     topics: ["bootstrap", "progress", "recovery"],
     summaries: {
       process:
-        "Follow the rendezvous host through bootstrap, monitor installation, and diagnose blocked progress.",
+        "Monitor bootstrap and installation completion; collect diagnostics and correct failures.",
       problems:
         "Quiet intervals, late dependency failures and repeated setup obscure the path forward.",
       opportunities:
@@ -76,7 +77,7 @@ export const stages: JourneyStage[] = [
     topics: ["completion"],
     summaries: {
       process:
-        "Verify installation completion, cluster health, and the remaining workload tasks.",
+        "Confirm installation completes, verify nodes and Operators, and record remaining workload setup.",
       problems:
         "An installed cluster can look finished while workload dependencies remain incomplete.",
       opportunities:
@@ -86,26 +87,33 @@ export const stages: JourneyStage[] = [
   {
     id: "enable-dependencies",
     phase: "post-installation",
-    title: "Configure workload dependencies",
-    topics: ["storage", "workload-network", "access"],
+    title: "Configure platform services",
+    topics: [
+      "platform-operators",
+      "storage",
+      "workload-network",
+      "image-access",
+      "access",
+      "observability",
+    ],
     summaries: {
       process:
-        "Connect storage, workload networking and access to the operations users need to perform.",
+        "Install and configure the components required for the intended workloads.",
       problems:
         "Storage, network attachments and permissions can remain unusable after the console is available.",
       opportunities:
         "Guide setup through a representative workload operation and verify effective access.",
     },
-    note: "Storage, networking and access can be prepared together; the workload needs them to work together.",
+    note: "Tasks can run in parallel where their dependencies allow. Select additional components according to workload and site requirements.",
   },
   {
     id: "first-workload",
     phase: "post-installation",
-    title: "Run the first useful workload",
+    title: "Prove workload readiness",
     topics: ["workloads"],
     summaries: {
       process:
-        "Complete the workload’s dependencies and demonstrate its first useful task.",
+        "Test deployment, storage, networking, access, and required maintenance behavior with representative workloads.",
       problems:
         "Missing components can stall the intended workload after base installation succeeds.",
       opportunities:
@@ -115,16 +123,16 @@ export const stages: JourneyStage[] = [
   {
     id: "handover-operations",
     phase: "post-installation",
-    title: "Demonstrate readiness and hand over",
-    topics: ["acceptance", "operations"],
+    title: "Hand over to application teams",
+    topics: ["operations", "acceptance"],
     summaries: {
       process:
-        "Test required behavior, transfer operating knowledge and plan for change and recovery.",
+        "Prepare update, recovery and support procedures. Review workload results and give application teams operating instructions and request procedures.",
       problems:
         "Recovery, add-on compatibility and operating knowledge can remain unresolved after first use.",
       opportunities:
-        "Rehearse readiness, diagnosis and recovery with the team that will operate the environment.",
+        "Link workload and restore results to known restrictions, operating instructions and named support contacts.",
     },
-    note: "Operations continue beyond installation, including updates, content refresh and recovery.",
+    note: "Complete operational preparation before handover. The platform team retains cluster operations after application teams receive access.",
   },
 ];

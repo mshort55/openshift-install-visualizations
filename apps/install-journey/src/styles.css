@@ -411,19 +411,6 @@ button {
     transform: translateY(0);
   }
 }
-.phase-number {
-  display: inline-grid;
-  place-items: center;
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
-  background: var(--phase-soft);
-  color: var(--phase);
-  font-size: 10px;
-  font-weight: 700;
-  border: 1px solid var(--phase-line);
-  letter-spacing: 0;
-}
 .site-footer {
   max-width: 1328px;
   margin: 0 auto;
@@ -543,6 +530,41 @@ button {
   font-size: 14px;
   line-height: 1.8;
   max-width: 620px;
+}
+.service-flow-table {
+  margin-top: 20px;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.service-flow-table table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  background: var(--surface);
+  font-size: 13px;
+  text-align: left;
+}
+.service-flow-table caption {
+  padding: 14px;
+  font-weight: 700;
+  text-align: left;
+}
+.service-flow-table th,
+.service-flow-table td {
+  padding: 12px 14px;
+  border-top: 1px solid var(--line);
+  vertical-align: top;
+}
+.service-flow-table thead {
+  background: var(--phase-soft);
+}
+.service-flow-table tbody th {
+  width: 27%;
+}
+.service-flow-table td p {
+  margin-top: 6px;
 }
 .context-column,
 .record-aside {
@@ -1272,11 +1294,6 @@ button {
   .perspective-panel {
     padding-top: 23px;
   }
-  .phase-number {
-    width: 23px;
-    height: 23px;
-    font-size: 10px;
-  }
   .site-footer {
     padding: 21px 18px;
     flex-direction: column;
@@ -1489,31 +1506,6 @@ button {
   background: #f7f8fa;
   box-shadow: 0 5px 8px -7px #7b899d;
 }
-.timeline-phase-nav {
-  display: flex;
-  gap: 8px;
-  padding: 12px 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-.timeline-phase-nav > a {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 9px 15px;
-  border-radius: 6px;
-  color: #576477;
-  font-size: 12px;
-  font-weight: 600;
-}
-.timeline-phase-nav > a:hover,
-.timeline-phase-nav > .selected-phase {
-  color: var(--phase, #385e8a);
-  background: var(--phase-soft, #eaf0f7);
-}
-.timeline-phase-nav .timeline-all {
-  margin-right: auto;
-}
 .timeline-controls .perspectives {
   padding: 0 4px;
 }
@@ -1621,7 +1613,7 @@ button {
 .timeline-phase-heading h2 {
   font-size: 24px;
   letter-spacing: -0.6px;
-  scroll-margin-top: 150px;
+  scroll-margin-top: 90px;
 }
 .timeline-phase-heading .eyebrow {
   color: var(--phase);
@@ -1690,7 +1682,7 @@ button {
   padding: 23px 24px;
   text-align: left;
   border-radius: 9px;
-  scroll-margin-top: 150px;
+  scroll-margin-top: 90px;
 }
 .stage-toggle:hover {
   background: #fafbfc;
@@ -1767,7 +1759,7 @@ button {
   gap: 12px;
   padding: 17px 8px;
   text-align: left;
-  scroll-margin-top: 150px;
+  scroll-margin-top: 90px;
 }
 .step-toggle:hover,
 .step-open > .step-heading > h4 > .step-toggle {
@@ -1858,7 +1850,7 @@ button {
   border-radius: 7px;
   background: #fff;
   text-align: left;
-  scroll-margin-top: 150px;
+  scroll-margin-top: 90px;
 }
 .method-option:hover,
 .method-option[aria-pressed="true"] {
@@ -1936,7 +1928,7 @@ button {
   margin-top: 16px;
 }
 .inline-record {
-  scroll-margin-top: 150px;
+  scroll-margin-top: 90px;
 }
 .inline-record > h5 {
   font-family: "Manrope", sans-serif;
@@ -1964,10 +1956,6 @@ button {
   .timeline-controls .perspective-hint {
     display: none;
   }
-  .timeline-phase-nav > a {
-    padding: 9px 8px;
-    font-size: 11px;
-  }
   .inline-record .detail-layout {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1990,23 +1978,6 @@ button {
   .timeline-hero > p {
     font-size: 12px;
     line-height: 1.8;
-  }
-  .timeline-phase-nav {
-    gap: 3px;
-  }
-  .timeline-phase-nav > a {
-    padding: 8px 5px;
-    flex: 1;
-    justify-content: center;
-    gap: 4px;
-    font-size: 10px;
-  }
-  .timeline-phase-nav .timeline-all {
-    flex: 0;
-  }
-  .timeline-all > span,
-  .timeline-phase-nav .phase-number {
-    display: none;
   }
   .timeline-controls .tabs {
     width: 100%;

@@ -34,7 +34,7 @@ const phaseNames = ["Pre-installation", "Installation", "Post-installation"];
 const phaseOutcomes = [
   "Ready to begin",
   "Base cluster installed",
-  "Workload usable & readiness demonstrated",
+  "Platform tested & team access verified",
 ];
 const methodIds = new Set(childrenOf("approach").map((topic) => topic.id));
 
@@ -312,12 +312,13 @@ function About({ onClose }: { onClose: () => void }) {
         <span className="eyebrow">An explorer for Red Hat engineers</span>
         <h3>See the work through the customer’s eyes.</h3>
         <p>
-          How it works follows the OCP 4.22 Agent-based Installer on bare metal,
-          using the local CLI workflow as the main path. Open variations for
-          other boot options and installation without an external registry.
-          Follow the timeline, then open a stage and step to reveal more detail.
-          Switch perspectives to explore the same step’s problems and possible
-          improvements.
+          Explore the shared decisions and tasks involved in installing OCP 4.22
+          on bare metal. Detailed installation examples follow the local
+          Agent-based Installer CLI workflow, with method-specific behavior
+          identified where it matters. Open variations for other boot options
+          and installation without an external registry. Follow the timeline,
+          then open a stage and step to reveal more detail. Switch perspectives
+          to explore the same step’s problems and possible improvements.
         </p>
         <div className="about-lenses">
           {lenses.map((lens, i) => (
@@ -419,35 +420,6 @@ function LensTabs({ route, navigate }: { route: Route; navigate: Navigate }) {
           : "Reports retain their original method and context."}
       </span>
     </div>
-  );
-}
-
-function PhaseStrip({ route, navigate }: { route: Route; navigate: Navigate }) {
-  const phase = topicById.get(route.topic)?.phase;
-  return (
-    <nav className="timeline-phase-nav" aria-label="Installation phases">
-      <JourneyLink
-        to={{ topic: "journey", lens: route.lens }}
-        navigate={navigate}
-        className="timeline-all"
-        label="Full journey"
-      >
-        <Icon name="map" size={17} />
-        <span>Full journey</span>
-      </JourneyLink>
-      {phaseIds.map((id, index) => (
-        <JourneyLink
-          key={id}
-          to={{ topic: id, lens: route.lens }}
-          navigate={navigate}
-          className={`phase-${index} ${phase === id ? "selected-phase" : ""}`}
-        >
-          <span className="phase-number">0{index + 1}</span>
-          <span>{phaseNames[index]}</span>
-          {phase === id && <span className="sr-only"> — current phase</span>}
-        </JourneyLink>
-      ))}
-    </nav>
   );
 }
 
@@ -576,9 +548,7 @@ function TimelineStep({
   const nestedSteps = children.length > 0 && topic.id !== "approach" && (
     <div className="nested-steps">
       <p className="eyebrow">
-        {isGroup
-          ? "Explore the steps in this area"
-          : "Optional details and variations"}
+        {isGroup ? "Explore the steps in this area" : "Details and variations"}
       </p>
       <ol>
         {children.map((child, index) => (
@@ -808,7 +778,7 @@ function Timeline({
                       ? "Prepare"
                       : phaseIndex === 1
                         ? "Create"
-                        : "Enable & operate"}
+                        : "Validate & hand over"}
                   </span>
                   <h2 id={`phase-${phaseId}`} tabIndex={-1}>
                     {phaseNames[phaseIndex]}
@@ -1028,6 +998,42 @@ function Process({ topic, navigate }: { topic: Topic; navigate: Navigate }) {
           ))}
         </ol>
       </section>
+      {topic.serviceFlows && (
+        <section
+          className="service-flow-table"
+          aria-label="Service access dependencies"
+          // biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users must be able to scroll the wide dependency table.
+          tabIndex={0}
+        >
+          <table>
+            <caption>Service paths to review with their owners</caption>
+            <thead>
+              <tr>
+                <th scope="col">Source → destination</th>
+                <th scope="col">Connection and purpose</th>
+                <th scope="col">Applies when · owner</th>
+              </tr>
+            </thead>
+            <tbody>
+              {topic.serviceFlows.map((flow) => (
+                <tr key={`${flow.source}-${flow.destination}`}>
+                  <th scope="row">
+                    {flow.source} → {flow.destination}
+                  </th>
+                  <td>
+                    <strong>{flow.protocol}</strong>
+                    <p>{flow.purpose}</p>
+                  </td>
+                  <td>
+                    {flow.applies}
+                    <p>Owner: {flow.owner}</p>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
       <div className="next-perspective">
         <div>
           <Icon name="warning" size={18} />
@@ -1473,12 +1479,11 @@ export function App() {
           </h1>
           <p>
             Follow a customer from planning to useful workloads and operational
-            handover. This journey uses the local Agent-based Installer workflow
-            on bare metal. Expand a step for details and supported variations.
+            handover on bare metal. Expand a step for decisions, prerequisites,
+            and details for the applicable installation method.
           </p>
         </section>
         <div className="timeline-controls">
-          <PhaseStrip route={route} navigate={navigate} />
           <LensTabs route={route} navigate={navigate} />
         </div>
         <div

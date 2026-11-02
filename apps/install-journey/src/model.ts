@@ -7,6 +7,16 @@ export interface FlowStep {
   command?: string;
 }
 
+/** A service dependency for preparation planning, not a complete firewall rule. */
+export interface ServiceFlow {
+  source: string;
+  destination: string;
+  protocol: string;
+  purpose: string;
+  owner: string;
+  applies: string;
+}
+
 /** A topic has one navigational parent in the installation journey. */
 export interface Topic {
   id: string;
@@ -24,6 +34,8 @@ export interface Topic {
   scope: string;
   /** Empty for groups whose process is explained by their child tasks. */
   flow: FlowStep[];
+  /** Optional service dependencies displayed in the process perspective. */
+  serviceFlows?: ServiceFlow[];
 }
 
 export interface Problem {

@@ -186,7 +186,7 @@ export const problems: Problem[] = [
   },
   {
     id: "storage-behavior-gap",
-    topics: ["storage-behavior", "storage-drivers"],
+    topics: ["storage-drivers"],
     title: "A storage example does not support the intended operation",
     summary:
       "A configuration that looks valid can fail the customer’s migration requirement.",
@@ -233,7 +233,7 @@ export const problems: Problem[] = [
   },
   {
     id: "readiness-unproven",
-    topics: ["acceptance", "storage-behavior", "backups"],
+    topics: ["acceptance", "storage-drivers", "backups"],
     title: "A running workload leaves recovery and continuity unproven",
     summary:
       "Customers need evidence of behavior under failure and maintenance before relying on it.",
@@ -457,12 +457,7 @@ export const opportunities: Opportunity[] = [
   },
   {
     id: "storage-outcome",
-    topics: [
-      "storage",
-      "storage-drivers",
-      "storage-behavior",
-      "physical-storage",
-    ],
+    topics: ["storage", "storage-drivers", "physical-storage"],
     title: "Guide storage setup by the operation it must support",
     summary:
       "Connect the physical system, driver, configuration and representative workload behavior.",
@@ -494,7 +489,7 @@ export const opportunities: Opportunity[] = [
   },
   {
     id: "confidence-rehearsal",
-    topics: ["acceptance", "backups", "storage-behavior"],
+    topics: ["acceptance", "backups", "storage-drivers"],
     title: "Demonstrate customer-specific readiness",
     summary:
       "Replace assumed readiness with evidence from the customer’s required behavior.",

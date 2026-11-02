@@ -92,7 +92,13 @@ export function routeHref(route: Route): string {
 export function parseRoute(hash: string): Route {
   const [path, query] = hash.replace(/^#\/?/, "").split("?");
   const topicId =
-    path === "managed-dns" || path === "dns-consumers" ? "dns" : path;
+    path === "managed-dns" || path === "dns-consumers"
+      ? "dns"
+      : path === "preboot-readiness"
+        ? "media"
+        : path === "storage-behavior"
+          ? "storage-drivers"
+          : path;
   const topic = topicId && topicById.has(topicId) ? topicId : "journey";
   const params = new URLSearchParams(query);
   const value = params.get("view");
@@ -141,6 +147,16 @@ export function searchJourney(query: string): SearchResult[] {
           topic.scope,
           ...topic.flow.map(
             (step) => `${step.title} ${step.detail} ${step.command ?? ""}`,
+          ),
+          ...(topic.serviceFlows ?? []).map((flow) =>
+            [
+              flow.source,
+              flow.destination,
+              flow.protocol,
+              flow.purpose,
+              flow.owner,
+              flow.applies,
+            ].join(" "),
           ),
         ].join(" "),
         context:
