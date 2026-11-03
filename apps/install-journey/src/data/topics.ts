@@ -1078,6 +1078,13 @@ export const topics: Topic[] = [
   },
   {
     id: "hosts",
+    notes: [
+      {
+        title: "Research coverage: physical execution",
+        detail:
+          "Reported accounts cover physical preparation, management connectivity and failed-run cleanup. Direct observation of firmware, boot delivery, bootstrap transitions and recovery decisions is still needed on current workflows. This research gap is not a customer incident.",
+      },
+    ],
     parent: "installation",
     phase: "installation",
     title: "Boot and install the hosts",
@@ -1247,6 +1254,13 @@ export const topics: Topic[] = [
   },
   {
     id: "platform-operators",
+    notes: [
+      {
+        title: "Carry the remaining configuration forward",
+        detail:
+          "Record the required identity, certificates, platform services and workload settings, with an owner and a verification step for each. Reuse the team's automation where it already supplies these settings. A healthy base cluster, a configured platform and an accepted workload are separate milestones.",
+      },
+    ],
     parent: "post-installation",
     phase: "post-installation",
     title: "Install and configure required Operators",
@@ -1606,6 +1620,13 @@ export const topics: Topic[] = [
   },
   {
     id: "upgrades",
+    notes: [
+      {
+        title: "Reported lifecycle context",
+        detail:
+          "Accounts describe additional migration, compatibility checks or revalidation around storage, networking and third-party Operators. Other accounts describe smooth core upgrades. These are later-operation experiences unless a dependency blocks the agreed initial platform configuration; they are not counted as installation problems here.",
+      },
+    ],
     parent: "operations",
     phase: "post-installation",
     title: "Plan platform and Operator updates",
@@ -1638,6 +1659,13 @@ export const topics: Topic[] = [
   },
   {
     id: "backups",
+    notes: [
+      {
+        title: "Acceptance requirement: recover credentials and secrets",
+        detail:
+          "A configuration repository alone does not establish that the environment can be recovered. Agree how required secrets, keys and external credentials will be retained or restored, who can access them and how the chosen recovery scenario will verify them. An unresolved recovery requirement is not evidence of an observed failed restore.",
+      },
+    ],
     parent: "operations",
     phase: "post-installation",
     title: "Configure backups and verify recovery",
@@ -1670,7 +1698,7 @@ export const topics: Topic[] = [
       {
         title: "Test a representative restore",
         detail:
-          "Restore a representative workload and verify its data and required connections. Measure recovery time and record results and restrictions.",
+          "Restore a representative workload and verify its data, required credentials and connections. Measure recovery time and record results and restrictions. Record separately which cluster-reconstruction or external-service recovery steps remain untested.",
       },
     ],
   },
@@ -1704,6 +1732,18 @@ export const topics: Topic[] = [
   },
   {
     id: "acceptance",
+    notes: [
+      {
+        title: "Acceptance requirement: demonstrate the agreed behavior",
+        detail:
+          "A running first workload proves only the checks performed. Agree which maintenance, migration, failure, offline-continuity and recovery scenarios matter for this deployment. Record each result, limitation and owner. Existing rehearsals, planned tests and unresolved requirements must remain distinct; none alone establishes an outage.",
+      },
+      {
+        title: "Research question: operating knowledge at handover",
+        detail:
+          "Existing learning and support accounts identify a need to check the receiving team's skills and instructions. They do not establish a failed initial handover. Observe a representative diagnostic task and determine whether any obstacle is missing knowledge, access, documentation or tool navigation.",
+      },
+    ],
     parent: "post-installation",
     phase: "post-installation",
     title: "Review readiness and hand over to application teams",
@@ -1721,7 +1761,7 @@ export const topics: Topic[] = [
       {
         title: "Review results and restrictions",
         detail:
-          "Link the earlier workload validation results. Identify failed or untested requirements, their impact on the intended workloads, and the owners responsible for resolving them.",
+          "Link the earlier workload validation and agreed maintenance or recovery results. Identify failed or untested requirements, their impact on the intended workloads, and the owners responsible for resolving them. Include secret restoration and offline continuity where the agreed recovery scenario requires them.",
       },
       {
         title: "Provide the team's operating information",

@@ -75,21 +75,37 @@ describe("journey content integrity", () => {
     expect(new Set(opportunities.map((idea) => idea.id)).size).toBe(
       opportunities.length,
     );
-    for (const record of [...problems, ...opportunities]) {
-      expect(record.topics.length).toBeGreaterThan(0);
-      for (const topic of record.topics) expect(topicIds.has(topic)).toBe(true);
-    }
     for (const problem of problems) {
+      expect(stageForTopic(problem.topic), problem.id).toBeDefined();
+      expect(
+        topics.find((topic) => topic.id === problem.topic)?.parent,
+      ).not.toBe("approach");
+      for (const topic of [problem.topic, ...problem.relatedTopics])
+        expect(topicIds.has(topic), problem.id).toBe(true);
+      expect(new Set([problem.topic, ...problem.relatedTopics]).size).toBe(
+        problem.relatedTopics.length + 1,
+      );
       expect(problem.limit.length).toBeGreaterThan(30);
       expect(problem.context.length).toBeGreaterThan(10);
+      expect(problem.outcome.length).toBeGreaterThan(30);
       expect(
-        opportunities.some((idea) => idea.problems.includes(problem.id)),
+        opportunities.some((idea) =>
+          idea.basis.some(
+            (basis) => basis.kind === "problem" && basis.id === problem.id,
+          ),
+        ),
       ).toBe(true);
     }
     for (const opportunity of opportunities) {
-      expect(opportunity.problems.length).toBeGreaterThan(0);
-      for (const problem of opportunity.problems)
-        expect(problemIds.has(problem)).toBe(true);
+      expect(opportunity.topics.length).toBeGreaterThan(0);
+      for (const topic of opportunity.topics)
+        expect(topicIds.has(topic)).toBe(true);
+      expect(opportunity.basis.length).toBeGreaterThan(0);
+      for (const basis of opportunity.basis)
+        expect(
+          (basis.kind === "problem" ? problemIds : topicIds).has(basis.id),
+          opportunity.id,
+        ).toBe(true);
       expect(opportunity.existing.length).toBeGreaterThan(30);
       expect(opportunity.investigate.length).toBeGreaterThan(30);
     }
@@ -153,7 +169,7 @@ describe("shareable navigation and discovery", () => {
     }
     for (const record of problems) {
       const route = {
-        topic: record.topics[0] ?? "journey",
+        topic: record.topic,
         lens: "problems" as const,
         item: record.id,
       };
@@ -176,7 +192,7 @@ describe("shareable navigation and discovery", () => {
         lens: "process",
       });
       expect(parseRoute(`#/${topic}?view=problems&item=owner-wait`)).toEqual({
-        topic: "dns",
+        topic: "networking",
         lens: "problems",
         item: "owner-wait",
       });
@@ -207,9 +223,8 @@ describe("shareable navigation and discovery", () => {
     expect(
       parseRoute("#/storage-behavior?view=problems&item=readiness-unproven"),
     ).toEqual({
-      topic: "storage-drivers",
-      lens: "problems",
-      item: "readiness-unproven",
+      topic: "acceptance",
+      lens: "process",
     });
     expect(
       parseRoute(
@@ -231,6 +246,60 @@ describe("shareable navigation and discovery", () => {
     expect(
       parseRoute("#/storage?view=opportunities&item=storage-outcome").item,
     ).toBe("storage-outcome");
+  });
+
+  test("related and phase links open the problem at its main step", () => {
+    for (const problem of problems) {
+      for (const topic of [
+        "journey",
+        problem.topic,
+        ...problem.relatedTopics,
+      ]) {
+        expect(
+          parseRoute(routeHref({ topic, lens: "problems", item: problem.id })),
+        ).toEqual({
+          topic: problem.topic,
+          lens: "problems",
+          item: problem.id,
+        });
+      }
+    }
+    expect(
+      problemsFor("platform-operators").map((problem) => problem.id),
+    ).toContain("missing-dependencies");
+  });
+
+  test("published links follow merged accounts and relocated guidance", () => {
+    expect(
+      parseRoute("#/storage-drivers?view=problems&item=storage-behavior-gap"),
+    ).toEqual({
+      topic: "storage-drivers",
+      lens: "problems",
+      item: "storage-not-usable",
+    });
+    for (const [item, topic] of [
+      ["readiness-unproven", "acceptance"],
+      ["secret-recovery", "backups"],
+      ["upgrade-dependencies", "upgrades"],
+      ["handover-knowledge", "acceptance"],
+      ["physical-evidence-gap", "hosts"],
+    ]) {
+      expect(parseRoute(`#/journey?view=problems&item=${item}`)).toEqual({
+        topic,
+        lens: "process",
+      });
+    }
+    expect(
+      searchJourney("secret restoration").some(
+        (result) =>
+          result.route.lens === "process" &&
+          result.route.topic === "acceptance",
+      ),
+    ).toBe(true);
+    const rehearsal = opportunities.find(
+      (idea) => idea.id === "confidence-rehearsal",
+    );
+    expect(rehearsal?.basis).toContainEqual({ kind: "task", id: "backups" });
   });
 
   test("search finds problem details and multiword concepts with working destinations", () => {

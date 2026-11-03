@@ -68,7 +68,9 @@ export function ancestorsOf(id: string): Topic[] {
 export function problemsFor(id: string) {
   const descendants = descendantsOf(id);
   return problems.filter((problem) =>
-    problem.topics.some((topic) => descendants.has(topic)),
+    [problem.topic, ...problem.relatedTopics].some((topic) =>
+      descendants.has(topic),
+    ),
   );
 }
 
@@ -87,6 +89,19 @@ export function routeHref(route: Route): string {
   if (route.stage) params.set("stage", route.stage);
   return `#/${route.topic}${params.size ? `?${params}` : ""}`;
 }
+
+// Published problem links follow the content when it is merged or moved into guidance.
+const retiredProblemRoutes = new Map<string, Route>([
+  [
+    "storage-behavior-gap",
+    { topic: "storage-drivers", lens: "problems", item: "storage-not-usable" },
+  ],
+  ["readiness-unproven", { topic: "acceptance", lens: "process" }],
+  ["secret-recovery", { topic: "backups", lens: "process" }],
+  ["upgrade-dependencies", { topic: "upgrades", lens: "process" }],
+  ["handover-knowledge", { topic: "acceptance", lens: "process" }],
+  ["physical-evidence-gap", { topic: "hosts", lens: "process" }],
+]);
 
 /** Invalid or out-of-scope items fall back to their topic rather than showing an unrelated record. */
 export function parseRoute(hash: string): Route {
@@ -110,12 +125,13 @@ export function parseRoute(hash: string): Route {
   );
   if (stage) route.stage = stage.id;
   const item = params.get("item");
-  const records =
-    lens === "problems"
-      ? problemsFor(topic)
-      : lens === "opportunities"
-        ? opportunitiesFor(topic)
-        : [];
+  if (lens === "problems" && item) {
+    const retired = retiredProblemRoutes.get(item);
+    if (retired) return { ...retired };
+    const problem = problemsFor(topic).find((problem) => problem.id === item);
+    if (problem) return { topic: problem.topic, lens, item };
+  }
+  const records = lens === "opportunities" ? opportunitiesFor(topic) : [];
   if (item && records.some((record) => record.id === item)) route.item = item;
   return route;
 }
@@ -148,6 +164,7 @@ export function searchJourney(query: string): SearchResult[] {
           ...topic.flow.map(
             (step) => `${step.title} ${step.detail} ${step.command ?? ""}`,
           ),
+          ...(topic.notes ?? []).map((note) => `${note.title} ${note.detail}`),
           ...(topic.serviceFlows ?? []).map((flow) =>
             [
               flow.source,
@@ -174,9 +191,9 @@ export function searchJourney(query: string): SearchResult[] {
       title: problem.title,
       summary: problem.summary,
       context: "Customer problem",
-      searchText: `${problem.evidence} ${problem.impact} ${problem.limit} ${problem.context}`,
+      searchText: `${problem.evidence} ${problem.impact} ${problem.outcome} ${problem.limit} ${problem.context}`,
       route: {
-        topic: problem.topics[0] ?? "journey",
+        topic: problem.topic,
         lens: "problems" as const,
         item: problem.id,
       },

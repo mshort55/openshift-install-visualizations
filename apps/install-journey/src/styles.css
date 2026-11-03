@@ -741,10 +741,14 @@ button {
   display: inline-flex;
   align-items: center;
 }
-.evidence-badge.gap {
-  background: #f1f3f7;
-  border-color: #e0e5ed;
-  color: #5e697b;
+.record-context {
+  font-size: 11px;
+  line-height: 1.6;
+}
+.process-notes {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 .opportunities .evidence-badge {
   background: #edf4f1;
@@ -1547,19 +1551,23 @@ button {
 .timeline-intro {
   padding: 0 0 32px 68px;
 }
-.timeline-intro-heading {
+.expansion-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  margin: 18px 0;
+  padding: 0;
+  border: 0;
 }
-.expand-all-button {
+.expansion-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   flex-shrink: 0;
-  padding: 7px 9px;
+  min-height: 38px;
+  padding: 8px 12px;
   border: 1px solid #d9e0e9;
   border-radius: 5px;
   background: #fff;
@@ -1569,9 +1577,18 @@ button {
   line-height: 1.4;
   white-space: nowrap;
 }
-.expand-all-button:hover {
+.expansion-button:hover {
   background: #edf3f9;
   border-color: #afc2d7;
+}
+.expansion-primary {
+  background: #345578;
+  border-color: #345578;
+  color: #fff;
+}
+.expansion-primary:hover {
+  background: #264564;
+  border-color: #264564;
 }
 .timeline-intro p {
   margin: 8px 0;
@@ -1645,9 +1662,6 @@ button {
   font-size: 11px;
   color: #606d7d;
 }
-.timeline-phase-heading > .expand-all-button {
-  margin-left: 8px;
-}
 .timeline-stage {
   position: relative;
   padding-left: 68px;
@@ -1683,9 +1697,6 @@ button {
 .step-heading > h4 {
   flex: 1;
   min-width: 0;
-}
-.stage-heading > .expand-all-button {
-  margin-right: 18px;
 }
 .stage-open .stage-card {
   border-color: var(--phase-line);
@@ -1781,10 +1792,6 @@ button {
 .step-toggle:hover,
 .step-open > .step-heading > h4 > .step-toggle {
   background: #f7f9fc;
-}
-.step-heading > .expand-all-button {
-  font-size: 10px;
-  padding: 6px 8px;
 }
 .step-number {
   color: #6a7585;
@@ -2018,15 +2025,12 @@ button {
   .timeline-intro {
     padding: 0 0 26px;
   }
-  .timeline-intro-heading {
-    align-items: flex-start;
+  .expansion-button {
+    flex: 1;
+    font-size: 11px;
   }
-  .timeline-intro-heading .eyebrow {
-    padding-top: 4px;
-  }
-  .expand-all-button {
-    font-size: 10px;
-    padding: 6px;
+  .expansion-primary {
+    flex-basis: 100%;
   }
   .timeline-intro p {
     font-size: 12px;
@@ -2060,9 +2064,6 @@ button {
     max-width: none;
     flex-basis: 100%;
   }
-  .timeline-phase-heading > .expand-all-button {
-    margin-left: auto;
-  }
   .timeline-stage {
     padding-left: 38px;
   }
@@ -2084,10 +2085,6 @@ button {
   .stage-heading > h3,
   .step-heading > h4 {
     flex-basis: 100%;
-  }
-  .stage-heading > .expand-all-button,
-  .step-heading > .expand-all-button {
-    margin: 0 12px 9px auto;
   }
   .stage-title {
     font-size: 13px;

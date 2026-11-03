@@ -20,7 +20,7 @@ export const stages: JourneyStage[] = [
       process:
         "Choose the release and layout; confirm hardware, workload and security requirements.",
       problems:
-        "Fixed site constraints and uncertain hardware fit make the starting path hard to choose.",
+        "Hardware and storage assumptions can block the intended workload; historical accounts also describe difficulty selecting an installation path.",
       opportunities:
         "Explain method responsibilities and check feasibility before committing to a design.",
     },
@@ -34,7 +34,7 @@ export const stages: JourneyStage[] = [
       process:
         "Choose network and image-access responsibilities, prepare services and media, and review readiness for boot.",
       problems:
-        "Network assumptions, restricted content and physical handoffs can leave prerequisites unfinished.",
+        "Team handoffs, connectivity corrections and mirrored-content preparation can delay a usable environment.",
       opportunities:
         "Translate site requirements into clear requests and guide content and boot preparation.",
     },
@@ -49,7 +49,7 @@ export const stages: JourneyStage[] = [
       process:
         "Boot the installation media, resolve validation failures, and monitor host installation.",
       problems:
-        "Unclear host progress and limited observation of physical execution make diagnosis difficult.",
+        "No separate problem account is assigned to host boot and discovery.",
       opportunities:
         "Observe real physical installations and connect each host’s state to a useful next action.",
     },
@@ -64,7 +64,7 @@ export const stages: JourneyStage[] = [
       process:
         "Monitor bootstrap and installation completion; collect diagnostics and correct failures.",
       problems:
-        "Quiet intervals, late dependency failures and repeated setup obscure the path forward.",
+        "Finding the failed component and choosing a cleanup or rerun can require work across resources and tools.",
       opportunities:
         "Explain progress, identify the owner of a failure and preserve context through retry.",
     },
@@ -79,7 +79,7 @@ export const stages: JourneyStage[] = [
       process:
         "Confirm installation completes, verify nodes and core Cluster Operators, and record remaining Operator and workload setup.",
       problems:
-        "An installed cluster can look finished while workload dependencies remain incomplete.",
+        "No separate problem account is assigned to base-cluster verification.",
       opportunities:
         "Carry the intended workload and its remaining tasks across the installation boundary.",
     },
@@ -100,7 +100,7 @@ export const stages: JourneyStage[] = [
       process:
         "Install and configure the components required for the intended workloads.",
       problems:
-        "Storage, network attachments and permissions can remain unusable after the console is available.",
+        "Reported accounts describe remaining platform, storage and VM-network configuration, plus difficulty understanding effective access.",
       opportunities:
         "Guide setup through a representative workload operation and verify effective access.",
     },
@@ -115,7 +115,7 @@ export const stages: JourneyStage[] = [
       process:
         "Test deployment, storage, networking, access, and required maintenance behavior with representative workloads.",
       problems:
-        "Missing components can stall the intended workload after base installation succeeds.",
+        "No separate problem account is assigned to workload validation.",
       opportunities:
         "Show and verify the remaining work between an installed cluster and a useful outcome.",
     },
@@ -129,7 +129,7 @@ export const stages: JourneyStage[] = [
       process:
         "Prepare update, recovery and support procedures. Review workload results and give application teams operating instructions and request procedures.",
       problems:
-        "Recovery, add-on compatibility and operating knowledge can remain unresolved after first use.",
+        "Acceptance requirements and lifecycle context are in How it works.",
       opportunities:
         "Link workload and restore results to known restrictions, operating instructions and named support contacts.",
     },

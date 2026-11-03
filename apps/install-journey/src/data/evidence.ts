@@ -2,295 +2,257 @@ import type { Opportunity, Problem } from "../model";
 
 export const problems: Problem[] = [
   {
-    id: "network-layers",
-    topics: ["networking", "addressing"],
-    title: "Physical and cluster networks get confused",
-    summary:
-      "Customers can apply familiar networking concepts at the wrong layer.",
-    context:
-      "2025–2026 accounts, including an existing VLAN and static-address environment.",
-    evidence:
-      "One account describes interpreting machine, pod and service network questions as physical switch/firewall work. Another describes difficulty mapping existing VLANs and static addresses to cluster workloads.",
-    impact:
-      "Unnecessary infrastructure work and difficulty establishing workload connectivity.",
-    limit:
-      "Different customer situations motivate a translation problem. They do not establish that static addressing requires one particular installer.",
-    kind: "Reported experience",
-  },
-  {
     id: "owner-wait",
-    topics: ["networking", "dns"],
-    title: "The installation owner cannot complete every prerequisite",
+    topic: "networking",
+    relatedTopics: ["dns", "hardware", "security"],
+    title: "Infrastructure preparation stalls across team handoffs",
     summary:
-      "Progress depends on specialists and approvals outside the installer.",
+      "The platform team waits for hardware, network access and corrected information before it can provision the cluster.",
     context:
-      "2026 accounts covering network-team dependencies and disconnected-environment planning.",
+      "2026 interviews · bare metal and vSphere · infrastructure preparation",
     evidence:
-      "One team depended on a busy network team. Another described separate cybersecurity approval and funding gates for proposed environments.",
+      "Teams described coordinating hardware, cabling, remote management, firewall rules, IP ranges and DNS with other owners. One account described repeated tickets when delivered network information failed reachability checks. Preparation estimates spanned weeks or months.",
     impact:
-      "Preparation can remain unfinished even when the platform team knows what it needs.",
+      "Provisioning waits while teams schedule work, clarify requests and correct prerequisites.",
+    outcome:
+      "One team reported straightforward repeat provisioning once prerequisites aligned. Physical work, approval and team scheduling still remained outside the installer.",
     limit:
-      "Waiting, approval and incorrect technical configuration are separate conditions. The research supplies no measured installation delay for these cases.",
+      "Elapsed preparation estimates include organizational work and experimentation. They are not installer-runtime benchmarks or evidence that a new tool can remove approval and capacity constraints.",
     kind: "Reported experience",
   },
   {
-    id: "feasibility",
-    topics: ["hardware", "physical-storage"],
-    title: "Available infrastructure does not establish workload fit",
+    id: "missing-dependencies",
+    topic: "platform-operators",
+    relatedTopics: ["completion", "workloads", "access"],
+    title:
+      "Base installation finishes before the intended environment is ready",
     summary:
-      "Missing connectivity, capacity or a mismatched storage design can block the intended outcome.",
+      "Identity, certificates, required services and workload configuration can still need work after cluster creation succeeds.",
     context:
-      "Mixed physical-pilot, planned-deployment and home-lab contexts, 2025–2026.",
+      "2025–2026 accounts · several platforms and installation workflows",
     evidence:
-      "Accounts describe missing storage links/cards, purchased hardware that did not match the proposed Ceph-oriented storage assumptions, and demanding virtualization and storage requirements in labs.",
+      "Teams configured identity, certificates and their selected platform services after base installation. One team repaired stuck configuration and stale inputs before accepting the platform. Virtualization accounts also described remaining storage and workload setup.",
     impact:
-      "The first workload or adoption decision remains blocked after substantial planning or setup.",
+      "The first workload or team handover waits for the remaining configuration to be completed and checked.",
+    outcome:
+      "Some teams already automate their configuration baseline. One accepts the platform after its required components are healthy, certificates work and users can log in with normal accounts. Application acceptance remains a separate check.",
     limit:
-      "These accounts are not a sizing benchmark and do not establish a universal storage product requirement. Procurement and funding cannot be fixed by installer automation alone.",
+      "These accounts describe different completion boundaries. They do not establish a false ready indicator, a universal Operator bundle or a current missing-dependency defect in every installer.",
     kind: "Reported experience",
   },
   {
-    id: "method-choice",
-    topics: ["approach", "assisted", "agent-based", "ipi", "upi"],
-    title: "The installation path is hard to choose under fixed constraints",
+    id: "retry-work",
+    topic: "recovery",
+    relatedTopics: ["media", "hosts", "platform-operators"],
+    title: "Recovering a failed build requires manual cleanup and reruns",
     summary:
-      "Customers assemble their own interpretation of the applicable workflow.",
-    context: "A VMware environment and historical field reports from 2022.",
-    evidence:
-      "No-DHCP VLAN constraints led one team to a UPI path and custom documentation. Historical field reports described confusion among installation choices.",
-    impact:
-      "Customers spend effort filtering documentation and maintaining local instructions.",
-    limit:
-      "The VMware account is adjacent evidence. It does not establish that static addressing currently requires UPI or that a newer method cannot meet the need.",
-    kind: "Historical evidence",
-  },
-  {
-    id: "offline-content",
-    topics: ["content", "disconnected"],
-    title: "Content preparation extends beyond an installation image",
-    summary:
-      "Restricted sites need compatible artifacts, approved transfers and usable local instructions.",
-    context: "Restricted and disconnected environments, 2025–2026.",
-    evidence:
-      "Accounts describe maintaining OCI distribution across zones, difficulty preparing a mirror registry, and analyzing Operator dependencies when preparing mirrored content.",
-    impact:
-      "Content completeness and delivery become prerequisites for installation and later operations.",
-    limit:
-      "Standard Agent media and a documented self-contained workflow have different requirements. These accounts do not establish that every current path needs an external installation registry.",
-    kind: "Reported experience",
-  },
-  {
-    id: "boot-handoff",
-    topics: ["media", "management"],
-    title: "Generating media leaves the physical next step unclear",
-    summary:
-      "Users need to understand delivery, boot, discovery and host identification.",
-    context: "Mostly 2021–2022 internal or mixed usability studies.",
-    evidence:
-      "Participants struggled to interpret ISO generation and whether URL copying, downloading and hosting were alternatives or consecutive tasks. Host identity and discovery approvals added confusion.",
-    impact:
-      "The user cannot confidently move from an artifact to ready physical hosts.",
-    limit:
-      "More recent lab accounts describe successful Assisted media generation and base installation. The old usability findings require current validation.",
-    kind: "Historical evidence",
-  },
-  {
-    id: "physical-evidence-gap",
-    topics: ["hosts", "bootstrap", "management"],
-    title: "Current physical execution needs closer observation",
-    summary:
-      "The corpus is stronger on preparation and workload readiness than on physical installation execution.",
-    context: "Installation synthesis, 2026.",
-    evidence:
-      "The qualifying execution accounts establish no customer-specific incident confirmed to combine physical OCP nodes with Assisted or Agent-based Installer. BMC, firmware and boot delivery are particularly thin.",
-    impact:
-      "Engineering needs direct observation before treating a plausible failure mode as a demonstrated current defect.",
-    limit:
-      "Absence of a qualifying incident in this collection is not evidence that these installations are trouble-free.",
-    kind: "Research gap",
-  },
-  {
-    id: "unclear-progress",
-    topics: ["progress", "bootstrap", "hosts"],
-    title: "Users cannot confidently interpret installation progress",
-    summary: "Quiet intervals and noisy logs obscure whether to wait or act.",
+      "A failed attempt can leave provisioning resources or configuration jobs that need repair before work can continue.",
     context:
-      "A 2026 Nutanix environment, alongside Assisted and other accounts from 2022.",
+      "2026 interviews · bare-metal provisioning and vSphere configuration",
     evidence:
-      "One team described stressful setup logs. Historical reports describe little useful status during long waits and after reboot, and failure messages without enough explanation.",
+      "One team described cleanup of provisioning resources and node disks after failed bare-metal builds. Another traced a failed post-install job from ACM into Ansible Automation Platform, repaired configuration inputs and used an indirect rerun.",
     impact:
-      "The operator depends on experts or cannot identify an appropriate next action.",
+      "Recovery requires knowledge of resources and tools beyond the initial creation workflow, adding work before the next attempt.",
+    outcome:
+      "The teams described ways to continue after cleanup or input correction. One found later-stage failures easier to revert. The exact cleanup and rerun procedures were not independently verified.",
     limit:
-      "The recent account is not a confirmed physical Agent installation. Historical findings do not establish the same current defect; reported times are not installation benchmarks.",
+      "Reported workarounds are not supported recovery instructions. The evidence does not measure retry frequency, prove configuration was lost or establish that every failure requires a fresh installation.",
     kind: "Reported experience",
   },
   {
     id: "late-dependency",
-    topics: ["routing", "progress", "dns", "recovery"],
-    title: "A dependency failure appears after time has been invested",
+    topic: "routing",
+    relatedTopics: ["dns", "progress", "recovery", "platform-operators"],
+    title: "Unmet prerequisites surface during installation or configuration",
     summary:
-      "The running attempt reveals network, DNS or proxy work that must return to another team.",
-    context: "2021–2022; exact platform and installer often unspecified.",
+      "An attempt exposes connectivity or configuration inputs that must be corrected before it can proceed.",
+    context:
+      "2026 interviews · bare metal, Nutanix and vSphere · earlier reports retained",
     evidence:
-      "One account describes hours of cluster creation before a network problem sent work back to infrastructure owners. Other historical reports describe delayed proxy discovery and unmet network/DNS requirements.",
-    impact: "Failed attempts create a correction and retry cycle across teams.",
-    limit:
-      "These reports do not prove current validation is absent, that earlier checks passed, or that all cases share a root cause.",
-    kind: "Historical evidence",
-  },
-  {
-    id: "retry-work",
-    topics: ["recovery", "media"],
-    title: "Another attempt repeats work and loses context between teams",
-    summary:
-      "Correction, configuration preservation and a subsequent attempt need a clear handoff.",
-    context: "2021–2022 reports; exact recovery stages unrecorded.",
-    evidence:
-      "The research records repetitive creation and infrastructure correction, plus manual backup of installation configuration for reuse.",
+      "Accounts described firewall and connectivity conditions affecting provisioning, regional proxy rules that allowed a workflow in one location but blocked it in another, and stale inputs that interrupted post-install configuration.",
     impact:
-      "Repeated setup consumes effort and makes investigation harder to carry across attempts.",
+      "Teams investigate the failure, return work to the responsible owner and repeat the affected steps.",
+    outcome:
+      "The regional proxy problem reportedly worked after endpoint access was corrected. Another team repaired stale configuration inputs and reran its configuration job.",
     limit:
-      "Retry counts, recoverable stages, actual configuration loss and avoidable repetition were not measured.",
-    kind: "Historical evidence",
+      "The accounts do not establish a shared root cause, that earlier checks passed or that current prerequisite validation is absent. Event versions and exact corrections are incomplete.",
+    kind: "Reported experience",
   },
   {
-    id: "missing-dependencies",
-    topics: ["workloads", "completion"],
+    id: "unclear-progress",
+    topic: "progress",
+    relatedTopics: ["bootstrap", "hosts", "recovery", "platform-operators"],
     title:
-      "The cluster appears ready before workload dependencies are complete",
+      "Finding the failed step requires tracing resources and logs across tools",
     summary:
-      "Successful base installation can leave the intended workload unfinished.",
-    context: "2025 pilot and bare-metal Assisted installation accounts.",
+      "A failed-build status can leave the operator following resource relationships and external job logs to decide what to fix.",
+    context:
+      "2026 interviews · provisioning and ACM/AAP configuration · older status studies",
     evidence:
-      "One pilot missed required virtualization components whose names were not enumerated. Another team expected working storage after choosing the virtualization add-on, but still had storage configuration to perform.",
+      "One team needed resource-level knowledge beneath simple creation controls. Another followed post-install job references into a separate automation tool to inspect logs and repair inputs. Older studies also described quiet intervals and unclear reboot transitions.",
     impact:
-      "The first intended workload stalls after the user expects to be finished.",
+      "The operator must locate the responsible component and relevant evidence before choosing whether to wait, repair or rerun.",
+    outcome:
+      "Search and resource views helped one team investigate. Another found native provisioning errors understandable but needed additional investigation for the external configuration job.",
     limit:
-      "A successful cluster is a real milestone. The evidence does not establish one universal Operator bundle or a reproduced current missing-dependency defect.",
+      "The recent evidence concerns specific diagnostic workflows, not every progress display or a confirmed local Agent CLI defect. Quiet-interval findings remain historical and do not provide a completion-time benchmark.",
+    kind: "Reported experience",
+  },
+  {
+    id: "offline-content",
+    topic: "disconnected",
+    relatedTopics: ["content", "image-access"],
+    title: "Preparing mirrored content adds work to disconnected deployment",
+    summary:
+      "Teams using a mirror-based workflow must prepare the required images and registry before installing at a restricted site.",
+    context:
+      "2026 partner call notes · disconnected deployments · installer unspecified",
+    evidence:
+      "Partner-reported accounts identified mirror-registry setup as a difficulty in disconnected cluster deployment. Separate maintenance accounts described checking Operator dependencies and updating mirrored content for upgrades.",
+    impact:
+      "Content preparation adds setup work before deployment and creates a separate maintenance responsibility.",
+    outcome:
+      "The partner requested an offline package and described continued use of its existing mirror-based workflow. A separate maintenance account reported improved mirroring reliability after changing tool versions.",
+    limit:
+      "The partner notes are copied meeting summaries, not observed installation runs. Initial setup and later updates are separate accounts. They do not establish that every current installation path requires an external registry or that a proposed bundle resolved the difficulty.",
+    kind: "Reported experience",
+  },
+  {
+    id: "feasibility",
+    topic: "hardware",
+    relatedTopics: ["physical-storage", "topology", "approach"],
+    title:
+      "Existing hardware may not fit the planned workload and storage design",
+    summary:
+      "Missing connections, limited capacity or storage assumptions can prevent a planned workload from running on the available equipment.",
+    context:
+      "2025–2026 accounts · physical pilots, planned deployments and labs",
+    evidence:
+      "Accounts described storage links or adapters still needing work, purchased hardware that did not match the proposed storage design, and virtualization requirements that exceeded comfortable lab capacity.",
+    impact:
+      "Customers can invest in setup before discovering that the intended workload needs different equipment, capacity or a revised design.",
+    outcome:
+      "Some accounts remained in evaluation or planning. The collection does not establish completed corrections for every hardware or capacity mismatch.",
+    limit:
+      "These accounts are not sizing benchmarks or universal storage-product requirements. Service-model restrictions, procurement and funding are separate feasibility decisions and should be identified explicitly.",
     kind: "Reported experience",
   },
   {
     id: "storage-not-usable",
-    topics: ["storage", "storage-drivers"],
-    title: "Virtualization is installed, but storage is not usable",
+    topic: "storage-drivers",
+    relatedTopics: ["storage", "platform-operators", "workloads", "acceptance"],
+    title:
+      "VM storage still needs configuration after virtualization is installed",
     summary:
-      "The storage integration and default class still require work after the console is available.",
-    context: "2025 · explicitly bare metal and Assisted Installer.",
-    evidence:
-      "After choosing the virtualization add-on, the participant still had to configure a default storage class and wanted guidance for the existing storage integration.",
-    impact:
-      "The user’s expected finish line and the delivered workload readiness do not match.",
-    limit:
-      "Suggested IBM/Dell provider paths were examples, not confirmed array inventories. This account does not establish that the same gap persists on the reference release.",
-    kind: "Reported experience",
-  },
-  {
-    id: "storage-behavior-gap",
-    topics: ["storage-drivers"],
-    title: "A storage example does not support the intended operation",
-    summary:
-      "A configuration that looks valid can fail the customer’s migration requirement.",
+      "Storage integration, a default storage class and workload-specific settings can remain unfinished after console access is available.",
     context:
-      "Bare-metal account; exact release and full storage configuration not established.",
+      "2025 accounts · bare-metal Assisted setup and VM storage configuration",
     evidence:
-      "A copied storage-profile example did not fit live migration. The customer changed the configuration after the UI indicated a mismatch.",
+      "A bare-metal Assisted user still needed a default storage class and guidance for the existing storage integration after selecting virtualization. In a separate account, a copied storage-profile example did not support the required live migration.",
     impact:
-      "The workload cannot perform a required maintenance or migration action.",
+      "A VM can remain blocked on storage setup, or a working VM can fail a required maintenance operation.",
+    outcome:
+      "The migration account described correcting its storage profile after a console hint identified the mismatch. Completion of the other account’s storage integration was not established.",
     limit:
-      "This is a scenario-specific account, not a universal access-mode rule or a general guarantee that another setting enables migration.",
+      "These are conditional examples of remaining workload configuration, not additional independent confirmation of every readiness problem. Migration matters only where required. The accounts establish neither a universal access-mode rule nor a current defect on the reference release.",
     kind: "Reported experience",
   },
   {
     id: "workload-network-gap",
-    topics: ["workload-network"],
-    title: "Familiar networking requires unfamiliar cluster configuration",
+    topic: "workload-network",
+    relatedTopics: ["networking", "workloads"],
+    title:
+      "Connecting VMs to existing networks requires additional cluster configuration",
     summary:
-      "Bridges, attachments and project scope complicate connecting a workload.",
-    context: "Mixed bare-metal and shared OpenShift evidence; versions vary.",
+      "Operators must translate the desired site connection into host settings and workload attachments before a VM can use it.",
+    context:
+      "2025–2026 accounts · virtualization and shared OpenShift networking",
     evidence:
-      "Accounts describe translating a Linux bridge task into Operator-managed configuration, working with namespace-scoped attachments, and learning network/storage interactions through disruptive lab experimentation.",
+      "Accounts described discovering the Operator-managed configuration needed for a familiar bridge task, understanding namespace-scoped network attachments and learning network/storage interactions through lab experimentation.",
     impact:
-      "Customers struggle to connect workloads and may repeatedly seek specialist help.",
+      "Workload connectivity takes additional configuration and specialist help after base installation.",
+    outcome:
+      "Participants described finding configuration paths and learning through experimentation. The collection does not establish a successful end-to-end result for every reported networking task.",
     limit:
-      "These are related learning and integration problems, not proof of one shared defect. Physical configuration remains partly outside cluster visibility.",
+      "The accounts concern different configurations and releases. They do not establish one shared networking defect or imply that every VM requires the same bridge or Operator.",
     kind: "Reported experience",
   },
   {
     id: "effective-access",
-    topics: ["access"],
-    title: "Configured roles do not make effective access obvious",
+    topic: "access",
+    relatedTopics: ["workloads", "acceptance"],
+    title: "Administrators struggle to determine what a user can actually do",
     summary:
-      "The receiving user still cannot identify or perform the intended action.",
+      "Permissions inherited through groups and cluster or namespace bindings make access difficult to explain and troubleshoot.",
     context:
-      "Shared OpenShift/virtualization evidence; not all cases establish bare metal.",
+      "2025 · nine OpenShift interview participants · mixed platforms",
     evidence:
-      "Participants struggled to identify roles for specific operations and to trace inherited permissions across group, namespace, cluster and management scopes.",
+      "Interview participants described manual auditing of effective permissions and difficulty identifying the roles behind permission-denied responses. Some used Git-managed configuration and the UI for investigation; others fell back on broad default roles.",
     impact:
-      "Delegation and everyday workload tasks remain difficult after access has been configured.",
+      "Administrators spend effort tracing permissions and cannot confidently verify delegated tasks from the role names alone.",
+    outcome:
+      "Participants used manual checks, configuration inspection and existing administration tools. The study does not establish that later design proposals resolved the difficulty.",
     limit:
-      "Reported bindings were not independently verified. Do not treat these accounts as proof of a single authorization defect.",
+      "Interview findings are distinct from the study’s prototype tasks. They do not establish a bare-metal installation failure, a faulty authorization engine or that every receiving user lacks required access.",
     kind: "Reported experience",
   },
   {
-    id: "readiness-unproven",
-    topics: ["acceptance", "storage-drivers", "backups"],
-    title: "A running workload leaves recovery and continuity unproven",
+    id: "network-layers",
+    topic: "addressing",
+    relatedTopics: ["networking"],
+    title: "Network setup questions can be interpreted at the wrong layer",
     summary:
-      "Customers need evidence of behavior under failure and maintenance before relying on it.",
+      "Customers can mistake cluster-internal address questions for changes to physical switches or firewalls.",
     context:
-      "Acceptance requirements in labs and planned production handovers.",
+      "2025 virtualization onboarding · partner-relayed customer account",
     evidence:
-      "Teams wanted to test host/storage loss, service continuity without Internet access, backups and maintenance migration. A functioning first workload did not settle those requirements.",
-    impact: "Production acceptance and operating confidence remain incomplete.",
-    limit:
-      "These are stated requirements, not documented production outages or failed disaster-recovery exercises. Acceptance criteria vary by customer.",
-    kind: "Acceptance requirement",
-  },
-  {
-    id: "handover-knowledge",
-    topics: ["acceptance", "operations"],
-    title: "The receiving team has not inherited the operating knowledge",
-    summary:
-      "Installation expertise can remain concentrated in the original builders.",
-    context: "Mixed customer, pilot and lab contexts, 2025–2026.",
-    evidence:
-      "One account describes knowledge concentrated in the original team. Other pilot and lab accounts highlight diagnostic and handover needs for teams learning OpenShift.",
+      "A partner described a customer interpreting machine, pod and service network questions as physical infrastructure work. The account illustrates difficulty mapping existing networking knowledge to OpenShift concepts.",
     impact:
-      "The environment can be running while its operators still depend on specialists for routine diagnosis.",
+      "The customer can pursue unnecessary infrastructure changes or need clarification before completing configuration.",
+    outcome:
+      "The account records the misunderstanding but does not establish a measured delay or a verified final configuration.",
     limit:
-      "These accounts establish a learning and ownership burden; they do not demonstrate a particular production outage.",
+      "This is bounded, partner-relayed evidence. Separate firewall coordination and VM attachment problems do not independently corroborate this comprehension issue.",
     kind: "Reported experience",
   },
   {
-    id: "upgrade-dependencies",
-    topics: ["upgrades", "operations"],
-    title: "Add-on dependencies complicate otherwise smooth upgrades",
+    id: "method-choice",
+    topic: "approach",
+    relatedTopics: ["topology", "assisted", "agent-based", "ipi", "upi"],
+    title:
+      "Site constraints make the applicable installation path hard to identify",
     summary:
-      "Networking, storage and third-party Operators change the whole-deployment upgrade task.",
-    context: "Reported accounts with incomplete versions and root causes.",
+      "Customers filter installation guidance against their networking and provisioning constraints, then maintain local instructions.",
+    context:
+      "Historical VMware account and 2022 field reports · current validation needed",
     evidence:
-      "Accounts describe a network attachment blocking an upgrade, storage/CSI complications, and third-party Operator removal/reinstallation while core upgrades worked well.",
+      "A team with no-DHCP VLAN constraints selected UPI and maintained custom documentation. Historical field reports also described confusion among installation choices.",
     impact:
-      "Teams must investigate dependencies and coordinate extra change work.",
+      "Choosing and documenting an applicable workflow adds effort before installation.",
+    outcome:
+      "The team established a local UPI path. More recent platform-transition accounts describe extra creation and import steps, which are a separate workflow-fragmentation concern.",
     limit:
-      "Preserve the positive core-upgrade reports. The accounts do not establish a common root cause or a current defect in every integration.",
-    kind: "Reported experience",
+      "The evidence does not establish that static addressing currently requires UPI. Platform switching is not independent confirmation that users cannot choose among present-day bare-metal installers.",
+    kind: "Historical evidence",
   },
   {
-    id: "secret-recovery",
-    topics: ["backups", "operations"],
-    title: "Recreating the cluster may leave secret restoration unresolved",
+    id: "boot-handoff",
+    topic: "media",
+    relatedTopics: ["management", "hosts"],
+    title: "Historical ISO workflows left the next action unclear",
     summary:
-      "A reproducible deployment also needs a secure way to recover its credentials.",
+      "Participants were unsure whether copying a URL, downloading an image and hosting it were alternatives or consecutive tasks.",
     context:
-      "Recovery planning requirement; no completed failed recovery recorded.",
+      "2021–2022 · internal or mixed Assisted Installer usability studies",
     evidence:
-      "The team had not settled how secrets would be restored when reconstructing clusters and considered manual setup a possible disaster-recovery blocker.",
+      "Participants struggled to interpret ISO generation and delivery choices. Host identification and discovery approvals also needed explanation in the tested workflows.",
     impact:
-      "Configuration replay alone does not establish a complete recovery path.",
+      "Participants could not confidently move from the generated artifact to the intended ready hosts.",
+    outcome:
+      "Later lab accounts described successful Assisted media generation and base installation. Those accounts do not establish whether every earlier usability issue was resolved.",
     limit:
-      "This is an unresolved requirement, not evidence of data loss or an observed failed restore.",
-    kind: "Acceptance requirement",
+      "These are historical usability findings, not a demonstrated current physical-boot defect. Validate the selected delivery and discovery workflow before proposing a change.",
+    kind: "Historical evidence",
   },
 ];
 
@@ -301,7 +263,6 @@ export const opportunities: Opportunity[] = [
     title: "Explain the network from the customer’s starting point",
     summary:
       "Connect the familiar site network to the cluster and workload configuration it requires.",
-    problems: ["network-layers", "workload-network-gap"],
     intervention:
       "Start with one existing-VLAN workload scenario. Show the physical-to-workload path, the responsible owner at each layer and the applicable configuration.",
     existing:
@@ -310,6 +271,16 @@ export const opportunities: Opportunity[] = [
       "Observe the current supported workflow with a user who knows their site network but is new to OpenShift. Include a missing attachment and an unresolved physical task.",
     measure:
       "Correct mapping, successful connectivity, wrong-layer changes and specialist clarification cycles. Establish a baseline before setting targets.",
+    basis: [
+      {
+        kind: "problem",
+        id: "network-layers",
+      },
+      {
+        kind: "problem",
+        id: "workload-network-gap",
+      },
+    ],
   },
   {
     id: "precise-handoffs",
@@ -317,7 +288,6 @@ export const opportunities: Opportunity[] = [
     title: "Make prerequisite requests precise and testable",
     summary:
       "Give infrastructure owners the exact request and the evidence needed to close it.",
-    problems: ["owner-wait", "late-dependency"],
     intervention:
       "For one supported site design, generate addresses, records and source-to-destination flow requests with owners, conditions and verification steps.",
     existing:
@@ -326,6 +296,16 @@ export const opportunities: Opportunity[] = [
       "Test whether complete requests reduce clarification. Keep technical verification separate from change approval and pending owner action.",
     measure:
       "Request rework, unresolved assumptions, correct identification of the responsible team and time to establish technical readiness.",
+    basis: [
+      {
+        kind: "problem",
+        id: "owner-wait",
+      },
+      {
+        kind: "problem",
+        id: "late-dependency",
+      },
+    ],
   },
   {
     id: "whole-deployment-fit",
@@ -333,7 +313,6 @@ export const opportunities: Opportunity[] = [
     title: "Establish feasibility for the intended workload",
     summary:
       "Surface missing capacity, connections and commitments before setup effort accumulates.",
-    problems: ["feasibility"],
     intervention:
       "Start with one workload and storage path. Separate confirmed inventory from planned purchases, physical prerequisites and platform overhead.",
     existing:
@@ -342,6 +321,12 @@ export const opportunities: Opportunity[] = [
       "Compare a complete intended deployment with the customer’s actual inventory. Separate product compatibility from procurement and funding constraints.",
     measure:
       "Earlier discovery of consequential gaps, avoided configuration rework and accuracy of feasibility expectations.",
+    basis: [
+      {
+        kind: "problem",
+        id: "feasibility",
+      },
+    ],
   },
   {
     id: "constraint-led-choice",
@@ -349,7 +334,6 @@ export const opportunities: Opportunity[] = [
     title: "Explain installer choices through ownership and constraints",
     summary:
       "Help engineers and customers understand what each path automates and still requires.",
-    problems: ["method-choice"],
     intervention:
       "Begin with host control, connectivity and existing provisioning practices. Explain the compatible choices and the work each owner retains.",
     existing:
@@ -358,6 +342,12 @@ export const opportunities: Opportunity[] = [
       "Check current selection guidance against representative constrained sites. Keep topology, installer family and orchestration as separate decisions.",
     measure:
       "Correct explanation of responsibilities, applicable-document selection and avoided incompatible starts.",
+    basis: [
+      {
+        kind: "problem",
+        id: "method-choice",
+      },
+    ],
   },
   {
     id: "offline-outcome-kit",
@@ -365,7 +355,6 @@ export const opportunities: Opportunity[] = [
     title: "Prepare an offline kit around the intended outcome",
     summary:
       "Connect installation content to workload dependencies and usable local guidance.",
-    problems: ["offline-content"],
     intervention:
       "Choose one disconnected scenario and produce an explicit content and transfer plan, including local instructions and a handoff for updates.",
     existing:
@@ -374,6 +363,12 @@ export const opportunities: Opportunity[] = [
       "Determine which missing artifacts or approval boundaries actually block the selected workload. Test the workflow without online documentation access.",
     measure:
       "Content completeness, successful local task completion and repeated transfers caused by missed dependencies.",
+    basis: [
+      {
+        kind: "problem",
+        id: "offline-content",
+      },
+    ],
   },
   {
     id: "clear-boot-handoff",
@@ -381,7 +376,6 @@ export const opportunities: Opportunity[] = [
     title: "Connect media creation to physical host readiness",
     summary:
       "Make artifact delivery, boot and discovery understandable for the selected method.",
-    problems: ["boot-handoff", "physical-evidence-gap"],
     intervention:
       "Walk through one real supported boot path from generation to the correctly identified hosts and installation disks.",
     existing:
@@ -390,22 +384,33 @@ export const opportunities: Opportunity[] = [
       "Observe current physical installs and document BMC models, firmware, boot choices and media-fetch behavior before choosing a product change.",
     measure:
       "Correct host identification, first successful boot, handoff clarification and reproducible points of failure.",
+    basis: [
+      {
+        kind: "problem",
+        id: "boot-handoff",
+      },
+    ],
   },
   {
     id: "actionable-progress",
     topics: ["progress", "bootstrap", "hosts"],
-    title: "Make installation state lead to the right next action",
+    title: "Connect build status to the responsible resource and job",
     summary:
-      "Explain the current phase, affected host and relevant diagnostic evidence.",
-    problems: ["unclear-progress", "physical-evidence-gap"],
+      "Help operators follow the failed stage into the relevant configuration, tool and diagnostic evidence.",
     intervention:
-      "Evaluate a phase explanation showing the last observed progress, expected waiting and the next supported action for a real blocked state.",
+      "Follow one provisioning failure and one external configuration-job failure. Connect the top-level state to the affected resource, job logs and supported next action.",
     existing:
       "Assisted and Agent-based workflows already expose validation, progress and diagnostics. First establish which current explanation or transition is insufficient.",
     investigate:
-      "Observe a quiet healthy interval, a reboot and a genuine failure on current physical installations. Avoid inventing an ETA from historical anecdotes.",
+      "Observe the current workflow and distinguish a healthy wait from a failed provisioning or configuration step. Preserve existing status explanations that already help operators.",
     measure:
-      "Correct wait-versus-intervene decisions, time to identify the affected stage and unnecessary restarts.",
+      "Time to find the failed component, correct wait-versus-repair decisions and successful handoff to the responsible owner.",
+    basis: [
+      {
+        kind: "problem",
+        id: "unclear-progress",
+      },
+    ],
   },
   {
     id: "earlier-dependency-feedback",
@@ -413,7 +418,6 @@ export const opportunities: Opportunity[] = [
     title: "Connect dependency failures to their owner and correction",
     summary:
       "Expose the failed endpoint and useful evidence at the earliest demonstrated point.",
-    problems: ["late-dependency"],
     intervention:
       "Reproduce one late dependency failure, identify when it becomes detectable, and connect the check to the responsible team’s correction.",
     existing:
@@ -422,38 +426,54 @@ export const opportunities: Opportunity[] = [
       "Check the exact method, host, endpoint, previous validation and failure transition. Move a check earlier only where the reproduction supports it.",
     measure:
       "Delay between detectable failure and actionable explanation, avoided repeated work and successful owner handoff.",
+    basis: [
+      {
+        kind: "problem",
+        id: "late-dependency",
+      },
+    ],
   },
   {
     id: "retry-continuity",
     topics: ["recovery", "media"],
-    title: "Preserve context through correction and retry",
+    title: "Guide cleanup, correction and the next supported attempt",
     summary:
-      "Carry the relevant configuration and diagnostic record into the next supported action.",
-    problems: ["retry-work"],
+      "Help operators identify what failed, what needs repair and which work can safely continue.",
     intervention:
       "Follow one failed attempt through correction. Distinguish continued monitoring, repair and a planned new installation, and retain safe reusable inputs.",
     existing:
       "Wait commands can be rerun for monitoring; generated media and consumed configuration have specific lifecycles. There is no universal safe resume for every failed attempt.",
     investigate:
-      "Observe where context is actually lost and which steps must genuinely repeat. Keep secrets out of ordinary exported records.",
+      "Follow a failed provisioning run and an external configuration-job failure. Identify the supported cleanup or rerun procedure and which inputs must be preserved. Do not assume context was lost or that every attempt must start over.",
     measure:
-      "Repeated manual inputs, diagnostic continuity and correct recovery-path selection.",
+      "Correct recovery-path selection, time to identify required cleanup and repeated manual setup.",
+    basis: [
+      {
+        kind: "problem",
+        id: "retry-work",
+      },
+    ],
   },
   {
     id: "outcome-plan",
-    topics: ["workloads", "completion"],
+    topics: ["platform-operators", "completion", "workloads", "access"],
     title: "Carry the intended workload across the installation boundary",
     summary:
-      "Show the remaining work between the base cluster and the customer’s first useful task.",
-    problems: ["missing-dependencies"],
+      "Show the configuration and verification still needed between base installation and the intended platform or workload.",
     intervention:
-      "Start with one supported workload scenario. Connect its dependencies, configuration, owners and verification across installer and console workflows.",
+      "Start with one supported workload scenario. Connect identity, certificates, required services, workload configuration, owners and verification across creation and post-install workflows.",
     existing:
       "Installer validation and workload post-installation guidance already exist. Test continuity and remaining-work visibility against current capabilities.",
     investigate:
       "Compare the actual supported dependency set with what users believe is complete after installation. Avoid assuming every workload needs the same Operators.",
     measure:
       "Representative task completion, missed critical dependencies and perceived readiness compared with observed behavior.",
+    basis: [
+      {
+        kind: "problem",
+        id: "missing-dependencies",
+      },
+    ],
   },
   {
     id: "storage-outcome",
@@ -461,7 +481,6 @@ export const opportunities: Opportunity[] = [
     title: "Guide storage setup by the operation it must support",
     summary:
       "Connect the physical system, driver, configuration and representative workload behavior.",
-    problems: ["storage-not-usable", "storage-behavior-gap", "feasibility"],
     intervention:
       "Prototype one supported external-storage path through integration, default class/profile and first workload, with a required maintenance operation where applicable.",
     existing:
@@ -470,6 +489,16 @@ export const opportunities: Opportunity[] = [
       "Use a scenario with an available array but incomplete configuration. Verify provider and release support; do not prescribe one product or access mode universally.",
     measure:
       "Successful first workload, correct identification of the missing layer and demonstrated required behavior.",
+    basis: [
+      {
+        kind: "problem",
+        id: "storage-not-usable",
+      },
+      {
+        kind: "problem",
+        id: "feasibility",
+      },
+    ],
   },
   {
     id: "rehearse-access",
@@ -477,7 +506,6 @@ export const opportunities: Opportunity[] = [
     title: "Rehearse the task as the receiving user",
     summary:
       "Make effective access visible in the context of the workload and project.",
-    problems: ["effective-access"],
     intervention:
       "Choose one delegated VM or workload task. Explain the relevant identity, role and scope, then verify the intended action with the receiving user.",
     existing:
@@ -486,6 +514,12 @@ export const opportunities: Opportunity[] = [
       "Determine whether the obstacle is a missing permission, misunderstood scope, navigation or external identity synchronization.",
     measure:
       "Task success with intended privileges and fewer trial-and-error role changes.",
+    basis: [
+      {
+        kind: "problem",
+        id: "effective-access",
+      },
+    ],
   },
   {
     id: "confidence-rehearsal",
@@ -493,7 +527,6 @@ export const opportunities: Opportunity[] = [
     title: "Demonstrate customer-specific readiness",
     summary:
       "Replace assumed readiness with evidence from the customer’s required behavior.",
-    problems: ["readiness-unproven", "secret-recovery"],
     intervention:
       "Agree a small acceptance plan for a representative workload and selected maintenance or recovery scenario. Record results, limits and ownership.",
     existing:
@@ -502,22 +535,41 @@ export const opportunities: Opportunity[] = [
       "Co-design a bounded rehearsal with the operating team. Include data, secrets and external dependencies where the scenario needs them.",
     measure:
       "Correct understanding of what is proven, successful selected recovery tasks and fewer unresolved handover dependencies.",
+    basis: [
+      {
+        kind: "task",
+        id: "acceptance",
+      },
+      {
+        kind: "task",
+        id: "backups",
+      },
+    ],
   },
   {
     id: "diagnostic-handover",
     topics: ["acceptance", "operations"],
-    title: "Make operating knowledge part of the handoff",
+    title: "Rehearse diagnosis with the team that will operate the environment",
     summary:
-      "Help the receiving team identify a failure and gather the right evidence.",
-    problems: ["handover-knowledge"],
+      "Test whether the receiving operator can find evidence and identify the next support action.",
     intervention:
       "Use one representative workload failure to rehearse diagnosis, evidence collection and support handoff with the receiving operator.",
     existing:
       "Logs, must-gather and support workflows already exist. The increment is making the applicable path usable to the team’s actual skills and access.",
     investigate:
-      "Observe the task without installation specialists guiding every step; account for offline and restricted-access environments.",
+      "Observe a representative diagnostic task without installation specialists guiding every step. Establish whether there is a knowledge, access or tool-navigation gap; do not assume a failed handover.",
     measure:
       "Independent diagnosis, useful evidence collection and a clear escalation path.",
+    basis: [
+      {
+        kind: "task",
+        id: "operations",
+      },
+      {
+        kind: "problem",
+        id: "unclear-progress",
+      },
+    ],
   },
   {
     id: "dependency-aware-change",
@@ -525,7 +577,6 @@ export const opportunities: Opportunity[] = [
     title: "Plan updates across the whole deployment",
     summary:
       "Bring integration compatibility and disconnected content into the same change plan.",
-    problems: ["upgrade-dependencies", "offline-content"],
     intervention:
       "Choose one dependency-bearing update. Record core release, Operators, storage and network configuration and test the representative workload path.",
     existing:
@@ -534,5 +585,15 @@ export const opportunities: Opportunity[] = [
       "Reproduce a reported integration problem on a known version pair and distinguish support limits from product behavior.",
     measure:
       "Earlier detection of incompatible dependencies, complete content preparation and successful representative workload checks.",
+    basis: [
+      {
+        kind: "task",
+        id: "upgrades",
+      },
+      {
+        kind: "problem",
+        id: "offline-content",
+      },
+    ],
   },
 ];

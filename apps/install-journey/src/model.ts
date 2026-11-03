@@ -41,6 +41,8 @@ export interface Topic {
   scope: string;
   /** Empty for groups whose process is explained by their child tasks. */
   flow: FlowStep[];
+  /** Supporting context shown only in How it works. */
+  notes?: Omit<FlowStep, "command">[];
   /** Optional service dependencies displayed in the process perspective. */
   serviceFlows?: ServiceFlow[];
   /** Optional examples shown before the installation process and included in search. */
@@ -49,26 +51,31 @@ export interface Topic {
 
 export interface Problem {
   id: string;
-  topics: string[];
+  /** The one step that displays this problem's full summary card. */
+  topic: string;
+  /** Former topic associations retained for published problem links. */
+  relatedTopics: string[];
   title: string;
   summary: string;
   context: string;
   evidence: string;
   impact: string;
+  outcome: string;
   limit: string;
-  kind:
-    | "Reported experience"
-    | "Historical evidence"
-    | "Acceptance requirement"
-    | "Research gap";
+  kind: "Reported experience" | "Historical evidence";
 }
+
+export type OpportunityBasis =
+  | { kind: "problem"; id: string }
+  | { kind: "task"; id: string };
 
 export interface Opportunity {
   id: string;
   topics: string[];
   title: string;
   summary: string;
-  problems: string[];
+  /** Distinguishes reported problems from tasks and acceptance requirements. */
+  basis: [OpportunityBasis, ...OpportunityBasis[]];
   intervention: string;
   existing: string;
   investigate: string;
