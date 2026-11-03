@@ -49,6 +49,32 @@ export interface Topic {
   operatorExamples?: OperatorExample[];
 }
 
+export type ReportedDate =
+  | { kind: "reported" | "study"; date: string }
+  | { kind: "disputed"; dates: [string, string] }
+  | { kind: "unknown" };
+
+export type OccurrenceDate =
+  | { kind: "dated"; period: string }
+  | { kind: "ongoing" | "unknown"; detail: string };
+
+/** One anonymous account keeps its event timing separate from its source date. */
+export interface EvidenceExample {
+  title: string;
+  platform: string;
+  reported: ReportedDate;
+  occurred: OccurrenceDate;
+  basis:
+    | "Interview transcript"
+    | "Research report"
+    | "Direct research notes"
+    | "Copied meeting notes"
+    | "Historical field report"
+    | "Historical usability study";
+  finding: string;
+  limitation: string;
+}
+
 export interface Problem {
   id: string;
   /** The one step that displays this problem's full summary card. */
@@ -58,7 +84,7 @@ export interface Problem {
   title: string;
   summary: string;
   context: string;
-  evidence: string;
+  examples: EvidenceExample[];
   impact: string;
   outcome: string;
   limit: string;

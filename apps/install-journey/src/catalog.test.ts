@@ -18,6 +18,17 @@ import {
 
 // Content is the app's navigation model. Broken edges make otherwise valid UI routes dead ends.
 describe("journey content integrity", () => {
+  test("the approved problems cover preparation, installation and post-installation without filling evidence gaps", () => {
+    expect(problems).toHaveLength(21);
+    expect(
+      stages.map(
+        (stage) =>
+          problems.filter(
+            (problem) => stageForTopic(problem.topic)?.id === stage.id,
+          ).length,
+      ),
+    ).toEqual([2, 6, 0, 3, 0, 5, 2, 3]);
+  });
   test("ordered stages cover every detailed topic exactly once in its phase", () => {
     expect(new Set(stages.map((stage) => stage.id)).size).toBe(stages.length);
     expect([...new Set(stages.map((stage) => stage.phase))]).toEqual(phaseIds);
@@ -88,6 +99,10 @@ describe("journey content integrity", () => {
       expect(problem.limit.length).toBeGreaterThan(30);
       expect(problem.context.length).toBeGreaterThan(10);
       expect(problem.outcome.length).toBeGreaterThan(30);
+      expect(problem.examples.length, problem.id).toBeGreaterThan(0);
+      expect(
+        new Set(problem.examples.map((example) => example.title)).size,
+      ).toBe(problem.examples.length);
       expect(
         opportunities.some((idea) =>
           idea.basis.some(
@@ -303,6 +318,17 @@ describe("shareable navigation and discovery", () => {
   });
 
   test("search finds problem details and multiword concepts with working destinations", () => {
+    for (const [query, id] of [
+      ["reservation error", "first-vm-blocked"],
+      ["June 17, 2026", "method-choice"],
+      ["study report March 12, 2025", "migration-workload-readiness"],
+      ["direct research notes June 9, 2026", "operating-knowledge-gap"],
+    ] satisfies [string, string][]) {
+      expect(
+        searchJourney(query).some((result) => result.route.item === id),
+        query,
+      ).toBe(true);
+    }
     expect(
       searchJourney(" default storage class ").some(
         (result) => result.route.item === "storage-not-usable",

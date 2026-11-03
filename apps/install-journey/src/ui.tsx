@@ -20,6 +20,7 @@ import {
   topics,
 } from "./catalog";
 import type { JourneyStage } from "./data/stages";
+import { occurrenceDateLabel, reportedDateLabel } from "./evidence-dates";
 import { Icon } from "./icons";
 import type { Opportunity, Problem, Route, Topic } from "./model";
 import { useNavigation } from "./navigation";
@@ -41,6 +42,13 @@ function hasContext(id: string): boolean {
 
 function useTimelineExpansion(route: Route) {
   const [opened, setOpened] = useState<Set<string>>(() => new Set());
+  useEffect(() => {
+    if (route.lens !== "problems" || !route.item) return;
+    const key = `problem:${route.item}`;
+    setOpened((current) =>
+      current.has(key) ? current : new Set([...current, key]),
+    );
+  }, [route.lens, route.item]);
   const selectedStage = stageForTopic(route.topic)?.id ?? route.stage;
   const stageOpen = (id: string) =>
     selectedStage === id || opened.has(`stage:${id}`);
@@ -50,6 +58,9 @@ function useTimelineExpansion(route: Route) {
     opened.has(`topic:${id}`);
   const detailOpen = (id: string) => opened.has(`detail:${id}`);
   const recordOpen = (id: string) => opened.has(`records:${id}`);
+  const problemOpen = (id: string) =>
+    (route.lens === "problems" && route.item === id) ||
+    opened.has(`problem:${id}`);
   const methodOpen = (id: string) => opened.has(`methods:${id}`);
   const comparisonOpen = () =>
     methodIds.has(route.topic) || opened.has("comparison:approach");
@@ -66,7 +77,17 @@ function useTimelineExpansion(route: Route) {
   const setLevel = (level: "overview" | "steps" | "details") => {
     const keys: string[] = [];
     if (level !== "overview") {
-      keys.push(...stages.map((stage) => `stage:${stage.id}`));
+      const expandedStages =
+        level === "steps" && route.lens === "problems"
+          ? stages.filter((stage) =>
+              problems.some(
+                (problem) => stageForTopic(problem.topic)?.id === stage.id,
+              ),
+            )
+          : stages;
+      keys.push(...expandedStages.map((stage) => `stage:${stage.id}`));
+      if (level === "details")
+        keys.push(...problems.map((problem) => `problem:${problem.id}`));
       for (const topic of topics) {
         if (
           !topic.parent ||
@@ -94,6 +115,7 @@ function useTimelineExpansion(route: Route) {
     topicOpen,
     detailOpen,
     recordOpen,
+    problemOpen,
     methodOpen,
     comparisonOpen,
     setLevel,
@@ -321,6 +343,14 @@ function About({ onClose }: { onClose: () => void }) {
           build on reported problems or on those tasks; their benefits still
           need investigation.
         </p>
+        <p>
+          Each customer example separates when it was reported from when the
+          experience occurred. A study report date is not an incident date.
+          Unknown timing and disputed call dates remain visible. Evidence labels
+          distinguish interview transcripts, research reports, direct notes and
+          copied meeting summaries; a summary-only account has not been checked
+          against its original transcript.
+        </p>
         <h4>Research still needed</h4>
         <p>
           Reported bare-metal preparation and cleanup accounts are available.
@@ -328,10 +358,11 @@ function About({ onClose }: { onClose: () => void }) {
           transitions and recovery decisions on current workflows.
         </p>
         <p>
-          Observe receiving teams diagnosing a representative problem and using
-          their operating instructions. Existing learning and support accounts
-          do not establish a failed initial handover. Research gaps are not
-          counted as customer problems.
+          Reported accounts describe wider teams still learning OpenShift and
+          difficulty collecting diagnostic evidence. Observe receiving teams
+          diagnosing a representative problem with their own access and
+          instructions. An ongoing learning transition does not establish a
+          failed formal handover; research gaps remain outside problem counts.
         </p>
         <p className="about-note">
           Internal use · This app opens independently from the installation
@@ -501,10 +532,6 @@ function TimelineStep({
     route.lens === "problems"
       ? problems.filter((problem) => problem.topic === topic.id)
       : opportunitiesFor(topic.id);
-  const problem =
-    selected && route.lens === "problems"
-      ? problems.find((item) => item.id === route.item)
-      : undefined;
   const opportunity =
     selected && route.lens === "opportunities"
       ? opportunities.find((item) => item.id === route.item)
@@ -592,7 +619,7 @@ function TimelineStep({
             <p className="step-summary">{topic.summary}</p>
             {(!isGroup || route.lens !== "process") && (
               <div className="step-detail">
-                {problem || opportunity ? (
+                {opportunity ? (
                   <>
                     {expansion.recordOpen(topic.id) && (
                       <RecordList
@@ -601,6 +628,7 @@ function TimelineStep({
                         route={route}
                         navigate={navigate}
                         showAll
+                        expansion={expansion}
                       />
                     )}
                     <section
@@ -614,26 +642,14 @@ function TimelineStep({
                         className="text-action"
                       >
                         <Icon name="back" size={16} />
-                        Back to{" "}
-                        {route.lens === "problems"
-                          ? "problems"
-                          : "opportunities"}{" "}
-                        in this step
+                        Back to opportunities in this step
                       </JourneyLink>
-                      <h5>{problem?.title ?? opportunity?.title}</h5>
-                      {problem ? (
-                        <ProblemDetail
-                          problem={problem}
-                          topic={topic}
-                          navigate={navigate}
-                        />
-                      ) : opportunity ? (
-                        <OpportunityDetail
-                          opportunity={opportunity}
-                          topic={topic}
-                          navigate={navigate}
-                        />
-                      ) : null}
+                      <h5>{opportunity.title}</h5>
+                      <OpportunityDetail
+                        opportunity={opportunity}
+                        topic={topic}
+                        navigate={navigate}
+                      />
                     </section>
                   </>
                 ) : route.lens === "process" ? (
@@ -674,6 +690,7 @@ function TimelineStep({
                     route={route}
                     navigate={navigate}
                     showAll={expansion.recordOpen(topic.id)}
+                    expansion={expansion}
                   />
                 )}
                 {route.lens === "process" && context}
@@ -710,7 +727,7 @@ function Timeline({
         </div>
         <p>
           {route.lens === "problems"
-            ? "Show all problems to scan each account once at its assigned step. Open an account for its evidence, outcome and limits."
+            ? "Show all problems to scan their summaries. Expand a problem in place for its evidence, outcome and limits."
             : "Show all steps to scan the complete outline, or open a stage to explore one area. Open a step for its explanation."}
         </p>
         <fieldset className="expansion-actions" aria-label="Journey expansion">
@@ -1042,11 +1059,13 @@ function RecordList({
   route,
   navigate,
   showAll,
+  expansion,
 }: {
   topic: Topic;
   route: Route;
   navigate: Navigate;
   showAll: boolean;
+  expansion: TimelineExpansion;
 }) {
   const records =
     route.lens === "problems"
@@ -1054,7 +1073,8 @@ function RecordList({
       : opportunitiesFor(topic.id);
   const listKey = `${topic.id}-${route.lens}`;
   const [visible, setVisible] = useState(recordLimits.get(listKey) ?? 6);
-  const limit = showAll ? records.length : visible;
+  const selectedIndex = records.findIndex((record) => record.id === route.item);
+  const limit = showAll ? records.length : Math.max(visible, selectedIndex + 1);
   return (
     <section className="record-section">
       <div className="subheading">
@@ -1071,7 +1091,7 @@ function RecordList({
       </div>
       <p className="section-description">
         {route.lens === "problems"
-          ? "Open an account for its evidence, outcome and limits."
+          ? "Expand a problem for its evidence, outcome and limits."
           : "Ideas to investigate, based on reported problems or required tasks. Open one to see its basis, existing capabilities and a proposed test."}
       </p>
       {records.length === 0 ? (
@@ -1100,35 +1120,39 @@ function RecordList({
         </div>
       ) : (
         <div className="record-list">
-          {records.slice(0, limit).map((record) => (
-            <JourneyLink
-              key={record.id}
-              to={{
-                topic: "kind" in record ? record.topic : topic.id,
-                lens: route.lens,
-                item: record.id,
-              }}
-              navigate={navigate}
-              className={`record-card ${route.lens}`}
-            >
-              <div className="record-meta">
-                <span className="evidence-badge">
-                  {"kind" in record ? record.kind : "Idea to investigate"}
+          {records.slice(0, limit).map((record) =>
+            "kind" in record ? (
+              <ProblemDisclosure
+                key={record.id}
+                problem={record}
+                topic={topic}
+                route={route}
+                navigate={navigate}
+                expansion={expansion}
+              />
+            ) : (
+              <JourneyLink
+                key={record.id}
+                to={{
+                  topic: topic.id,
+                  lens: route.lens,
+                  item: record.id,
+                }}
+                navigate={navigate}
+                className={`record-card ${route.lens}`}
+              >
+                <div className="record-meta">
+                  <span className="evidence-badge">Idea to investigate</span>
+                </div>
+                <h3>{record.title}</h3>
+                <p>{record.summary}</p>
+                <span className="record-action">
+                  Explore this opportunity
+                  <Icon name="arrow" size={16} />
                 </span>
-                {"kind" in record && (
-                  <span className="record-context">{record.context}</span>
-                )}
-              </div>
-              <h3>{record.title}</h3>
-              <p>{record.summary}</p>
-              <span className="record-action">
-                {route.lens === "problems"
-                  ? "Understand this problem"
-                  : "Explore this opportunity"}
-                <Icon name="arrow" size={16} />
-              </span>
-            </JourneyLink>
-          ))}
+              </JourneyLink>
+            ),
+          )}
         </div>
       )}
       {records.length > limit && (
@@ -1145,6 +1169,60 @@ function RecordList({
         </button>
       )}
     </section>
+  );
+}
+
+function ProblemDisclosure({
+  problem,
+  topic,
+  route,
+  navigate,
+  expansion,
+}: {
+  problem: Problem;
+  topic: Topic;
+  route: Route;
+  navigate: Navigate;
+  expansion: TimelineExpansion;
+}) {
+  const open = expansion.problemOpen(problem.id);
+  return (
+    <details className="record-card problems problem-disclosure" open={open}>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: Native summary handles Enter and Space; synchronize its disclosure with the shared route. */}
+      <summary
+        id={`record-${problem.id}`}
+        data-focus={`record-${problem.id}`}
+        aria-labelledby={`problem-title-${problem.id}`}
+        onClick={(event) => {
+          event.preventDefault();
+          expansion.setKeys([`problem:${problem.id}`], !open);
+          if (!open)
+            navigate(
+              { topic: problem.topic, lens: "problems", item: problem.id },
+              true,
+            );
+          else if (route.item === problem.id)
+            navigate({ topic: problem.topic, lens: "problems" }, true);
+        }}
+      >
+        <span className="record-meta">
+          <span className="evidence-badge">{problem.kind}</span>
+          <span className="record-context">{problem.context}</span>
+        </span>
+        <span className="problem-heading">
+          <span className="problem-title" id={`problem-title-${problem.id}`}>
+            {problem.title}
+          </span>
+          <Icon name="chevron" size={18} />
+        </span>
+        <span className="problem-summary">{problem.summary}</span>
+      </summary>
+      {open && (
+        <div className="problem-body">
+          <ProblemDetail problem={problem} topic={topic} navigate={navigate} />
+        </div>
+      )}
+    </details>
   );
 }
 
@@ -1165,13 +1243,31 @@ function ProblemDetail({
   return (
     <div className="detail-layout">
       <article className="evidence-detail">
-        <div className="evidence-context">
-          <span className="evidence-badge">{problem.kind}</span>
-        </div>
-        <p className="detail-context">{problem.context}</p>
         <div className="detail-section">
           <h2>What the research records</h2>
-          <p>{problem.evidence}</p>
+          <ul className="evidence-examples">
+            {problem.examples.map((example) => (
+              <li className="evidence-example" key={example.title}>
+                <h3>{example.title}</h3>
+                <p className="example-platform">{example.platform}</p>
+                <p className="example-date">
+                  {reportedDateLabel(example.reported)}
+                </p>
+                <p>{example.finding}</p>
+                <dl className="example-metadata">
+                  <div>
+                    <dt>Occurred</dt>
+                    <dd>{occurrenceDateLabel(example.occurred)}</dd>
+                  </div>
+                  <div>
+                    <dt>Evidence basis</dt>
+                    <dd>{example.basis}</dd>
+                  </div>
+                </dl>
+                <p className="example-limit">{example.limitation}</p>
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="detail-section">
           <h2>Why it matters to the customer</h2>
@@ -1226,17 +1322,6 @@ function ProblemDetail({
             </JourneyLink>
           ))}
         </div>
-        <JourneyLink
-          to={{
-            topic: topic.id,
-            lens: "problems",
-          }}
-          navigate={navigate}
-          className="text-action"
-        >
-          <Icon name="back" size={16} />
-          All problems in this area
-        </JourneyLink>
       </aside>
     </div>
   );

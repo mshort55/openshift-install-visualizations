@@ -1,6 +1,7 @@
 import { opportunities, problems } from "./data/evidence";
 import { stages } from "./data/stages";
 import { topics } from "./data/topics";
+import { occurrenceDateLabel, reportedDateLabel } from "./evidence-dates";
 import type { Lens, Route, Topic } from "./model";
 
 export { opportunities, problems, stages, topics };
@@ -191,7 +192,21 @@ export function searchJourney(query: string): SearchResult[] {
       title: problem.title,
       summary: problem.summary,
       context: "Customer problem",
-      searchText: `${problem.evidence} ${problem.impact} ${problem.outcome} ${problem.limit} ${problem.context}`,
+      searchText: [
+        problem.impact,
+        problem.outcome,
+        problem.limit,
+        problem.context,
+        ...problem.examples.flatMap((example) => [
+          example.title,
+          example.platform,
+          reportedDateLabel(example.reported),
+          occurrenceDateLabel(example.occurred),
+          example.basis,
+          example.finding,
+          example.limitation,
+        ]),
+      ].join(" "),
       route: {
         topic: problem.topic,
         lens: "problems" as const,

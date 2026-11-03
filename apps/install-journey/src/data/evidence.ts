@@ -7,11 +7,9 @@ export const problems: Problem[] = [
     relatedTopics: ["dns", "hardware", "security"],
     title: "Infrastructure preparation stalls across team handoffs",
     summary:
-      "The platform team waits for hardware, network access and corrected information before it can provision the cluster.",
+      "The platform team waits for equipment, network access, corrected information, funding or approval before it can provision the intended environment.",
     context:
-      "2026 interviews · bare metal and vSphere · infrastructure preparation",
-    evidence:
-      "Teams described coordinating hardware, cabling, remote management, firewall rules, IP ranges and DNS with other owners. One account described repeated tickets when delivered network information failed reachability checks. Preparation estimates spanned weeks or months.",
+      "2025–2026 reports · physical preparation, vSphere and planned environments",
     impact:
       "Provisioning waits while teams schedule work, clarify requests and correct prerequisites.",
     outcome:
@@ -19,6 +17,94 @@ export const problems: Problem[] = [
     limit:
       "Elapsed preparation estimates include organizational work and experimentation. They are not installer-runtime benchmarks or evidence that a new tool can remove approval and capacity constraints.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "Physical preparation across owners",
+        platform: "Bare-metal platform preparation",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "dated",
+          period:
+            "Servers arrived in 2025; bare-metal installation work began several months later that year, inferred from the interview’s relative dates.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "Power, cabling, remote access, firewall rules, IP addresses and DNS required work across teams before repeatable builds became straightforward.",
+        limitation:
+          "This describes physical preparation and organizational waiting, without diagnosing a BMC or firmware defect.",
+      },
+      {
+        title: "Hosting and network requests",
+        platform: "OpenShift on vSphere",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the recent cluster-request dates were not supplied.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "Compute, DHCP, storage, DNS, certificates and credentials involved separate requests. The participant reported about two months of preparation for the recent example.",
+        limitation:
+          "This estimate includes gathering and correcting prerequisites; it is not installer runtime.",
+      },
+      {
+        title: "Network-team capacity",
+        platform: "On-premises virtualization pilot",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "Networking work waited while the network team handled other responsibilities.",
+        limitation:
+          "No queue duration was measured; the linked original transcript was unavailable.",
+      },
+      {
+        title: "Security approval",
+        platform: "An additional disconnected environment",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "An additional disconnected environment was awaiting cybersecurity approval.",
+        limitation:
+          "This environment is separate from a proposed future bare-metal AI deployment. The original transcript was unavailable.",
+      },
+      {
+        title: "Funding before further deployment",
+        platform: "Planned OpenShift deployment",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Direct research notes",
+        finding:
+          "A follow-up said deployment was not actively progressing while funding remained pending.",
+        limitation:
+          "This later funding update does not change the dates of the same organization’s earlier technical accounts.",
+      },
+    ],
   },
   {
     id: "missing-dependencies",
@@ -30,8 +116,6 @@ export const problems: Problem[] = [
       "Identity, certificates, required services and workload configuration can still need work after cluster creation succeeds.",
     context:
       "2025–2026 accounts · several platforms and installation workflows",
-    evidence:
-      "Teams configured identity, certificates and their selected platform services after base installation. One team repaired stuck configuration and stale inputs before accepting the platform. Virtualization accounts also described remaining storage and workload setup.",
     impact:
       "The first workload or team handover waits for the remaining configuration to be completed and checked.",
     outcome:
@@ -39,6 +123,77 @@ export const problems: Problem[] = [
     limit:
       "These accounts describe different completion boundaries. They do not establish a false ready indicator, a universal Operator bundle or a current missing-dependency defect in every installer.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "Accepting the configured platform",
+        platform: "OpenShift on vSphere",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "The team accepted the platform after its components were synced, certificates worked and normal users could log in. Configuration sometimes needed input repair; application-team onboarding followed separately.",
+        limitation:
+          "This is the team’s completion boundary, not proof the installer reported a false ready state.",
+      },
+      {
+        title: "Required components discovered after setup",
+        platform: "Bare-metal virtualization pilot context",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "the call recalls an earlier pilot, likely in 2025, but does not separately date the missing-component episode.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "The participant recalled missing required bare-metal or virtualization components and wanted clearer readiness checks.",
+        limitation:
+          "The exact missing Operator list and installer are not recorded. The original transcript was unavailable.",
+      },
+      {
+        title: "Learning which Operator is needed",
+        platform: "OpenShift Virtualization; node substrate unspecified",
+        reported: {
+          kind: "study",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the experience predates the report.",
+        },
+        basis: "Research report",
+        finding:
+          "A training course clarified the role of NMState and Operators for the participant’s intended configuration.",
+        limitation:
+          "A learning discovery does not establish that the installer silently omitted a required component.",
+      },
+      {
+        title: "Expected health and remediation configuration",
+        platform: "Partner’s virtualization setup experience",
+        reported: {
+          kind: "study",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the experience predates the report.",
+        },
+        basis: "Research report",
+        finding:
+          "The participant discovered that expected descheduler and health-check configuration still needed attention, and worried that less experienced customers would overlook it.",
+        limitation:
+          "The participant’s discovery is reported experience; the predicted downstream-customer consequence is hypothetical.",
+      },
+    ],
   },
   {
     id: "retry-work",
@@ -48,9 +203,7 @@ export const problems: Problem[] = [
     summary:
       "A failed attempt can leave provisioning resources or configuration jobs that need repair before work can continue.",
     context:
-      "2026 interviews · bare-metal provisioning and vSphere configuration",
-    evidence:
-      "One team described cleanup of provisioning resources and node disks after failed bare-metal builds. Another traced a failed post-install job from ACM into Ansible Automation Platform, repaired configuration inputs and used an indirect rerun.",
+      "Reported 2026 · bare-metal provisioning and vSphere configuration",
     impact:
       "Recovery requires knowledge of resources and tools beyond the initial creation workflow, adding work before the next attempt.",
     outcome:
@@ -58,6 +211,42 @@ export const problems: Problem[] = [
     limit:
       "Reported workarounds are not supported recovery instructions. The evidence does not measure retry frequency, prove configuration was lost or establish that every failure requires a fresh installation.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "Cleaning up a failed provisioning attempt",
+        platform: "Bare-metal provisioning",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "earlier failed builds were not individually dated.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "Cleanup involved provisioning resources, finalizers, namespaces and node disks. The participant found later-stage failures easier to revert.",
+        limitation:
+          "These are reported practices, not verified or supported recovery instructions. No data loss is established.",
+      },
+      {
+        title: "Repairing and rerunning a configuration job",
+        platform: "vSphere creation through ACM and AAP",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual configuration failures were not dated.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "The participant inspected AAP logs, repaired inputs such as stale tokens and used an indirect rerun of the ACM post-hook job.",
+        limitation:
+          "This is configuration recovery, not another physical disk-cleanup incident.",
+      },
+    ],
   },
   {
     id: "late-dependency",
@@ -67,9 +256,7 @@ export const problems: Problem[] = [
     summary:
       "An attempt exposes connectivity or configuration inputs that must be corrected before it can proceed.",
     context:
-      "2026 interviews · bare metal, Nutanix and vSphere · earlier reports retained",
-    evidence:
-      "Accounts described firewall and connectivity conditions affecting provisioning, regional proxy rules that allowed a workflow in one location but blocked it in another, and stale inputs that interrupted post-install configuration.",
+      "2026 interviews · Nutanix, vSphere and OpenStack · earlier failures recalled",
     impact:
       "Teams investigate the failure, return work to the responsible owner and repeat the affected steps.",
     outcome:
@@ -77,6 +264,60 @@ export const problems: Problem[] = [
     limit:
       "The accounts do not establish a shared root cause, that earlier checks passed or that current prerequisite validation is absent. Event versions and exact corrections are incomplete.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "Different proxy rules between regions",
+        platform: "OpenShift on Nutanix",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "regional installation failures occurred before the interview.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "A workflow that worked in North America failed in EMEA. Support helped identify endpoint access and proxy changes needed for the installer and underlying AHV hosts.",
+        limitation:
+          "The participant reported successful correction; this is a different mechanism from an image-distribution timeout.",
+      },
+      {
+        title: "Stale configuration inputs",
+        platform: "vSphere creation through ACM and AAP",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual failed builds were not dated.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "A configuration job could stop on an old token or other input that needed correction before rerunning.",
+        limitation:
+          "The account does not establish that an earlier validation passed or that all current checks miss the same inputs.",
+      },
+      {
+        title: "Earlier connectivity and DNS problems",
+        platform: "Automated service-provider workflow on OpenStack",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "these were recalled earlier issues.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "The participant recalled connectivity, proxy and stale-DNS problems, while describing the current setup positively and saying early problems were no longer occurring in the same way.",
+        limitation:
+          "Do not present the recalled DNS issue as an unresolved defect at the 2026 interview; the described clusters were connected.",
+      },
+    ],
   },
   {
     id: "unclear-progress",
@@ -86,36 +327,124 @@ export const problems: Problem[] = [
       "Finding the failed step requires tracing resources and logs across tools",
     summary:
       "A failed-build status can leave the operator following resource relationships and external job logs to decide what to fix.",
-    context:
-      "2026 interviews · provisioning and ACM/AAP configuration · older status studies",
-    evidence:
-      "One team needed resource-level knowledge beneath simple creation controls. Another followed post-install job references into a separate automation tool to inspect logs and repair inputs. Older studies also described quiet intervals and unclear reboot transitions.",
+    context: "Reported 2026 · provisioning and ACM/AAP configuration",
     impact:
       "The operator must locate the responsible component and relevant evidence before choosing whether to wait, repair or rerun.",
     outcome:
-      "Search and resource views helped one team investigate. Another found native provisioning errors understandable but needed additional investigation for the external configuration job.",
+      "The teams described investigation paths and later working builds. The AAP account identifies input correction and reruns; the exact remedy for the Ironic investigation is not established.",
     limit:
       "The recent evidence concerns specific diagnostic workflows, not every progress display or a confirmed local Agent CLI defect. Quiet-interval findings remain historical and do not provide a completion-time benchmark.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "Understanding the provisioning resources",
+        platform: "Bare-metal and hosted-control-plane work",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "the participant recalled an investigation lasting about three weeks.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "The participant investigated Ironic/image/version behavior and tag-versus-digest confusion in a restricted environment. Simple creation controls did not explain all the underlying resources.",
+        limitation:
+          "The exact cause, compatibility rule and remedy are unconfirmed. Three weeks describes investigation time, not installation runtime.",
+      },
+      {
+        title: "Following a job into another tool",
+        platform: "vSphere creation through ACM and AAP",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual configuration failures were not dated.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "Native provisioning errors were understandable, but an external configuration failure required following job references into AAP, reading its logs and repairing inputs.",
+        limitation:
+          "This supports a specific cross-tool diagnostic burden, not a defect in every progress display.",
+      },
+    ],
   },
   {
     id: "offline-content",
     topic: "disconnected",
     relatedTopics: ["content", "image-access"],
-    title: "Preparing mirrored content adds work to disconnected deployment",
+    title:
+      "Preparing and delivering content adds work in restricted environments",
     summary:
-      "Teams using a mirror-based workflow must prepare the required images and registry before installing at a restricted site.",
+      "Teams need the right images and approved ways to deliver them to each environment; preparing a mirror may be only part of the work.",
     context:
-      "2026 partner call notes · disconnected deployments · installer unspecified",
-    evidence:
-      "Partner-reported accounts identified mirror-registry setup as a difficulty in disconnected cluster deployment. Separate maintenance accounts described checking Operator dependencies and updating mirrored content for upgrades.",
+      "2026 reports · disconnected workflows and restricted security zones",
     impact:
       "Content preparation adds setup work before deployment and creates a separate maintenance responsibility.",
     outcome:
-      "The partner requested an offline package and described continued use of its existing mirror-based workflow. A separate maintenance account reported improved mirroring reliability after changing tool versions.",
+      "One organization already used a custom artifact-distribution path. Another reported improved mirroring after changing tool versions; the partner’s requested offline bundle remained a proposal.",
     limit:
-      "The partner notes are copied meeting summaries, not observed installation runs. Initial setup and later updates are separate accounts. They do not establish that every current installation path requires an external registry or that a proposed bundle resolved the difficulty.",
+      "Initial preparation, content updates and management connectivity are distinct tasks. These accounts do not establish that every installation path requires an external registry or that all proxy environments are air-gapped.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "Preparing a disconnected deployment",
+        platform:
+          "Partner-reported disconnected workflow; installer unspecified",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual customer deployments were not dated.",
+        },
+        basis: "Research report",
+        finding:
+          "The partner described mirroring as a deployment difficulty and requested a downloadable offline bundle.",
+        limitation:
+          "The partner continued using the existing mirror-based workflow. The requested bundle is not a demonstrated remedy.",
+      },
+      {
+        title: "Delivering artifacts through security zones",
+        platform: "Bare-metal platform and hosted-control-plane context",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "A custom system pushed or pulled OCI artifacts between permitted hops to distribute content and instructions. Security-zone connectivity also limited centralized management.",
+        limitation:
+          "The distribution system was already working. Content delivery and management reachability are separate jobs.",
+      },
+      {
+        title: "Maintaining the required image set",
+        platform: "Disconnected OpenShift environments",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "earlier mirroring timeouts and the transition date were not supplied.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "Dependency and image preparation remained necessary, but the participant reported improved mirroring after moving from oc-mirror v1 to v2.",
+        limitation:
+          "This is maintenance context, not another initial-install incident. The original transcript was unavailable.",
+      },
+    ],
   },
   {
     id: "feasibility",
@@ -124,11 +453,9 @@ export const problems: Problem[] = [
     title:
       "Existing hardware may not fit the planned workload and storage design",
     summary:
-      "Missing connections, limited capacity or storage assumptions can prevent a planned workload from running on the available equipment.",
+      "Unconnected storage, limited lab resources and hardware or budget assumptions can constrain the intended workload before the full design is proven.",
     context:
-      "2025–2026 accounts · physical pilots, planned deployments and labs",
-    evidence:
-      "Accounts described storage links or adapters still needing work, purchased hardware that did not match the proposed storage design, and virtualization requirements that exceeded comfortable lab capacity.",
+      "Reported 2024–2026 · hardware evaluation, on-premises pilot and labs",
     impact:
       "Customers can invest in setup before discovering that the intended workload needs different equipment, capacity or a revised design.",
     outcome:
@@ -136,6 +463,59 @@ export const problems: Problem[] = [
     limit:
       "These accounts are not sizing benchmarks or universal storage-product requirements. Service-model restrictions, procurement and funding are separate feasibility decisions and should be identified explicitly.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "Hardware and budget during evaluation",
+        platform: "Evaluation of virtualization alternatives",
+        reported: {
+          kind: "reported",
+          date: "2024",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the hardware had already been purchased by the call.",
+        },
+        basis: "Direct research notes",
+        finding:
+          "Budget and hardware lacking the discussed internal Ceph storage complicated the team’s evaluation.",
+        limitation:
+          "The discussion covered several alternatives. It does not establish a diagnosed OCP/Ceph installation failure.",
+      },
+      {
+        title: "Connecting the available storage",
+        platform: "On-premises pilot; OCP node substrate unconfirmed",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "External iSCSI storage still needed connections or adapters, and the team was considering better-equipped hosts.",
+        limitation:
+          "Hardware changes were plans. Neither the storage path nor the host was established as the cause of a separate VM reservation error; the original transcript was unavailable.",
+      },
+      {
+        title: "Capacity for a useful learning lab",
+        platform: "OpenShift Virtualization labs",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "Limited lab resources and storage overhead constrained experimentation with the intended environment.",
+        limitation:
+          "This supplies no sizing threshold or verified resource-allocation cause. The original transcript was unavailable.",
+      },
+    ],
   },
   {
     id: "storage-not-usable",
@@ -146,9 +526,7 @@ export const problems: Problem[] = [
     summary:
       "Storage integration, a default storage class and workload-specific settings can remain unfinished after console access is available.",
     context:
-      "2025 accounts · bare-metal Assisted setup and VM storage configuration",
-    evidence:
-      "A bare-metal Assisted user still needed a default storage class and guidance for the existing storage integration after selecting virtualization. In a separate account, a copied storage-profile example did not support the required live migration.",
+      "2025 study report and 2026 call · bare-metal setup and VM storage",
     impact:
       "A VM can remain blocked on storage setup, or a working VM can fail a required maintenance operation.",
     outcome:
@@ -156,6 +534,60 @@ export const problems: Problem[] = [
     limit:
       "These are conditional examples of remaining workload configuration, not additional independent confirmation of every readiness problem. Migration matters only where required. The accounts establish neither a universal access-mode rule nor a current defect on the reference release.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "Completing storage after virtualization setup",
+        platform: "Bare-metal Assisted installation",
+        reported: {
+          kind: "study",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the experience predates the report.",
+        },
+        basis: "Research report",
+        finding:
+          "After selecting virtualization, the participant still needed a usable default storage class and guidance for integrating existing storage.",
+        limitation:
+          "The report does not establish when that integration was completed; suggested storage-driver examples are not confirmed hardware inventory.",
+      },
+      {
+        title: "Checking the required live-migration behavior",
+        platform:
+          "OpenShift Virtualization; specific node substrate unconfirmed",
+        reported: {
+          kind: "study",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the experience predates the report.",
+        },
+        basis: "Research report",
+        finding:
+          "A copied storage-profile example did not support the desired live migration. A console hint led the participant to correct the profile and achieve it.",
+        limitation:
+          "Preserve the successful correction; this is not a universal access-mode rule for every VM.",
+      },
+      {
+        title: "A physical dependency still outstanding",
+        platform: "On-premises virtualization pilot",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "The planned external-storage path was not yet connected. Work remained on links or adapters before software integration could be validated.",
+        limitation:
+          "The storage issue was not established as the cause of the pilot’s separate memory-reservation error. The original transcript was unavailable.",
+      },
+    ],
   },
   {
     id: "workload-network-gap",
@@ -167,8 +599,6 @@ export const problems: Problem[] = [
       "Operators must translate the desired site connection into host settings and workload attachments before a VM can use it.",
     context:
       "2025–2026 accounts · virtualization and shared OpenShift networking",
-    evidence:
-      "Accounts described discovering the Operator-managed configuration needed for a familiar bridge task, understanding namespace-scoped network attachments and learning network/storage interactions through lab experimentation.",
     impact:
       "Workload connectivity takes additional configuration and specialist help after base installation.",
     outcome:
@@ -176,6 +606,94 @@ export const problems: Problem[] = [
     limit:
       "The accounts concern different configurations and releases. They do not establish one shared networking defect or imply that every VM requires the same bridge or Operator.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "A familiar bridge through cluster configuration",
+        platform:
+          "OpenShift Virtualization; specific node substrate unconfirmed",
+        reported: {
+          kind: "study",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the experience predates the report.",
+        },
+        basis: "Research report",
+        finding:
+          "The participant needed an unfamiliar Operator-managed path to configure a bridge on the immutable worker OS.",
+        limitation:
+          "The wider estate included physical and test environments; the report does not locate every configuration issue on a physical node.",
+      },
+      {
+        title: "Mapping an existing network to the target",
+        platform: "Enterprise virtualization migration",
+        reported: {
+          kind: "study",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the experience predates the report.",
+        },
+        basis: "Research report",
+        finding:
+          "Numerous VLANs and IP requirements complicated source-to-target network mappings during migration preparation.",
+        limitation:
+          "This concerns the intended workload connection, not an initial installer network failure.",
+      },
+      {
+        title: "Namespace-scoped attachments",
+        platform: "Partner observations of virtualization users",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual customer episodes were not dated.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "Presales staff described difficulty with NNCP configuration and understanding namespace-scoped network attachment definitions.",
+        limitation:
+          "Partner-reported patterns do not establish a named deployment failure or a confirmed product defect. The original transcript was unavailable.",
+      },
+      {
+        title: "Using the permitted administration path",
+        platform: "Restricted cluster administration",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "The kube API was not exposed for security reasons. The team primarily used console access, while automation used CLI and Ansible.",
+        limitation:
+          "This access constraint predates the same organization’s 2026 BGP account. CLI was not universally prohibited; the original transcript was unavailable.",
+      },
+      {
+        title: "BGP management in the console",
+        platform: "Bare-metal platform networking context",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "The participant found BGP routes difficult to manage in the console and was evaluating alternatives.",
+        limitation:
+          "No verified remedy or present-release console capability claim follows from this account.",
+      },
+    ],
   },
   {
     id: "effective-access",
@@ -184,10 +702,7 @@ export const problems: Problem[] = [
     title: "Administrators struggle to determine what a user can actually do",
     summary:
       "Permissions inherited through groups and cluster or namespace bindings make access difficult to explain and troubleshoot.",
-    context:
-      "2025 · nine OpenShift interview participants · mixed platforms",
-    evidence:
-      "Interview participants described manual auditing of effective permissions and difficulty identifying the roles behind permission-denied responses. Some used Git-managed configuration and the UI for investigation; others fell back on broad default roles.",
+    context: "2025 interviews and 2026 partner reports · mixed platforms",
     impact:
       "Administrators spend effort tracing permissions and cannot confidently verify delegated tasks from the role names alone.",
     outcome:
@@ -195,6 +710,58 @@ export const problems: Problem[] = [
     limit:
       "Interview findings are distinct from the study’s prototype tasks. They do not establish a bare-metal installation failure, a faulty authorization engine or that every receiving user lacks required access.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "Tracing effective permissions",
+        platform: "Mixed OpenShift platforms; nine interview participants",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Research report",
+        finding:
+          "Participants manually traced groups and cluster or namespace bindings to understand permissions. Some used Git-managed configuration and the UI for investigation; others relied on broad default roles.",
+        limitation:
+          "These are operational interview findings, separate from prototype tasks. They do not establish a faulty authorization engine.",
+      },
+      {
+        title: "Finding permissions for a VM task",
+        platform: "Partner observations of virtualization users",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual customer episodes were not dated.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "Users struggled to configure permissions for actions such as powering VMs on or off through the GUI.",
+        limitation:
+          "The original transcript was unavailable; no authorization-engine defect was verified.",
+      },
+      {
+        title: "Navigation with namespace access",
+        platform: "Partner-reported restricted-user workflow",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual occurrences were not dated.",
+        },
+        basis: "Research report",
+        finding:
+          "The partner reported missing search or VM-console-link behavior despite believing the roles were correctly configured.",
+        limitation: "Bindings and root cause were not independently verified.",
+      },
+    ],
   },
   {
     id: "network-layers",
@@ -204,9 +771,7 @@ export const problems: Problem[] = [
     summary:
       "Customers can mistake cluster-internal address questions for changes to physical switches or firewalls.",
     context:
-      "2025 virtualization onboarding · partner-relayed customer account",
-    evidence:
-      "A partner described a customer interpreting machine, pod and service network questions as physical infrastructure work. The account illustrates difficulty mapping existing networking knowledge to OpenShift concepts.",
+      "Study report 2025 · partner-relayed example · occurrence date unknown",
     impact:
       "The customer can pursue unnecessary infrastructure changes or need clarification before completing configuration.",
     outcome:
@@ -214,6 +779,25 @@ export const problems: Problem[] = [
     limit:
       "This is bounded, partner-relayed evidence. Separate firewall coordination and VM attachment problems do not independently corroborate this comprehension issue.",
     kind: "Reported experience",
+    examples: [
+      {
+        title: "Interpreting network questions at the physical layer",
+        platform: "Partner-relayed customer example",
+        reported: {
+          kind: "study",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the experience predates the report.",
+        },
+        basis: "Research report",
+        finding:
+          "A partner described a customer interpreting machine, pod and service network questions as three physical networks to configure.",
+        limitation:
+          "The source alternates agent/assisted terminology. No exact installer version, measured delay or verified final configuration is established.",
+      },
+    ],
   },
   {
     id: "method-choice",
@@ -224,16 +808,51 @@ export const problems: Problem[] = [
     summary:
       "Customers filter installation guidance against their networking and provisioning constraints, then maintain local instructions.",
     context:
-      "Historical VMware account and 2022 field reports · current validation needed",
-    evidence:
-      "A team with no-DHCP VLAN constraints selected UPI and maintained custom documentation. Historical field reports also described confusion among installation choices.",
+      "2026 VMware account; call date disputed · 2022 field context retained",
     impact:
       "Choosing and documenting an applicable workflow adds effort before installation.",
     outcome:
       "The team established a local UPI path. More recent platform-transition accounts describe extra creation and import steps, which are a separate workflow-fragmentation concern.",
     limit:
       "The evidence does not establish that static addressing currently requires UPI. Platform switching is not independent confirmation that users cannot choose among present-day bare-metal installers.",
-    kind: "Historical evidence",
+    kind: "Reported experience",
+    examples: [
+      {
+        title: "Choosing and documenting a local workflow",
+        platform: "OpenShift on VMware with no-DHCP server VLANs",
+        reported: {
+          kind: "reported",
+          date: "2026 (exact source date disputed)",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the VMware deployment preceded the disputed call date.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "The team selected UPI under its site constraints, filtered complex documentation and maintained local deployment and scaling instructions.",
+        limitation:
+          "The call heading and linked meeting title disagree; the original was unavailable. This does not prove static addressing currently requires UPI.",
+      },
+      {
+        title: "Explaining installation alternatives",
+        platform: "Five internal EMEA field specialists",
+        reported: {
+          kind: "reported",
+          date: "2022",
+        },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "the focus group recalled earlier customer-support experiences.",
+        },
+        basis: "Historical field report",
+        finding:
+          "Specialists described confusion among installation methods and repeated work to establish prerequisites.",
+        limitation:
+          "Historical field experience, not five independent customer incidents or evidence of current unsupported static-IP behavior.",
+      },
+    ],
   },
   {
     id: "boot-handoff",
@@ -244,8 +863,6 @@ export const problems: Problem[] = [
       "Participants were unsure whether copying a URL, downloading an image and hosting it were alternatives or consecutive tasks.",
     context:
       "2021–2022 · internal or mixed Assisted Installer usability studies",
-    evidence:
-      "Participants struggled to interpret ISO generation and delivery choices. Host identification and discovery approvals also needed explanation in the tested workflows.",
     impact:
       "Participants could not confidently move from the generated artifact to the intended ready hosts.",
     outcome:
@@ -253,6 +870,505 @@ export const problems: Problem[] = [
     limit:
       "These are historical usability findings, not a demonstrated current physical-boot defect. Validate the selected delivery and discovery workflow before proposing a change.",
     kind: "Historical evidence",
+    examples: [
+      {
+        title: "What to do with the Discovery ISO",
+        platform: "Assisted Installer; eight internal test participants",
+        reported: {
+          kind: "study",
+          date: "2021",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual test dates were not supplied.",
+        },
+        basis: "Historical usability study",
+        finding:
+          "Participants were unsure whether ISO generation was required and what to do with the resulting image or URL.",
+        limitation:
+          "Internal proxy usability, not a current customer firmware, BMC or PXE failure.",
+      },
+      {
+        title: "Understanding host discovery and allocation",
+        platform: "ACM 2.6 CIM and hosted-control-plane test",
+        reported: {
+          kind: "study",
+          date: "2022",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual test dates were not supplied.",
+        },
+        basis: "Historical usability study",
+        finding:
+          "Participants needed clearer host/infrastructure terminology, status and allocation feedback.",
+        limitation:
+          "One customer and eight internal proxies took part. These findings do not establish current physical-execution defects.",
+      },
+      {
+        title: "A later successful base-install experience",
+        platform: "OpenShift Virtualization lab",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the Assisted installations preceded the call.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "The participant described Assisted media generation and base installation positively.",
+        limitation:
+          "This later experience does not establish that every earlier usability issue was resolved. The original transcript was unavailable.",
+      },
+    ],
+  },
+  {
+    id: "first-vm-blocked",
+    topic: "workloads",
+    relatedTopics: [],
+    title: "Creating the first VM can remain blocked after cluster setup",
+    summary:
+      "An installed cluster can still leave an administrator unable to complete VM configuration or resolve a resource-reservation error.",
+    context:
+      "Virtualization pilot · reported 2025 and 2026 · on-premises",
+    examples: [
+      {
+        title: "Completing the VM configuration",
+        platform: "On-premises pilot; OCP node substrate unconfirmed",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "Logical versus bootable volumes, instance types, ISO handling and retaining project context impeded first-VM work.",
+        limitation:
+          "The original transcript was unavailable. Confusion alone does not establish a product defect or an actual wrong-project deployment.",
+      },
+      {
+        title: "VM creation blocked on a reservation error",
+        platform: "Same on-premises pilot",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "A reported memory-reservation error prevented VM creation and the intended availability tests. A possible configuration change was identified but not confirmed as a fix.",
+        limitation:
+          "The error was not log-verified and its cause is unknown. A named physical server does not prove OCP nodes ran directly on it.",
+      },
+    ],
+    impact: "The intended VMs and their availability tests could not proceed.",
+    outcome:
+      "Training helped, but the retained account does not record a verified remedy for the reservation error.",
+    limit:
+      "These are two reports from one pilot. Hardware capacity and unconnected storage are not established as the error’s cause; blocked HA testing is not proof that HA failed.",
+    kind: "Reported experience",
+  },
+  {
+    id: "support-evidence-gap",
+    topic: "support",
+    relatedTopics: [],
+    title:
+      "Collecting diagnostic evidence can require additional skills or access",
+    summary:
+      "Users can struggle to locate and collect useful diagnostic evidence when Linux knowledge, tool familiarity or access to infrastructure is limited.",
+    context: "Post-install diagnosis · reports from 2025 and 2026",
+    examples: [
+      {
+        title: "Interpreting a POC alert and gathering evidence",
+        platform: "Virtualization evaluation",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the POC episode was reported at Summit.",
+        },
+        basis: "Direct research notes",
+        finding:
+          "An error or alert was difficult to interpret, and collecting a support bundle required unfamiliar host/container access.",
+        limitation:
+          "The exact physical substrate and technical cause of this episode are not established.",
+      },
+      {
+        title: "Support-bundle work for VMware-oriented staff",
+        platform: "Same organization; broader bare-metal pilot context",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the participant recalled earlier diagnostic work.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "The team described difficulty collecting and extracting must-gather evidence with limited Linux familiarity.",
+        limitation:
+          "The original transcript was unavailable. This follow-up is not a second independent organization.",
+      },
+      {
+        title: "Import troubleshooting and infrastructure visibility",
+        platform: "Virtualization lab and customer support contexts",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "import attempts preceded the call; infrastructure visibility remained a support constraint.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "Import attempts were abandoned partly because logs and unfamiliarity complicated diagnosis; fresh VM builds provided an alternative. Support also lacked visibility into some customer-owned infrastructure.",
+        limitation:
+          "Task abandonment does not mean platform abandonment. Tool familiarity and infrastructure access are separate constraints; the original transcript was unavailable.",
+      },
+    ],
+    impact:
+      "Collecting useful evidence required additional expertise or access; one import path was abandoned.",
+    outcome:
+      "Fresh VM builds provided an alternative for one participant. The records do not establish a complete remedy for the support-evidence barriers.",
+    limit:
+      "This concerns operating and support readiness after setup. It does not establish that logs or support tools are absent, or that a formal handover failed.",
+    kind: "Reported experience",
+  },
+  {
+    id: "operating-knowledge-gap",
+    topic: "acceptance",
+    relatedTopics: [],
+    title: "The wider operations team is still learning to support OpenShift",
+    summary:
+      "A working setup can coexist with infrastructure and support teams still learning OpenShift troubleshooting and operating procedures.",
+    context:
+      "Operations and support learning · 2026 call and 2025 study report",
+    examples: [
+      {
+        title: "Learning beyond the original builders",
+        platform: "Infrastructure and support-team transition",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Direct research notes",
+        finding:
+          "The original builders worked within a wider datacenter/support organization that was still learning OpenShift and Kubernetes troubleshooting.",
+        limitation:
+          "The linked original was unavailable. The notes do not establish exclusively held knowledge, a failed formal handover or a wholly physical estate.",
+      },
+      {
+        title: "Expert help for difficult problems",
+        platform: "Partner-supported virtualization environment",
+        reported: {
+          kind: "study",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the experience predates the report.",
+        },
+        basis: "Research report",
+        finding:
+          "Customers handled everyday VM tasks while harder issues returned to consultants for deeper investigation.",
+        limitation:
+          "Expert escalation is not proof the customer could not perform routine operations.",
+      },
+    ],
+    impact:
+      "More difficult operations and troubleshooting continued to require experienced help.",
+    outcome:
+      "The wider team was still learning; no measured handover delay or completed corrective intervention is recorded.",
+    limit:
+      "This is an ongoing learning transition. Platform/support teams and application teams have different responsibilities; the evidence does not establish an unusable platform or failed initial transfer.",
+    kind: "Reported experience",
+  },
+  {
+    id: "repeatable-configuration",
+    topic: "configuration",
+    relatedTopics: [],
+    title:
+      "Repeating a deployment requires maintaining configuration across tools and releases",
+    summary:
+      "Teams maintain deployment inputs, playbooks and integrations; platform or release changes create additional adaptation work.",
+    context:
+      "2025–2026 reports · deployment automation and platform transitions",
+    examples: [
+      {
+        title: "Adapting deployment playbooks",
+        platform: "Customized OpenShift deployment; substrate unspecified",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual release-change episodes were not dated.",
+        },
+        basis: "Direct research notes",
+        finding:
+          "Deployment playbooks needed release-dependent changes, and preserving configuration or understanding upgrade deltas was difficult.",
+        limitation:
+          "The operational mobility requirement in the same account is not an installation-duration target.",
+      },
+      {
+        title: "Finding integration inputs and examples",
+        platform: "ACM and Ansible Automation Platform",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "The participant could not find the built-in variables needed for ACM/AAP integration and wanted working source-control and deployment examples.",
+        limitation:
+          "The participant acknowledged they might be looking in the wrong place; this does not prove documentation was absent.",
+      },
+      {
+        title: "Changing the deployment workflow",
+        platform: "VMware-to-Nutanix platform transition",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "dated",
+          period:
+            "Migration began in 2025; manual work spanned roughly 9–10 months. Last new builds were reported in early 2026; individual difficulty dates are unknown.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "The team moved from an ACM-based creation flow to bastion-host configuration files and a separate ACM import. Automation was deferred because of time and build frequency.",
+        limitation:
+          "The same organization supplies the image-timeout account. This is additional workflow work, not evidence every custom integration is defective.",
+      },
+    ],
+    impact:
+      "Repeating or adapting a deployment requires maintained customer configuration and coordination between tools.",
+    outcome:
+      "Several workflows already worked. Participants still wanted clearer integration guidance or more repeatable automation.",
+    limit:
+      "This concerns deploying the next intended environment, separately from choosing a method or recovering a failed attempt. Platform-specific examples do not establish a universal installer limitation.",
+    kind: "Reported experience",
+  },
+  {
+    id: "identity-group-integration",
+    topic: "access",
+    relatedTopics: [],
+    title:
+      "Identity and group integration adds work before access can be delegated",
+    summary:
+      "Connecting directory groups to namespace and product roles can require synchronization, mapping and additional administration work.",
+    context: "2025 interviews · mixed platforms · earlier setup recalled",
+    examples: [
+      {
+        title: "Earlier manual group synchronization",
+        platform: "Enterprise OpenShift identity integration",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "the participant recalled early implementations without giving their dates.",
+        },
+        basis: "Research report",
+        finding:
+          "An infrastructure engineer recalled painful manual group synchronization during earlier OpenShift implementations.",
+        limitation:
+          "This recollection does not prove manual sync remained necessary at the interview or on the reference release.",
+      },
+      {
+        title: "Mapping groups and entitlements across tools",
+        platform: "Directory integration and delegated access",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Research report",
+        finding:
+          "Participants wanted clearer AD group mappings, less manual group-to-namespace/role linkage and more consistent identity entitlements across tools.",
+        limitation:
+          "Requests for automation do not establish an absent supported integration or a failed first login.",
+      },
+    ],
+    impact:
+      "Administrators perform synchronization and mapping work before intended access can be delegated and verified.",
+    outcome:
+      "Some teams already automated parts of access setup; the report does not establish that later proposals resolved the remaining concerns.",
+    limit:
+      "This explains how users and groups reach the permission model. The effective-access account separately concerns understanding the permissions they receive. Operational interviews remain distinct from prototype tests.",
+    kind: "Reported experience",
+  },
+  {
+    id: "image-distribution-timeout",
+    topic: "progress",
+    relatedTopics: [],
+    title: "Nutanix image distribution can time out before cluster creation",
+    summary:
+      "In a reported Nutanix workflow, distributing an image across sites timed out; staging it near the target reduced transfer time.",
+    context: "Nutanix only · reported 2026 · earlier OCP 4.17/4.18-era builds",
+    examples: [
+      {
+        title: "Staging an image near the target",
+        platform: "OpenShift on Nutanix AHV across sites",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "the participant recalled OCP 4.17/4.18-era builds; individual incident dates were not supplied.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "Image distribution through Prism Central across sites exceeded an approximately five-minute timeout in the reported workflow. Pre-downloading the image locally and specifying its location reduced transfer time.",
+        limitation:
+          "An earlier 2025 timeout note is from the same organization. It does not independently establish this detailed mechanism or a later-release fix.",
+      },
+    ],
+    impact:
+      "The image operation interrupted initial builds before the target cluster was created.",
+    outcome:
+      "The participant reported local staging as a working workaround. A suggested later-release fix was not verified.",
+    limit:
+      "This is Nutanix image provisioning before bootstrap, not bare-metal image pulling, disconnected mirroring or a current Agent CLI defect. The reported timeout is not a product-wide constant.",
+    kind: "Reported experience",
+  },
+  {
+    id: "security-policy-rollout",
+    topic: "acceptance",
+    relatedTopics: [],
+    title:
+      "Security rollout requires policy enforcement and developer agreement",
+    summary:
+      "Security rollout includes policy enforcement, workload validation and agreement with application teams beyond deploying the component.",
+    context:
+      "When policy rollout is part of acceptance · 2025 and 2026 reports",
+    examples: [
+      {
+        title: "Moving from tool setup to agreed enforcement",
+        platform: "Partner-supported ACS rollout",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "individual customer rollout dates were not supplied.",
+        },
+        basis: "Copied meeting notes",
+        finding:
+          "The partner reported two to three days for initial ACS setup, with policy enforcement and developer agreement taking substantially longer.",
+        limitation:
+          "No complete rollout duration or failed handover was recorded; the original transcript was unavailable.",
+      },
+      {
+        title: "Policy guidance and management integration",
+        platform: "ACS and ACM workflows",
+        reported: {
+          kind: "reported",
+          date: "2025",
+        },
+        occurred: {
+          kind: "ongoing",
+          detail: "start date unknown.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "The participant reported difficulty finding policy-as-code API guidance and wanted better integration between security and cluster-management workflows.",
+        limitation:
+          "A documentation complaint and integration request are not a measured approval delay or an observed policy-admission failure.",
+      },
+    ],
+    impact:
+      "Deploying the component does not finish the customer’s policy-rollout work.",
+    outcome:
+      "The accounts identify remaining enforcement, guidance and agreement work without a verified end-to-end remedy.",
+    limit:
+      "Use this account when the agreed initial security baseline requires it. ACS is not universal; requested scanning and hypothetical security tasks are requirements, not additional rollout failures.",
+    kind: "Reported experience",
+  },
+  {
+    id: "migration-workload-readiness",
+    topic: "workloads",
+    relatedTopics: [],
+    title:
+      "Moving existing workloads requires compatibility and guest preparation beyond cluster setup",
+    summary:
+      "A prepared target does not ensure an existing workload can move and start correctly; source compatibility and guest-specific preparation may remain.",
+    context:
+      "When migrating existing VMs · 2025 study report · occurrence dates unknown",
+    examples: [
+      {
+        title: "Compatibility and appliance preparation",
+        platform: "Partner-led migration to OpenShift Virtualization",
+        reported: {
+          kind: "study",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the experience predates the report.",
+        },
+        basis: "Research report",
+        finding:
+          "A fixed RHEV source complicated choosing compatible migration-tool and target versions. Appliance import also required disk conversion and choosing devices compatible with available guest drivers.",
+        limitation:
+          "Exact version ownership is ambiguous. Avoiding virtio devices when drivers were absent is not evidence drivers were installed or every guest is unsupported.",
+      },
+      {
+        title: "Legacy guests and application startup",
+        platform: "Enterprise virtualization migration",
+        reported: {
+          kind: "study",
+          date: "2025",
+        },
+        occurred: {
+          kind: "unknown",
+          detail: "the experience predates the report.",
+        },
+        basis: "Research report",
+        finding:
+          "A different participant described legacy guest compatibility, network mappings and application-specific pre/post actions needed for startup.",
+        limitation:
+          "Keep this account distinct from the partner’s appliance/device example. Resolution was not recorded for every task.",
+      },
+    ],
+    impact:
+      "Migration and application startup require preparation beyond creating and configuring the target cluster.",
+    outcome:
+      "Participants described troubleshooting and preparation work; the report does not establish a universal compatibility recipe or resolution of every task.",
+    limit:
+      "Conditional on migration being an intended first workload. VMware workload migration is not the same as installing OpenShift on VMware; later migration operations remain outside the core installation sequence.",
+    kind: "Reported experience",
   },
 ];
 
@@ -356,9 +1472,9 @@ export const opportunities: Opportunity[] = [
     summary:
       "Connect installation content to workload dependencies and usable local guidance.",
     intervention:
-      "Choose one disconnected scenario and produce an explicit content and transfer plan, including local instructions and a handoff for updates.",
+      "Start with one disconnected workload scenario. Identify the required content, dependencies and approved transfer paths, including environments that need multiple permitted hops. Test preparation and delivery separately.",
     existing:
-      "Mirroring, improved oc-mirror workflows and a documented self-contained-media path already exist. Compare their coverage before proposing new packaging.",
+      "Mirroring and documented disconnected workflows already exist, and one organization uses a working custom artifact-distribution system. The proposed kit remains an untested intervention; it is not a remedy for every management-connectivity restriction.",
     investigate:
       "Determine which missing artifacts or approval boundaries actually block the selected workload. Test the workflow without online documentation access.",
     measure:
@@ -402,13 +1518,17 @@ export const opportunities: Opportunity[] = [
     existing:
       "Assisted and Agent-based workflows already expose validation, progress and diagnostics. First establish which current explanation or transition is insufficient.",
     investigate:
-      "Observe the current workflow and distinguish a healthy wait from a failed provisioning or configuration step. Preserve existing status explanations that already help operators.",
+      "Observe provisioning, external configuration-job and platform-specific image-transfer failures separately. Confirm the component and stage responsible; the Nutanix image account does not establish a defect in the reference Agent workflow.",
     measure:
       "Time to find the failed component, correct wait-versus-repair decisions and successful handoff to the responsible owner.",
     basis: [
       {
         kind: "problem",
         id: "unclear-progress",
+      },
+      {
+        kind: "problem",
+        id: "image-distribution-timeout",
       },
     ],
   },
@@ -456,12 +1576,18 @@ export const opportunities: Opportunity[] = [
   },
   {
     id: "outcome-plan",
-    topics: ["platform-operators", "completion", "workloads", "access"],
+    topics: [
+      "platform-operators",
+      "completion",
+      "workloads",
+      "access",
+      "configuration",
+    ],
     title: "Carry the intended workload across the installation boundary",
     summary:
       "Show the configuration and verification still needed between base installation and the intended platform or workload.",
     intervention:
-      "Start with one supported workload scenario. Connect identity, certificates, required services, workload configuration, owners and verification across creation and post-install workflows.",
+      "Start with one supported workload scenario and its reusable deployment configuration. Connect identity, certificates, required services, owners and workload verification across creation and post-install workflows. Include migration preparation only when it is the intended first use.",
     existing:
       "Installer validation and workload post-installation guidance already exist. Test continuity and remaining-work visibility against current capabilities.",
     investigate:
@@ -472,6 +1598,18 @@ export const opportunities: Opportunity[] = [
       {
         kind: "problem",
         id: "missing-dependencies",
+      },
+      {
+        kind: "problem",
+        id: "first-vm-blocked",
+      },
+      {
+        kind: "problem",
+        id: "migration-workload-readiness",
+      },
+      {
+        kind: "problem",
+        id: "repeatable-configuration",
       },
     ],
   },
@@ -507,7 +1645,7 @@ export const opportunities: Opportunity[] = [
     summary:
       "Make effective access visible in the context of the workload and project.",
     intervention:
-      "Choose one delegated VM or workload task. Explain the relevant identity, role and scope, then verify the intended action with the receiving user.",
+      "Follow one intended user from directory/group mapping through effective permissions to a representative task. Test with the user’s actual privileges and identify which role, scope or identity connection needs attention.",
     existing:
       "Role bindings, identity integration and authorization checks are existing building blocks. The proposal connects them to an actual user task.",
     investigate:
@@ -519,6 +1657,10 @@ export const opportunities: Opportunity[] = [
         kind: "problem",
         id: "effective-access",
       },
+      {
+        kind: "problem",
+        id: "identity-group-integration",
+      },
     ],
   },
   {
@@ -528,7 +1670,7 @@ export const opportunities: Opportunity[] = [
     summary:
       "Replace assumed readiness with evidence from the customer’s required behavior.",
     intervention:
-      "Agree a small acceptance plan for a representative workload and selected maintenance or recovery scenario. Record results, limits and ownership.",
+      "Agree a small acceptance plan for a representative workload and the selected maintenance, recovery or security-policy requirements. Record results, limits and ownership with the responsible teams.",
     existing:
       "Monitoring, backup tools, workload checks and recovery procedures already exist. No single green badge proves every production requirement.",
     investigate:
@@ -544,6 +1686,10 @@ export const opportunities: Opportunity[] = [
         kind: "task",
         id: "backups",
       },
+      {
+        kind: "problem",
+        id: "security-policy-rollout",
+      },
     ],
   },
   {
@@ -557,7 +1703,7 @@ export const opportunities: Opportunity[] = [
     existing:
       "Logs, must-gather and support workflows already exist. The increment is making the applicable path usable to the team’s actual skills and access.",
     investigate:
-      "Observe a representative diagnostic task without installation specialists guiding every step. Establish whether there is a knowledge, access or tool-navigation gap; do not assume a failed handover.",
+      "Observe a representative diagnostic task without installation specialists guiding every step. Use the reported skill, evidence-collection and infrastructure-access barriers to distinguish what the receiving operator needs; do not assume a failed formal handover.",
     measure:
       "Independent diagnosis, useful evidence collection and a clear escalation path.",
     basis: [
@@ -568,6 +1714,14 @@ export const opportunities: Opportunity[] = [
       {
         kind: "problem",
         id: "unclear-progress",
+      },
+      {
+        kind: "problem",
+        id: "support-evidence-gap",
+      },
+      {
+        kind: "problem",
+        id: "operating-knowledge-gap",
       },
     ],
   },

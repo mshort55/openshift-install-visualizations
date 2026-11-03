@@ -809,22 +809,51 @@ button {
   border-radius: 10px;
   min-width: 0;
 }
-.evidence-context {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  font-size: 11px;
-  font-weight: 600;
-  color: #5a687d;
-}
-.detail-context {
-  font-size: 10px;
-  margin: 11px 0 23px;
-  line-height: 1.8;
-}
 .detail-section + .detail-section {
   margin-top: 25px;
+}
+.evidence-examples {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+}
+.evidence-example + .evidence-example {
+  border-top: 1px solid var(--line);
+  margin-top: 24px;
+  padding-top: 22px;
+}
+.evidence-example h3 {
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 6px;
+}
+.evidence-example .example-platform {
+  font-size: 12px;
+  margin: 0 0 4px;
+}
+.evidence-example .example-date {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.example-metadata {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 14px 0 8px;
+}
+.example-metadata > div + div {
+  margin-top: 8px;
+}
+.example-metadata dt {
+  font-weight: 700;
+}
+.example-metadata dd {
+  margin: 0;
+}
+.evidence-example .example-limit {
+  font-size: 12px;
+  line-height: 1.7;
 }
 .detail-section h2 {
   font-size: 15px;
@@ -1402,10 +1431,6 @@ button {
   .evidence-detail {
     padding: 21px;
   }
-  .evidence-context {
-    gap: 8px;
-    font-size: 10px;
-  }
   .detail-section h2 {
     font-size: 14px;
   }
@@ -1960,7 +1985,8 @@ button {
   line-height: 1.5;
   margin: 18px 0 24px;
 }
-.inline-record .detail-layout {
+.inline-record .detail-layout,
+.problem-disclosure .detail-layout {
   grid-template-columns: minmax(0, 1fr) 230px;
   gap: 28px;
 }
@@ -1980,12 +2006,74 @@ button {
   .timeline-controls .perspective-hint {
     display: none;
   }
-  .inline-record .detail-layout {
+  .inline-record .detail-layout,
+  .problem-disclosure .detail-layout {
     grid-template-columns: minmax(0, 1fr);
   }
   .phase-outcome {
     max-width: 190px;
     font-size: 10px;
+  }
+}
+
+details.problem-disclosure {
+  padding: 0;
+}
+.problem-disclosure > summary {
+  display: block;
+  padding: 22px 24px;
+  cursor: pointer;
+  list-style: none;
+  border-radius: inherit;
+  scroll-margin-top: 90px;
+}
+.problem-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.problem-disclosure > summary:hover {
+  background: var(--phase-soft);
+}
+.problem-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.problem-heading > svg {
+  margin-top: 4px;
+  color: var(--phase);
+}
+.problem-disclosure[open] .problem-heading > svg {
+  transform: rotate(90deg);
+}
+.problem-title {
+  font-family: "Manrope", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+.problem-summary {
+  display: block;
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.8;
+  max-width: 650px;
+}
+.problem-body {
+  padding: 24px;
+  border-top: 1px solid var(--line);
+}
+.problem-disclosure .evidence-detail {
+  padding: 0;
+  border: 0;
+}
+@media (max-width: 600px) {
+  .problem-disclosure > summary,
+  .problem-body {
+    padding: 16px;
+  }
+  .problem-title {
+    font-size: 14px;
   }
 }
 @media (max-width: 600px) {

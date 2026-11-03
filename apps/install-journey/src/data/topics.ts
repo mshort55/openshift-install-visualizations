@@ -1728,6 +1728,11 @@ export const topics: Topic[] = [
         detail:
           "Identify who can open Red Hat support cases and verify their support account access. Record the cluster ID and instructions for collecting oc adm must-gather data, including component-specific diagnostics where needed. Assign collection to an operator with the required cluster permissions.",
       },
+      {
+        title: "Rehearse a diagnostic task with the responsible operator",
+        detail:
+          "Use a representative workload problem to check whether the operator can find relevant evidence, collect it with their own access and identify the next escalation. Record any missing skills, infrastructure visibility or instructions, and assign an owner to close the gap.",
+      },
     ],
   },
   {
@@ -1739,9 +1744,9 @@ export const topics: Topic[] = [
           "A running first workload proves only the checks performed. Agree which maintenance, migration, failure, offline-continuity and recovery scenarios matter for this deployment. Record each result, limitation and owner. Existing rehearsals, planned tests and unresolved requirements must remain distinct; none alone establishes an outage.",
       },
       {
-        title: "Research question: operating knowledge at handover",
+        title: "Operating knowledge and the receiving team's responsibilities",
         detail:
-          "Existing learning and support accounts identify a need to check the receiving team's skills and instructions. They do not establish a failed initial handover. Observe a representative diagnostic task and determine whether any obstacle is missing knowledge, access, documentation or tool navigation.",
+          "Reported accounts describe wider infrastructure and support teams still learning OpenShift, with difficult work returning to experienced staff. Check the responsible operators' skills and instructions separately from application-team onboarding. A reported learning transition does not establish a failed formal handover; use a representative diagnostic task to identify the remaining gap.",
       },
     ],
     parent: "post-installation",
@@ -1761,7 +1766,7 @@ export const topics: Topic[] = [
       {
         title: "Review results and restrictions",
         detail:
-          "Link the earlier workload validation and agreed maintenance or recovery results. Identify failed or untested requirements, their impact on the intended workloads, and the owners responsible for resolving them. Include secret restoration and offline continuity where the agreed recovery scenario requires them.",
+          "Link the earlier workload validation and agreed maintenance or recovery results. Identify failed or untested requirements, their impact on the intended workloads, and the owners responsible for resolving them. Include secret restoration and offline continuity where the agreed recovery scenario requires them. When security-policy rollout is part of acceptance, review enforcement, workload validation and agreement with application teams separately from installing the tooling.",
       },
       {
         title: "Provide the team's operating information",
