@@ -135,8 +135,12 @@ export function parseRoute(hash: string): Route {
     const problem = problemsFor(topic).find((problem) => problem.id === item);
     if (problem) return { topic: problem.topic, lens, item };
   }
-  const records = lens === "opportunities" ? opportunitiesFor(topic) : [];
-  if (item && records.some((record) => record.id === item)) route.item = item;
+  if (lens === "opportunities" && item) {
+    const opportunity = opportunitiesFor(topic).find(
+      (opportunity) => opportunity.id === item,
+    );
+    if (opportunity) return { topic: opportunity.topics[0], lens, item };
+  }
   return route;
 }
 
@@ -223,7 +227,7 @@ export function searchJourney(query: string): SearchResult[] {
       context: "Improvement opportunity",
       searchText: `${opportunity.intervention} ${opportunity.existing} ${opportunity.investigate}`,
       route: {
-        topic: opportunity.topics[0] ?? "journey",
+        topic: opportunity.topics[0],
         lens: "opportunities" as const,
         item: opportunity.id,
       },

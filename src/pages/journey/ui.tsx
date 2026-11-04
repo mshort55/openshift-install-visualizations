@@ -13,7 +13,6 @@ import {
   childrenOf,
   lenses,
   opportunities,
-  opportunitiesFor,
   phaseIds,
   problems,
   routeHref,
@@ -26,7 +25,7 @@ import {
 import type { JourneyStage } from "./data/stages";
 import { occurrenceDateLabel, reportedDateLabel } from "./evidence-dates";
 import "./styles.css";
-import type { Opportunity, Problem, Route, Topic } from "./model";
+import type { Lens, Opportunity, Problem, Route, Topic } from "./model";
 
 type Navigate = (route: Route, preserve?: boolean) => void;
 // Keep expanded lists available when browser Back restores a previously opened record.
@@ -38,6 +37,14 @@ const phaseOutcomes = [
   "Platform tested & team access verified",
 ];
 const methodIds = new Set(childrenOf("approach").map((topic) => topic.id));
+
+function recordsAtTopic(id: string, lens: Lens) {
+  return lens === "problems"
+    ? problems.filter((problem) => problem.topic === id)
+    : lens === "opportunities"
+      ? opportunities.filter((opportunity) => opportunity.topics[0] === id)
+      : [];
+}
 
 function hasContext(id: string): boolean {
   return topicById.get(id)?.kind !== "group";
@@ -56,8 +63,8 @@ function useTimelineExpansion(
   { opened, setOpened }: ReturnType<typeof useJourneySession>,
 ) {
   useEffect(() => {
-    if (route.lens !== "problems" || !route.item) return;
-    const key = `problem:${route.item}`;
+    if (route.lens === "process" || !route.item) return;
+    const key = `${route.lens}:${route.item}`;
     setOpened((current) =>
       current.has(key) ? current : new Set([...current, key]),
     );
@@ -71,9 +78,8 @@ function useTimelineExpansion(
     opened.has(`topic:${id}`);
   const detailOpen = (id: string) => opened.has(`detail:${id}`);
   const recordOpen = (id: string) => opened.has(`records:${id}`);
-  const problemOpen = (id: string) =>
-    (route.lens === "problems" && route.item === id) ||
-    opened.has(`problem:${id}`);
+  const disclosureOpen = (lens: "problems" | "opportunities", id: string) =>
+    (route.lens === lens && route.item === id) || opened.has(`${lens}:${id}`);
   const methodOpen = (id: string) => opened.has(`methods:${id}`);
   const comparisonOpen = () =>
     methodIds.has(route.topic) || opened.has("comparison:approach");
@@ -91,16 +97,16 @@ function useTimelineExpansion(
     const keys: string[] = [];
     if (level !== "overview") {
       const expandedStages =
-        level === "steps" && route.lens === "problems"
+        level === "steps" && route.lens !== "process"
           ? stages.filter((stage) =>
-              problems.some(
-                (problem) => stageForTopic(problem.topic)?.id === stage.id,
+              topics.some(
+                (topic) =>
+                  stageForTopic(topic.id)?.id === stage.id &&
+                  recordsAtTopic(topic.id, route.lens).length > 0,
               ),
             )
           : stages;
       keys.push(...expandedStages.map((stage) => `stage:${stage.id}`));
-      if (level === "details")
-        keys.push(...problems.map((problem) => `problem:${problem.id}`));
       for (const topic of topics) {
         if (
           !topic.parent ||
@@ -110,13 +116,15 @@ function useTimelineExpansion(
           continue;
         if (level === "details") {
           keys.push(`topic:${topic.id}`, `records:${topic.id}`);
+          keys.push(
+            ...recordsAtTopic(topic.id, route.lens).map(
+              (record) => `${route.lens}:${record.id}`,
+            ),
+          );
           if (hasContext(topic.id)) keys.push(`detail:${topic.id}`);
           if (topic.id === "approach")
             keys.push("methods:approach", "comparison:approach");
-        } else if (
-          route.lens === "problems" &&
-          problems.some((problem) => problem.topic === topic.id)
-        ) {
+        } else if (recordsAtTopic(topic.id, route.lens).length > 0) {
           keys.push(`topic:${topic.id}`, `records:${topic.id}`);
         }
       }
@@ -128,7 +136,7 @@ function useTimelineExpansion(
     topicOpen,
     detailOpen,
     recordOpen,
-    problemOpen,
+    disclosureOpen,
     methodOpen,
     comparisonOpen,
     setLevel,
@@ -493,14 +501,7 @@ function TimelineStep({
       route.lens !== "process");
   const children = childrenOf(topic.id);
   const isGroup = topic.kind === "group";
-  const records =
-    route.lens === "problems"
-      ? problems.filter((problem) => problem.topic === topic.id)
-      : opportunitiesFor(topic.id);
-  const opportunity =
-    selected && route.lens === "opportunities"
-      ? opportunities.find((item) => item.id === route.item)
-      : undefined;
+  const records = recordsAtTopic(topic.id, route.lens);
   const closeRoute: Route = {
     topic: stage.phase,
     stage: stage.id,
@@ -584,40 +585,7 @@ function TimelineStep({
             <p className="step-summary">{topic.summary}</p>
             {(!isGroup || route.lens !== "process") && (
               <div className="step-detail">
-                {opportunity ? (
-                  <>
-                    {expansion.recordOpen(topic.id) && (
-                      <RecordList
-                        key={`${topic.id}-${route.lens}`}
-                        topic={topic}
-                        route={route}
-                        navigate={navigate}
-                        showAll
-                        expansion={expansion}
-                      />
-                    )}
-                    <section
-                      id={`record-${route.item}`}
-                      tabIndex={-1}
-                      className="inline-record"
-                    >
-                      <JourneyLink
-                        to={{ topic: topic.id, lens: route.lens }}
-                        navigate={navigate}
-                        className="text-action"
-                      >
-                        <Icon name="back" size={16} />
-                        Back to opportunities in this step
-                      </JourneyLink>
-                      <h5>{opportunity.title}</h5>
-                      <OpportunityDetail
-                        opportunity={opportunity}
-                        topic={topic}
-                        navigate={navigate}
-                      />
-                    </section>
-                  </>
-                ) : route.lens === "process" ? (
+                {route.lens === "process" ? (
                   <>
                     <Process topic={topic} navigate={navigate} />
                     {topic.id === "approach" && (
@@ -693,7 +661,9 @@ function Timeline({
         <p>
           {route.lens === "problems"
             ? "Show all problems to scan their summaries. Expand a problem in place for its evidence, outcome and limits."
-            : "Show all steps to scan the complete outline, or open a stage to explore one area. Open a step for its explanation."}
+            : route.lens === "opportunities"
+              ? "Show all opportunities to scan their summaries. Expand an opportunity in place for its basis, existing capabilities and proposed test."
+              : "Show all steps to scan the complete outline, or open a stage to explore one area. Open a step for its explanation."}
         </p>
         <fieldset className="expansion-actions" aria-label="Journey expansion">
           <button
@@ -703,7 +673,11 @@ function Timeline({
             onClick={() => setLevel("steps")}
           >
             <Icon name="layers" size={16} />
-            {route.lens === "problems" ? "Show All Problems" : "Show all steps"}
+            {route.lens === "problems"
+              ? "Show All Problems"
+              : route.lens === "opportunities"
+                ? "Show all opportunities"
+                : "Show all steps"}
           </button>
           <button
             type="button"
@@ -712,7 +686,9 @@ function Timeline({
             onClick={() => setLevel("details")}
           >
             <Icon name="book" size={16} />
-            Expand all details
+            {route.lens === "opportunities"
+              ? "Expand all opportunities"
+              : "Expand all details"}
           </button>
           <button
             type="button"
@@ -1043,10 +1019,7 @@ function RecordList({
   showAll: boolean;
   expansion: TimelineExpansion;
 }) {
-  const records =
-    route.lens === "problems"
-      ? problems.filter((problem) => problem.topic === topic.id)
-      : opportunitiesFor(topic.id);
+  const records = recordsAtTopic(topic.id, route.lens);
   const listKey = `${topic.id}-${route.lens}`;
   const [visible, setVisible] = useState(recordLimits.get(listKey) ?? 6);
   const selectedIndex = records.findIndex((record) => record.id === route.item);
@@ -1068,7 +1041,7 @@ function RecordList({
       <p className="section-description">
         {route.lens === "problems"
           ? "Expand a problem for its evidence, outcome and limits."
-          : "Ideas to investigate, based on reported problems or required tasks. Open one to see its basis, existing capabilities and a proposed test."}
+          : "Ideas to investigate, based on reported problems or required tasks. Expand an opportunity for its basis, existing capabilities and a proposed test."}
       </p>
       {records.length === 0 ? (
         <div className="empty-state">
@@ -1081,54 +1054,21 @@ function RecordList({
           <p>
             {route.lens === "problems"
               ? "No account is assigned to this step. Use Show All Problems to scan the recorded accounts."
-              : "This is a coverage boundary, not evidence that the workflow has no difficulty. Explore the parent area for related findings."}
+              : "No opportunity is assigned to this step. Use Show all opportunities to scan the candidate ideas."}
           </p>
-          {topic.parent && route.lens !== "problems" && (
-            <JourneyLink
-              to={{ topic: topic.parent, lens: route.lens }}
-              navigate={navigate}
-              className="secondary-button"
-            >
-              Explore {topicById.get(topic.parent)?.title}
-              <Icon name="arrow" size={16} />
-            </JourneyLink>
-          )}
         </div>
       ) : (
         <div className="record-list">
-          {records.slice(0, limit).map((record) =>
-            "kind" in record ? (
-              <ProblemDisclosure
-                key={record.id}
-                problem={record}
-                topic={topic}
-                route={route}
-                navigate={navigate}
-                expansion={expansion}
-              />
-            ) : (
-              <JourneyLink
-                key={record.id}
-                to={{
-                  topic: topic.id,
-                  lens: route.lens,
-                  item: record.id,
-                }}
-                navigate={navigate}
-                className={`record-card ${route.lens}`}
-              >
-                <div className="record-meta">
-                  <span className="evidence-badge">Idea to investigate</span>
-                </div>
-                <h3>{record.title}</h3>
-                <p>{record.summary}</p>
-                <span className="record-action">
-                  Explore this opportunity
-                  <Icon name="arrow" size={16} />
-                </span>
-              </JourneyLink>
-            ),
-          )}
+          {records.slice(0, limit).map((record) => (
+            <RecordDisclosure
+              key={record.id}
+              record={record}
+              topic={topic}
+              route={route}
+              navigate={navigate}
+              expansion={expansion}
+            />
+          ))}
         </div>
       )}
       {records.length > limit && (
@@ -1148,54 +1088,63 @@ function RecordList({
   );
 }
 
-function ProblemDisclosure({
-  problem,
+function RecordDisclosure({
+  record,
   topic,
   route,
   navigate,
   expansion,
 }: {
-  problem: Problem;
+  record: Problem | Opportunity;
   topic: Topic;
   route: Route;
   navigate: Navigate;
   expansion: TimelineExpansion;
 }) {
-  const open = expansion.problemOpen(problem.id);
+  const lens = "kind" in record ? "problems" : "opportunities";
+  const open = expansion.disclosureOpen(lens, record.id);
   return (
-    <details className="record-card problems problem-disclosure" open={open}>
+    <details className={`record-card ${lens} record-disclosure`} open={open}>
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Native summary handles Enter and Space; synchronize its disclosure with the shared route. */}
       <summary
-        id={`record-${problem.id}`}
-        data-focus={`record-${problem.id}`}
-        aria-labelledby={`problem-title-${problem.id}`}
+        id={`record-${record.id}`}
+        data-focus={`record-${record.id}`}
+        aria-labelledby={`record-title-${record.id}`}
         onClick={(event) => {
           event.preventDefault();
-          expansion.setKeys([`problem:${problem.id}`], !open);
-          if (!open)
-            navigate(
-              { topic: problem.topic, lens: "problems", item: problem.id },
-              true,
-            );
-          else if (route.item === problem.id)
-            navigate({ topic: problem.topic, lens: "problems" }, true);
+          expansion.setKeys([`${lens}:${record.id}`], !open);
+          if (!open) navigate({ topic: topic.id, lens, item: record.id }, true);
+          else if (route.item === record.id)
+            navigate({ topic: topic.id, lens }, true);
         }}
       >
         <span className="record-meta">
-          <span className="evidence-badge">{problem.kind}</span>
-          <span className="record-context">{problem.context}</span>
+          <span className="evidence-badge">
+            {"kind" in record ? record.kind : "Idea to investigate"}
+          </span>
+          {"kind" in record && (
+            <span className="record-context">{record.context}</span>
+          )}
         </span>
-        <span className="problem-heading">
-          <span className="problem-title" id={`problem-title-${problem.id}`}>
-            {problem.title}
+        <span className="record-heading">
+          <span className="record-title" id={`record-title-${record.id}`}>
+            {record.title}
           </span>
           <Icon name="chevron" size={18} />
         </span>
-        <span className="problem-summary">{problem.summary}</span>
+        <span className="record-summary">{record.summary}</span>
       </summary>
       {open && (
-        <div className="problem-body">
-          <ProblemDetail problem={problem} topic={topic} navigate={navigate} />
+        <div className="record-body">
+          {"kind" in record ? (
+            <ProblemDetail problem={record} topic={topic} navigate={navigate} />
+          ) : (
+            <OpportunityDetail
+              opportunity={record}
+              topic={topic}
+              navigate={navigate}
+            />
+          )}
         </div>
       )}
     </details>
@@ -1281,10 +1230,7 @@ function ProblemDetail({
             <JourneyLink
               key={opportunity.id}
               to={{
-                topic:
-                  opportunity.topics.find((id) => id === topic.id) ??
-                  opportunity.topics[0] ??
-                  "journey",
+                topic: opportunity.topics[0],
                 lens: "opportunities",
                 item: opportunity.id,
               }}
@@ -1384,24 +1330,13 @@ function OpportunityDetail({
             ) : null;
           })}
         </div>
-        <JourneyLink
-          to={{
-            topic: topic.id,
-            lens: "opportunities",
-          }}
-          navigate={navigate}
-          className="text-action"
-        >
-          <Icon name="back" size={16} />
-          All opportunities in this area
-        </JourneyLink>
       </aside>
     </div>
   );
 }
 
 export function JourneyPage({
-  route: savedRoute,
+  route,
   navigate,
   session,
   choicesLink,
@@ -1411,22 +1346,6 @@ export function JourneyPage({
   session: ReturnType<typeof useJourneySession>;
   choicesLink: ReactNode;
 }) {
-  const record =
-    savedRoute.item && savedRoute.lens === "opportunities"
-      ? opportunities.find((item) => item.id === savedRoute.item)
-      : undefined;
-  const recordTopic =
-    record && !stageForTopic(savedRoute.topic)
-      ? record.topics.find(
-          (id) =>
-            savedRoute.topic === "journey" ||
-            topicById.get(id)?.phase === savedRoute.topic,
-        )
-      : undefined;
-  const route: Route =
-    recordTopic && record
-      ? { topic: recordTopic, lens: savedRoute.lens, item: record.id }
-      : savedRoute;
   const expansion = useTimelineExpansion(route, session);
   const [searchOpen, setSearchOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);

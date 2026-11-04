@@ -112,6 +112,13 @@ describe("journey content integrity", () => {
       ).toBe(true);
     }
     for (const opportunity of opportunities) {
+      expect(
+        stageForTopic(opportunity.topics[0]),
+        opportunity.id,
+      ).toBeDefined();
+      expect(
+        topics.find((topic) => topic.id === opportunity.topics[0])?.parent,
+      ).not.toBe("approach");
       expect(opportunity.topics.length).toBeGreaterThan(0);
       for (const topic of opportunity.topics)
         expect(topicIds.has(topic)).toBe(true);
@@ -192,7 +199,7 @@ describe("shareable navigation and discovery", () => {
     }
     for (const record of opportunities) {
       const route = {
-        topic: record.topics[0] ?? "journey",
+        topic: record.topics[0],
         lens: "opportunities" as const,
         item: record.id,
       };
@@ -246,7 +253,7 @@ describe("shareable navigation and discovery", () => {
         "#/storage-behavior?view=opportunities&item=confidence-rehearsal",
       ),
     ).toEqual({
-      topic: "storage-drivers",
+      topic: "acceptance",
       lens: "opportunities",
       item: "confidence-rehearsal",
     });
@@ -282,6 +289,32 @@ describe("shareable navigation and discovery", () => {
     expect(
       problemsFor("platform-operators").map((problem) => problem.id),
     ).toContain("missing-dependencies");
+  });
+
+  test("related and ancestor links open an opportunity at its assigned step", () => {
+    for (const opportunity of opportunities) {
+      for (const topic of new Set(
+        opportunity.topics.flatMap((id) =>
+          ancestorsOf(id).map((topic) => topic.id),
+        ),
+      )) {
+        expect(
+          parseRoute(
+            routeHref({ topic, lens: "opportunities", item: opportunity.id }),
+          ),
+        ).toEqual({
+          topic: opportunity.topics[0],
+          lens: "opportunities",
+          item: opportunity.id,
+        });
+      }
+    }
+    expect(
+      parseRoute("#/access?view=opportunities&item=storage-outcome"),
+    ).toEqual({
+      topic: "access",
+      lens: "opportunities",
+    });
   });
 
   test("published links follow merged accounts and relocated guidance", () => {

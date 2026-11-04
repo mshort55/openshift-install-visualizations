@@ -1708,17 +1708,7 @@
   gap: 24px;
   margin-top: 16px;
 }
-:where(.journey-page) .inline-record {
-  scroll-margin-top: 90px;
-}
-:where(.journey-page) .inline-record > h5 {
-  font-family: "Manrope", sans-serif;
-  font-size: 24px;
-  line-height: 1.5;
-  margin: 18px 0 24px;
-}
-:where(.journey-page) .inline-record .detail-layout,
-:where(.journey-page) .problem-disclosure .detail-layout {
+:where(.journey-page) .record-disclosure .detail-layout {
   grid-template-columns: minmax(0, 1fr) 230px;
   gap: 28px;
 }
@@ -1738,8 +1728,7 @@
   :where(.journey-page) .timeline-controls .perspective-hint {
     display: none;
   }
-  :where(.journey-page) .inline-record .detail-layout,
-  :where(.journey-page) .problem-disclosure .detail-layout {
+  :where(.journey-page) .record-disclosure .detail-layout {
     grid-template-columns: minmax(0, 1fr);
   }
   :where(.journey-page) .phase-outcome {
@@ -1748,10 +1737,10 @@
   }
 }
 
-:where(.journey-page) details.problem-disclosure {
+:where(.journey-page) details.record-disclosure {
   padding: 0;
 }
-:where(.journey-page) .problem-disclosure > summary {
+:where(.journey-page) .record-disclosure > summary {
   display: block;
   padding: 22px 24px;
   cursor: pointer;
@@ -1759,52 +1748,52 @@
   border-radius: inherit;
   scroll-margin-top: 90px;
 }
-:where(.journey-page) .problem-disclosure > summary::-webkit-details-marker {
+:where(.journey-page) .record-disclosure > summary::-webkit-details-marker {
   display: none;
 }
-:where(.journey-page) .problem-disclosure > summary:hover {
+:where(.journey-page) .record-disclosure > summary:hover {
   background: var(--phase-soft);
 }
-:where(.journey-page) .problem-heading {
+:where(.journey-page) .record-heading {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
 }
-:where(.journey-page) .problem-heading > svg {
+:where(.journey-page) .record-heading > svg {
   margin-top: 4px;
   color: var(--phase);
 }
-:where(.journey-page) .problem-disclosure[open] .problem-heading > svg {
+:where(.journey-page) .record-disclosure[open] .record-heading > svg {
   transform: rotate(90deg);
 }
-:where(.journey-page) .problem-title {
+:where(.journey-page) .record-title {
   font-family: "Manrope", sans-serif;
   font-size: 16px;
   font-weight: 700;
   line-height: 1.55;
 }
-:where(.journey-page) .problem-summary {
+:where(.journey-page) .record-summary {
   display: block;
   margin-top: 7px;
   font-size: 12px;
   line-height: 1.8;
   max-width: 650px;
 }
-:where(.journey-page) .problem-body {
+:where(.journey-page) .record-body {
   padding: 24px;
   border-top: 1px solid var(--line);
 }
-:where(.journey-page) .problem-disclosure .evidence-detail {
+:where(.journey-page) .record-disclosure .evidence-detail {
   padding: 0;
   border: 0;
 }
 @media (max-width: 600px) {
-  :where(.journey-page) .problem-disclosure > summary,
-  :where(.journey-page) .problem-body {
+  :where(.journey-page) .record-disclosure > summary,
+  :where(.journey-page) .record-body {
     padding: 16px;
   }
-  :where(.journey-page) .problem-title {
+  :where(.journey-page) .record-title {
     font-size: 14px;
   }
 }
@@ -1965,9 +1954,6 @@
   :where(.journey-page) .step-detail .next-perspective {
     align-items: flex-start;
     flex-direction: column;
-  }
-  :where(.journey-page) .inline-record > h5 {
-    font-size: 20px;
   }
   :where(.journey-page) .timeline-finish {
     margin-left: 38px;

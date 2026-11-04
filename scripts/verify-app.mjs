@@ -216,6 +216,147 @@ try {
     );
     await click('button[aria-label="Close dialog"]');
 
+    // Problems and opportunities share the same independent inline disclosures.
+    for (const [lens, count, showLabel, expandLabel, first, second] of [
+      [
+        "problems",
+        21,
+        "Show All Problems",
+        "Expand all details",
+        "owner-wait",
+        "network-layers",
+      ],
+      [
+        "opportunities",
+        15,
+        "Show all opportunities",
+        "Expand all opportunities",
+        "network-translation",
+        "precise-handoffs",
+      ],
+    ]) {
+      await go(`#/journey?view=${lens}`);
+      assert.equal(
+        await run(
+          'document.querySelector("[data-focus=show-all-steps]").textContent.trim()',
+        ),
+        showLabel,
+      );
+      assert.equal(
+        await run(
+          'document.querySelector("[data-focus=expand-all-details]").textContent.trim()',
+        ),
+        expandLabel,
+      );
+      await click('[data-focus="show-all-steps"]');
+      assert.equal(
+        await run('document.querySelectorAll("details.record-card").length'),
+        count,
+      );
+      assert.equal(
+        await run(
+          'new Set([...document.querySelectorAll("details.record-card > summary")].map(el => el.id)).size',
+        ),
+        count,
+      );
+      await check(
+        'document.querySelectorAll("details.record-card[open]").length === 0 && [...document.querySelectorAll(".step-toggle[aria-expanded=true]")].every(el => el.closest(".timeline-step").querySelector("details.record-card"))',
+        `${showLabel} reveals summaries only at assigned steps`,
+      );
+      await click(`#record-${first}`);
+      await click(`#record-${second}`);
+      await check(
+        'document.querySelectorAll("details.record-card[open]").length === 2',
+        `${lens}: multiple disclosures stay open`,
+      );
+      await click(`#record-${first}`);
+      await check(
+        `!document.getElementById("record-${first}").parentElement.open && document.getElementById("record-${second}").parentElement.open && location.hash.includes("item=${second}")`,
+        `${lens}: closing one disclosure preserves the other`,
+      );
+      await run(`document.getElementById("record-${second}").focus()`);
+      for (const type of ["keyDown", "keyUp"]) {
+        await cdp.send("Input.dispatchKeyEvent", {
+          type,
+          key: " ",
+          code: "Space",
+          windowsVirtualKeyCode: 32,
+        });
+      }
+      await settle();
+      await check(
+        `!document.getElementById("record-${second}").parentElement.open && !location.hash.includes("item=") && document.getElementById("record-${second}").closest(".timeline-step").querySelector(".step-toggle").getAttribute("aria-expanded") === "true"`,
+        `${lens}: Space closes the selected disclosure and keeps the step open`,
+      );
+      await run(`document.getElementById("record-${second}").focus()`);
+      await cdp.send("Input.dispatchKeyEvent", {
+        type: "keyDown",
+        key: "Enter",
+        code: "Enter",
+        windowsVirtualKeyCode: 13,
+        text: "\r",
+      });
+      await cdp.send("Input.dispatchKeyEvent", {
+        type: "keyUp",
+        key: "Enter",
+        code: "Enter",
+        windowsVirtualKeyCode: 13,
+      });
+      await settle();
+      await check(
+        `document.getElementById("record-${second}").parentElement.open && location.hash.includes("item=${second}")`,
+        `${lens}: Enter opens a shareable disclosure`,
+      );
+      await click("#tab-process");
+      await click(`#tab-${lens}`);
+      await check(
+        `document.getElementById("record-${second}").parentElement.open`,
+        `${lens}: perspective switches preserve disclosure state`,
+      );
+      await click('[data-focus="expand-all-details"]');
+      assert.equal(
+        await run(
+          'document.querySelectorAll("details.record-card[open]").length',
+        ),
+        count,
+      );
+      await click('[data-focus="show-all-steps"]');
+      assert.equal(
+        await run('document.querySelectorAll("details.record-card").length'),
+        count,
+      );
+      await check(
+        'document.querySelectorAll("details.record-card[open]").length === 0',
+        `${lens}: Show all resets expanded details`,
+      );
+      await click('[data-focus="collapse-all"]');
+      await check(
+        'document.querySelectorAll(".journey-timeline button[aria-expanded=true]").length === 0 && document.querySelectorAll("details.record-card").length === 0',
+        `${lens}: Collapse all returns to the overview`,
+      );
+    }
+
+    await go("#/storage-behavior?view=opportunities&item=confidence-rehearsal");
+    await check(
+      'document.getElementById("record-confidence-rehearsal").parentElement.open && document.getElementById("step-acceptance").getAttribute("aria-expanded") === "true"',
+      "Legacy opportunity links open the disclosure at its assigned step",
+    );
+    await run("window.__verificationDocument = true");
+    await cdp.send("Page.reload");
+    await wait(
+      '!window.__verificationDocument && document.getElementById("record-confidence-rehearsal")?.parentElement.open',
+    );
+    await settle();
+    await click("#record-confidence-rehearsal");
+    await run("history.back()");
+    await wait(
+      'document.getElementById("record-confidence-rehearsal")?.parentElement.open',
+    );
+    await check(
+      'location.hash.includes("item=confidence-rehearsal")',
+      "Back restores the shared opportunity disclosure",
+    );
+
     // Real content in both layouts must fit a phone, tablet, and desktop.
     for (const width of [320, 390, 768, 1440]) {
       await cdp.send("Emulation.setDeviceMetricsOverride", {
@@ -226,10 +367,18 @@ try {
       });
       for (const [page, hash] of [
         ["journey", "#/journey"],
+        [
+          "opportunities",
+          "#/journey/networking?view=opportunities&item=network-translation",
+        ],
         ["choices", "#/choices?mode=map&host-addressing=static"],
       ]) {
         await go(hash);
-        await run("window.scrollTo(0, 0)");
+        await run(
+          page === "opportunities"
+            ? 'document.getElementById("record-network-translation").scrollIntoView()'
+            : "window.scrollTo(0, 0)",
+        );
         await settle();
         await check(
           "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
@@ -284,7 +433,7 @@ try {
       "Skip link focuses active page content",
     );
     console.log(
-      "PASS: page navigation, retained state, history, contextual return, legacy links, refresh, sharing, search, keyboard access, and 320/390/768/1440px layouts.",
+      "PASS: page navigation, retained state, history, contextual return, legacy links, refresh, sharing, search, problem/opportunity disclosures and bulk controls, keyboard access, and 320/390/768/1440px layouts.",
     );
   });
 } finally {

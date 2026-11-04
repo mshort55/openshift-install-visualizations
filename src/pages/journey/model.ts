@@ -97,7 +97,8 @@ export type OpportunityBasis =
 
 export interface Opportunity {
   id: string;
-  topics: string[];
+  /** The first topic owns the card; the rest resolve related and published links. */
+  topics: [string, ...string[]];
   title: string;
   summary: string;
   /** Distinguishes reported problems from tasks and acceptance requirements. */
