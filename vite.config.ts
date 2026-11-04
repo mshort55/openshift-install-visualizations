@@ -4,10 +4,10 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   base: "./",
   plugins: [react()],
-  server: { port: 5173 },
-  preview: { port: 4173 },
+  server: { port: 5174 },
+  preview: { port: 4174 },
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx", "tests/**/*.test.ts"],
   },
 });

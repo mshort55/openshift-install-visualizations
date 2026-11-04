@@ -1,93 +1,63 @@
 ---
 name: verify-openshift-install-visualizations
-description: Drive the OpenShift agent-based bare metal decision-tree web UI in a disposable Vite session and headless Chrome. Use when proving a user-visible change to the tree, a selected option, the URL hash, scroll position, or Clear choices.
+description: Verify Journey and Choices in the combined OpenShift app using disposable Vite and headless Chrome. Use for page navigation, retained state, shared links, decision-tree changes, or responsive layouts.
 ---
 
-# Verify the decision tree
+# Verify the installation app
 
-The decision-tree app in `apps/install-decisions/` is one client-rendered page. State lives in the URL hash. It has no login or seed data. The independent journey explorer is outside this skill’s scope.
+Run commands from the repository root. Install dependencies with `npm ci` when `node_modules/vite` is missing.
 
-Run every command from the repository root. Paths below are relative to that root. The harness resolves them from its own location, so a different working directory still targets this repo, but keep the root so the printed paths match.
-
-## Launch
-
-Install dependencies first when `node_modules/vite` is missing:
+## Combined-app verification
 
 ```bash
-npm install
+npm run verify:browser
 ```
 
-`npm install` must finish with `found 0 vulnerabilities` and no `install-scripts` warning. `esbuild@0.28.2` is already listed in `package.json` `allowScripts` because Vite needs its postinstall to fetch the platform binary.
+This launches disposable Vite and Chrome processes, drives the real UI and cleans up in `finally`. Completion requires the `PASS` line and exit code 0. It verifies Journey as the default page, Choices navigation, retained Journey expansion/scroll and Choices answers, Back/Forward, contextual return, old URL formats, refresh, Share fallback, Journey search, keyboard access, and both layouts at 320, 390, 768 and 1440 pixels. Screenshots remain under `artifacts/verify/combined-app/`.
 
-Start a disposable instance:
+The first run downloads Chrome for Testing to this skill's ignored `cache/` directory. The app has no login, database or external runtime service.
+
+## Focused Choices session
 
 ```bash
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs launch
+node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs launch
 ```
 
-Launch picks a free Vite port starting at `4173` and a free Chrome DevTools port starting at `9333`, starts `npm run app:decisions -- --host 127.0.0.1 --port <port> --strictPort`, downloads Chrome for Testing `154.0.8037.92` headless shell for this machine's architecture on first use (cache: `.cursor/skills/verify-openshift-install-visualizations/cache/`), and opens the app. It is ready when it prints:
-
-```text
-VERIFY_RUN_DIR=/tmp/verify-openshift-install-visualizations-<id>
-URL=http://127.0.0.1:<port>/
-```
-
-Export `VERIFY_RUN_DIR` from that line before any later command. The page is ready when the heading `Agent-based bare metal decisions` is present. Launch waits for that heading before it prints the lines above.
-
-A second launch uses another port, another DevTools port, and another Chrome profile. Do not drive a Vite process you did not start with this command.
-
-## Doctor
+Launch prints `VERIFY_RUN_DIR=/tmp/verify-openshift-install-visualizations-<id>` and `URL=http://127.0.0.1:<port>/`. Export the run directory before later commands. It starts the combined app and opens `#/choices`; the root URL itself opens Journey. Use only the processes created by this launch.
 
 ```bash
-VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs doctor
+VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs doctor
 ```
 
-A healthy instance prints `ok`, then `url`, `title Bare metal install decisions`, `heading Agent-based bare metal decisions`, and the Vite and Chrome pids from this run. Anything else means the instance is not worth driving. Run doctor before a feature recipe and again when a later command fails.
+Doctor requires running Vite/Chrome processes and the heading `Agent-based installation choices`. It checks the served HTML title `OpenShift Bare-metal Installation Journey`; the browser document title changes with the active page. Run doctor before a Choices recipe or after a failed command. Navigate back to Choices before running doctor if you visited Journey.
 
-## Drive
-
-The harness is `verify-decisions.mjs`. Prefer the accessible name and the `data-decision` attribute over coordinates. Option buttons expose `aria-label` set to the choice label (`Static NMState`, `DHCP`, `NIC bond`) and `aria-pressed`. Each decision is an article with `data-decision="<id>"` and `data-active="true"` or `data-active="false"`.
+Read [the feature map](features/README.md), then follow the matching recipe. Option buttons expose accessible names, `aria-pressed`, `data-decision`, and `data-option`. Decisions expose `data-active`.
 
 ```bash
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser wait --role heading --name "Agent-based bare metal decisions"
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser click --role button --name "Static NMState"
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser hash
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser pressed --name "Static NMState"
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser attr --decision nmstate-ethernet --attr data-active
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser scroll --decision host-addressing
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser scroll-by --y 800
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser scroll-y
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser box --role button --name "Static NMState"
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser search
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser navigate --hash "host-addressing=static"
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser snapshot --aria --path artifacts/verify/<feature>/<name>.aria.txt
-node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser screenshot --path artifacts/verify/<feature>/<name>.png
+VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser click --role button --name "See every option"
+VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser click --role button --name "Static NMState"
+VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser hash
+VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser pressed --name "Static NMState"
+VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser attr --decision nmstate-ethernet --attr data-active
 ```
 
-Prefix browser, doctor, and cleanup commands with `VERIFY_RUN_DIR="$VERIFY_RUN_DIR"`. `browser hash` and `browser click` print the hash without a leading `#`. An empty line means no answers. `browser click` prints the hash after the page applies the choice. `browser scroll-y` prints `window.scrollY`. `browser search` prints `location.search`, which is `?view=map` in See every option and empty in Step through.
-
-The feature map is the source of which entry points to drive. A proof that uses one entry point does not cover the others listed in that feature.
+Hashes print without `#`. No answers in Step through is `/choices`; See every option is `/choices?mode=map`. The document search is empty. Clear choices preserves the page and mode while removing answers. Legacy `#decision=option` links are still accepted; a full load normalizes them to the Choices route.
 
 ## Evidence
 
-Write proof under `artifacts/verify/<feature>/`. Cleanup must not delete that directory.
+Capture the action and result: hash, pressed state, active decision, ARIA snapshot, and screenshot. Exercise each relevant entry point through the rendered UI.
 
-A proof exercises the page a user opens. Do not call `walk`, `withAnswer`, or any other catalog function as a substitute for a click or a hash navigation.
+```bash
+VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser snapshot --aria --path artifacts/verify/<feature>/page.aria.txt
+VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser screenshot --path artifacts/verify/<feature>/page.png
+```
 
-Capture the action and the resulting state: the hash before the click, the hash the click prints, `aria-pressed` on the chosen button, and `data-active` on the decision that choice opens. Then write an ARIA snapshot and a screenshot that show the same choice. The snapshot lists named accessibility nodes as `role "name"` plus `pressed` or `level` when Chrome reports them.
-
-There is no external service to mock. The catalog is the JSON bundled into the page. There is no dry-run mode.
+Report a failed or unreachable entry point with its attempted command and unmet condition. Preserve artifacts when cleaning up.
 
 ## Cleanup
 
 ```bash
-VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs cleanup
+VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs cleanup
 ```
 
-Cleanup sends `SIGTERM` to the Vite and Chrome process groups recorded in that run's `meta.json`, then deletes the run directory. It does not signal processes by name and it does not remove `artifacts/verify/` or the Chrome cache.
-
-Run cleanup after a failed launch too. Launch already does that when startup fails. If you kill the harness yourself mid-run, run cleanup with the printed `VERIFY_RUN_DIR` so the ports are released.
-
-## Helpers
-
-`.cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs` is the only helper. Invoke it as shown in Launch, Doctor, Drive, and Cleanup. `launch` prints `VERIFY_RUN_DIR` and `URL`. `doctor` prints the health lines. `browser click` and `browser hash` print the hash without `#`. `browser pressed` prints `true` or `false`. `browser attr` prints the attribute value. `browser snapshot` and `browser screenshot` print the absolute file path they wrote.
+Cleanup stops only this run's process groups and removes its temporary directory. A failed launch cleans itself up. `npm run verify:browser` cleans up automatically when it owns the run; with an existing `VERIFY_RUN_DIR`, the caller retains responsibility for cleanup.

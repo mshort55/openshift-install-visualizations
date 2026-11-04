@@ -1,10 +1,14 @@
 import {
+  createContext,
   type MouseEvent,
   type ReactNode,
+  useContext,
   useEffect,
   useRef,
   useState,
 } from "react";
+import { Icon } from "../../app/Icon";
+import { Modal } from "../../app/Modal";
 import {
   childrenOf,
   lenses,
@@ -21,9 +25,8 @@ import {
 } from "./catalog";
 import type { JourneyStage } from "./data/stages";
 import { occurrenceDateLabel, reportedDateLabel } from "./evidence-dates";
-import { Icon } from "./icons";
+import "./styles.css";
 import type { Opportunity, Problem, Route, Topic } from "./model";
-import { useNavigation } from "./navigation";
 
 type Navigate = (route: Route, preserve?: boolean) => void;
 // Keep expanded lists available when browser Back restores a previously opened record.
@@ -40,15 +43,25 @@ function hasContext(id: string): boolean {
   return topicById.get(id)?.kind !== "group";
 }
 
-function useTimelineExpansion(route: Route) {
+const choicesLinkContext = createContext<ReactNode>(null);
+
+/** Keeps expanded Journey sections alive while another page is open. */
+export function useJourneySession() {
   const [opened, setOpened] = useState<Set<string>>(() => new Set());
+  return { opened, setOpened };
+}
+
+function useTimelineExpansion(
+  route: Route,
+  { opened, setOpened }: ReturnType<typeof useJourneySession>,
+) {
   useEffect(() => {
     if (route.lens !== "problems" || !route.item) return;
     const key = `problem:${route.item}`;
     setOpened((current) =>
       current.has(key) ? current : new Set([...current, key]),
     );
-  }, [route.lens, route.item]);
+  }, [route.lens, route.item, setOpened]);
   const selectedStage = stageForTopic(route.topic)?.id ?? route.stage;
   const stageOpen = (id: string) =>
     selectedStage === id || opened.has(`stage:${id}`);
@@ -164,54 +177,6 @@ function JourneyLink({
     >
       {children}
     </a>
-  );
-}
-
-function Modal({
-  title,
-  onClose,
-  children,
-  className = "",
-}: {
-  title: string;
-  onClose: () => void;
-  children: ReactNode;
-  className?: string;
-}) {
-  const dialog = useRef<HTMLDialogElement>(null);
-  useEffect(() => {
-    const element = dialog.current;
-    element?.showModal();
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      element?.close();
-      document.body.style.overflow = overflow;
-    };
-  }, []);
-  return (
-    <dialog
-      ref={dialog}
-      className={`modal ${className}`}
-      aria-labelledby="modal-title"
-      onCancel={(event) => {
-        event.preventDefault();
-        onClose();
-      }}
-    >
-      <div className="modal-heading">
-        <h2 id="modal-title">{title}</h2>
-        <button
-          type="button"
-          className="icon-button"
-          onClick={onClose}
-          aria-label="Close dialog"
-        >
-          <Icon name="close" />
-        </button>
-      </div>
-      {children}
-    </dialog>
   );
 }
 
@@ -917,8 +882,19 @@ function Context({ topic }: { topic: Topic }) {
 }
 
 function Process({ topic, navigate }: { topic: Topic; navigate: Navigate }) {
+  const choicesLink = useContext(choicesLinkContext);
   return (
     <div className="process-content">
+      {["approach", "agent-based"].includes(topic.id) && (
+        <aside className="choices-callout">
+          <strong>Explore the Agent-based installation choices</strong>
+          <p>
+            Work through configuration decisions and examples, then return to
+            this step.
+          </p>
+          {choicesLink}
+        </aside>
+      )}
       {topic.operatorExamples && (
         <section className="operator-examples">
           <div className="subheading">
@@ -1424,8 +1400,17 @@ function OpportunityDetail({
   );
 }
 
-export function App() {
-  const { route: savedRoute, navigate } = useNavigation();
+export function JourneyPage({
+  route: savedRoute,
+  navigate,
+  session,
+  choicesLink,
+}: {
+  route: Route;
+  navigate: Navigate;
+  session: ReturnType<typeof useJourneySession>;
+  choicesLink: ReactNode;
+}) {
   const record =
     savedRoute.item && savedRoute.lens === "opportunities"
       ? opportunities.find((item) => item.id === savedRoute.item)
@@ -1442,184 +1427,84 @@ export function App() {
     recordTopic && record
       ? { topic: recordTopic, lens: savedRoute.lens, item: record.id }
       : savedRoute;
-  const expansion = useTimelineExpansion(route);
+  const expansion = useTimelineExpansion(route, session);
   const [searchOpen, setSearchOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
-  const [shareStatus, setShareStatus] = useState("");
-  const [shareFallback, setShareFallback] = useState(false);
-  const shareInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
     const searchShortcut = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        if (!aboutOpen && !shareFallback) setSearchOpen(true);
+        if (!aboutOpen && !document.querySelector("dialog[open]"))
+          setSearchOpen(true);
       }
     };
     window.addEventListener("keydown", searchShortcut);
     return () => window.removeEventListener("keydown", searchShortcut);
-  }, [aboutOpen, shareFallback]);
-  useEffect(() => {
-    if (!shareStatus) return;
-    const timer = window.setTimeout(() => setShareStatus(""), 3000);
-    return () => clearTimeout(timer);
-  }, [shareStatus]);
-  useEffect(() => {
-    if (shareFallback) {
-      shareInput.current?.focus();
-      shareInput.current?.select();
-    }
-  }, [shareFallback]);
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(
-        `${window.location.href.split("#")[0]}${routeHref(route)}`,
-      );
-      setShareStatus("Link copied");
-    } catch {
-      setShareFallback(true);
-    }
-  };
+  }, [aboutOpen]);
   return (
-    <div className="app timeline-app">
-      <button
-        type="button"
-        className="skip-link"
-        onClick={(event) => {
-          event.preventDefault();
-          document.getElementById("main-content")?.focus();
-        }}
-      >
-        Skip to journey content
-      </button>
-      <header className="site-header">
-        <div className="header-inner">
-          <JourneyLink
-            to={{ topic: "journey", lens: "process" }}
-            navigate={navigate}
-            className="brand"
-          >
-            <span className="brand-mark">
-              <svg
-                width="26"
-                height="26"
-                viewBox="0 0 40 40"
-                fill="none"
-                aria-hidden="true"
+    <choicesLinkContext.Provider value={choicesLink}>
+      <div className="journey-page">
+        <div className="app timeline-app">
+          <main id="main-content" className="main-shell" tabIndex={-1}>
+            <div className="journey-tools">
+              <button
+                type="button"
+                className="search-trigger"
+                aria-label="Search the journey"
+                onClick={() => setSearchOpen(true)}
               >
-                <path
-                  d="M7 26V14h12v12h14V14"
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  strokeLinejoin="round"
-                />
-                <circle cx="7" cy="26" r="3" fill="currentColor" />
-                <circle cx="33" cy="14" r="3" fill="currentColor" />
-              </svg>
-            </span>
-            <span>
-              <strong>OpenShift</strong>
-              <span className="brand-divider">/</span>
-              <span className="brand-name">Installation journey</span>
-            </span>
-          </JourneyLink>
-          <nav className="header-actions" aria-label="Explorer tools">
-            <button
-              type="button"
-              className="search-trigger"
-              aria-label="Search the journey"
-              onClick={() => setSearchOpen(true)}
+                <Icon name="search" size={17} />
+                <span>Search the journey</span>
+                <kbd>⌘ / Ctrl K</kbd>
+              </button>
+              <button
+                type="button"
+                className="icon-button about-trigger"
+                onClick={() => setAboutOpen(true)}
+                aria-label="About this journey"
+              >
+                <Icon name="info" size={20} />
+              </button>
+            </div>
+            <section className="timeline-hero">
+              <span className="eyebrow hero-eyebrow">
+                <span />
+                The customer experience
+              </span>
+              <h1 id="page-title" tabIndex={-1}>
+                OpenShift on bare metal.
+                <br />
+                <span>The installation journey.</span>
+              </h1>
+              <p>
+                Follow a customer from planning to useful workloads and
+                operational handover on bare metal. Expand a step for decisions,
+                prerequisites, and details for the applicable installation
+                method.
+              </p>
+            </section>
+            <div className="timeline-controls">
+              <LensTabs route={route} navigate={navigate} />
+            </div>
+            <div
+              id="perspective-content"
+              role="tabpanel"
+              aria-labelledby={`tab-${route.lens}`}
+              className="perspective-panel"
             >
-              <Icon name="search" size={17} />
-              <span>Search the journey</span>
-              <kbd>⌘ / Ctrl K</kbd>
-            </button>
-            <button
-              type="button"
-              className="icon-button about-trigger"
-              onClick={() => setAboutOpen(true)}
-              aria-label="About this journey"
-            >
-              <Icon name="info" size={20} />
-            </button>
-            <button
-              type="button"
-              className="share-button"
-              aria-label="Share this view"
-              onClick={copyLink}
-            >
-              <Icon name="link" size={17} />
-              <span>Share view</span>
-            </button>
-          </nav>
+              <Timeline
+                route={route}
+                navigate={navigate}
+                expansion={expansion}
+              />
+            </div>
+          </main>
+          {searchOpen && (
+            <Search navigate={navigate} onClose={() => setSearchOpen(false)} />
+          )}
+          {aboutOpen && <About onClose={() => setAboutOpen(false)} />}
         </div>
-      </header>
-      <main id="main-content" className="main-shell" tabIndex={-1}>
-        <section className="timeline-hero">
-          <span className="eyebrow hero-eyebrow">
-            <span />
-            The customer experience
-          </span>
-          <h1 id="page-title" tabIndex={-1}>
-            OpenShift on bare metal.
-            <br />
-            <span>The installation journey.</span>
-          </h1>
-          <p>
-            Follow a customer from planning to useful workloads and operational
-            handover on bare metal. Expand a step for decisions, prerequisites,
-            and details for the applicable installation method.
-          </p>
-        </section>
-        <div className="timeline-controls">
-          <LensTabs route={route} navigate={navigate} />
-        </div>
-        <div
-          id="perspective-content"
-          role="tabpanel"
-          aria-labelledby={`tab-${route.lens}`}
-          className="perspective-panel"
-        >
-          <Timeline route={route} navigate={navigate} expansion={expansion} />
-        </div>
-      </main>
-      <footer className="site-footer">
-        <div>
-          <span className="footer-mark">OpenShift installation journey</span>
-          <span>Evidence reviewed · Nov 2026</span>
-        </div>
-        <div>
-          <span className="internal-label">Internal use</span>
-        </div>
-      </footer>
-      <div
-        className={`toast ${shareStatus ? "visible" : ""}`}
-        role="status"
-        aria-live="polite"
-      >
-        {shareStatus && (
-          <>
-            <Icon name="check" size={17} />
-            {shareStatus}
-          </>
-        )}
       </div>
-      {searchOpen && (
-        <Search navigate={navigate} onClose={() => setSearchOpen(false)} />
-      )}
-      {aboutOpen && <About onClose={() => setAboutOpen(false)} />}
-      {shareFallback && (
-        <Modal title="Share this view" onClose={() => setShareFallback(false)}>
-          <div className="share-fallback">
-            <p>Copy this link to open the same topic and perspective.</p>
-            <input
-              ref={shareInput}
-              aria-label="Link to this view"
-              value={`${window.location.href.split("#")[0]}${routeHref(route)}`}
-              readOnly
-            />
-          </div>
-        </Modal>
-      )}
-    </div>
+    </choicesLinkContext.Provider>
   );
 }

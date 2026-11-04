@@ -3,26 +3,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "app:decisions": "npm --prefix apps/install-decisions run app --",
-    "app:journey": "npm --prefix apps/install-journey run app --",
-    "build": "npm run build:decisions && npm run build:journey",
-    "build:decisions": "npm --prefix apps/install-decisions run build",
-    "build:journey": "npm --prefix apps/install-journey run build",
-    "preview:decisions": "npm --prefix apps/install-decisions run preview --",
-    "preview:journey": "npm --prefix apps/install-journey run preview --",
-    "test": "npm run test:decisions && npm run test:journey && vitest run",
-    "test:decisions": "npm --prefix apps/install-decisions test",
-    "test:journey": "npm --prefix apps/install-journey test",
-    "typecheck": "tsc --noEmit && npm --prefix apps/install-decisions run typecheck && npm --prefix apps/install-journey run typecheck",
+    "app": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "check": "npm run typecheck && npm run lint && npm test",
-    "check:decisions": "npm --prefix apps/install-decisions run check",
-    "check:journey": "npm --prefix apps/install-journey run check"
+    "verify:browser": "node scripts/verify-app.mjs"
   },
   "dependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "zod": "^3.25.76"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",

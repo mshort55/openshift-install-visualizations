@@ -2,7 +2,8 @@
   "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
   "files": {
     "includes": [
-      "apps/**",
+      "src/**",
+      "scripts/**",
       "tests/**",
       "*.json",
       "*.ts",
@@ -46,5 +47,17 @@
       "quoteStyle": "double",
       "semicolons": "always"
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["src/pages/journey/styles.css"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDescendingSpecificity": "off"
+          }
+        }
+      }
+    }
+  ]
 }

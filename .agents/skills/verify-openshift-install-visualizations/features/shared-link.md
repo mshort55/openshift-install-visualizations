@@ -17,13 +17,13 @@ Opening the app URL with `#host-addressing=static` selects Static NMState. Step 
 
 Preconditions:
 
-- `doctor` prints `ok` and `heading Agent-based bare metal decisions`.
-- Start from an empty hash so the navigation is what changes the choice.
+- `doctor` prints `ok` and `heading Agent-based installation choices`.
+- Start from `#/choices` with no answers so navigation changes the choice.
 
-- **Open the shared hash.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser navigate --hash "host-addressing=static"`. The command prints `host-addressing=static`.
-- **The option is pressed.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser pressed --name "Static NMState"`. It prints `true`.
-- **The first open decision is still there.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser pressed --name "x86_64"`. It prints `false`.
-- **Proof.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser snapshot --aria --path artifacts/verify/shared-link/tree.aria.txt` and `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .cursor/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser screenshot --path artifacts/verify/shared-link/tree.png`. The snapshot contains `button "Static NMState" pressed=true` and `button "x86_64" pressed=false`.
+- **Open the shared hash.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser navigate --hash "host-addressing=static"`. The command prints `host-addressing=static`.
+- **The option is pressed.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser pressed --name "Static NMState"`. It prints `true`.
+- **The first open decision is still there.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser pressed --name "x86_64"`. It prints `false`.
+- **Proof.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser snapshot --aria --path artifacts/verify/shared-link/tree.aria.txt` and `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser screenshot --path artifacts/verify/shared-link/tree.png`. The snapshot contains `button "Static NMState" pressed=true` and `button "x86_64" pressed=false`.
 
 ## Gotchas
 

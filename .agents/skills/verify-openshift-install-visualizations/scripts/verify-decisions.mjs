@@ -8,8 +8,8 @@ import { pipeline } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
 
 const CHROME_VERSION = "154.0.8037.92";
-const HEADING = "Agent-based bare metal decisions";
-const TITLE = "Bare metal install decisions";
+const HEADING = "Agent-based installation choices";
+const TITLE = "OpenShift Bare-metal Installation Journey";
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../../..",
@@ -210,7 +210,7 @@ async function chromeBinary() {
   const platform = chromePlatform();
   const cache = path.join(
     repoRoot,
-    ".cursor/skills/verify-openshift-install-visualizations/cache",
+    ".agents/skills/verify-openshift-install-visualizations/cache",
     platform,
   );
   const binary = path.join(cache, `chrome-headless-shell-${platform}`, "chrome-headless-shell");
@@ -267,7 +267,7 @@ async function launch() {
   const viteLog = await fs.open(path.join(dir, "vite.log"), "a");
   const vite = spawn(
     "npm",
-    ["run", "app:decisions", "--", "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
+    ["run", "app", "--", "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
     {
       cwd: repoRoot,
       detached: true,
@@ -286,6 +286,7 @@ async function launch() {
   process.env.VERIFY_RUN_DIR = dir;
   try {
     await started(vite);
+    await viteLog.close();
     vite.unref();
     meta.vitePid = vite.pid ?? 0;
     await writeMeta(dir, meta);
@@ -310,11 +311,12 @@ async function launch() {
         `--remote-debugging-port=${cdpPort}`,
         `--user-data-dir=${path.join(dir, "chrome-profile")}`,
         "--window-size=1280,1600",
-        url,
+        `${url}#/choices`,
       ],
       { detached: true, stdio: ["ignore", chromeLog.fd, chromeLog.fd] },
     );
     await started(chrome);
+    await chromeLog.close();
     chrome.unref();
     meta.chromePid = chrome.pid ?? 0;
     await writeMeta(dir, meta);
@@ -653,6 +655,10 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  fail(error instanceof Error ? error.message : String(error));
-});
+export { launch, cleanup, readMeta, withPage, evaluate };
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    fail(error instanceof Error ? error.message : String(error));
+  });
+}

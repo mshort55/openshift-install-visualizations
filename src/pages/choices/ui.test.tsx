@@ -1,8 +1,29 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, test } from "vitest";
-import { parseCatalog } from "./catalog";
+import type { Catalog } from "./catalog";
+import { decodeAnswers, parseCatalog, pruneAnswers } from "./catalog";
 import rawCatalog from "./data/bare-metal-4.22.json";
-import { App } from "./ui";
+import type { TreeMode } from "./tree";
+import { ChoicesPage } from "./ui";
+
+function App({
+  catalog,
+  initialView = "path",
+  initialHash = "",
+}: {
+  catalog: Catalog;
+  initialView?: TreeMode;
+  initialHash?: string;
+}) {
+  return (
+    <ChoicesPage
+      catalog={catalog}
+      mode={initialView}
+      answers={pruneAnswers(catalog, decodeAnswers(catalog, initialHash))}
+      onChange={() => {}}
+    />
+  );
+}
 
 function page(view?: "path" | "map") {
   const parsed = parseCatalog(rawCatalog);
@@ -18,7 +39,7 @@ function page(view?: "path" | "map") {
 
 test("step through starts with no selection and only the first decision", () => {
   const html = page();
-  expect(html).toContain("Agent-based bare metal decisions");
+  expect(html).toContain("Agent-based installation choices");
   expect(html).toContain('data-view="path"');
   expect(html).toContain('class="mode" aria-pressed="true"');
   expect(html).not.toContain('class="option" aria-pressed="true"');

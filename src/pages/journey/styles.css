@@ -1,22 +1,4 @@
-@font-face {
-  font-family: "DM Sans";
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url(/fonts/dm-sans.woff2) format("woff2");
-  unicode-range:
-    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Manrope";
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(/fonts/manrope.woff2) format("woff2");
-  unicode-range:
-    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-:root {
+.journey-page {
   font-family:
     "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
@@ -36,117 +18,117 @@
   --surface: #fff;
   color-scheme: light;
 }
-* {
+:where(.journey-page) * {
   box-sizing: border-box;
 }
-body {
+.journey-page {
   margin: 0;
 }
-button,
-input,
-select {
+:where(.journey-page) button,
+:where(.journey-page) input,
+:where(.journey-page) select {
   font: inherit;
 }
-button,
-a,
-input,
-select {
+:where(.journey-page) button,
+:where(.journey-page) a,
+:where(.journey-page) input,
+:where(.journey-page) select {
   -webkit-tap-highlight-color: transparent;
 }
-button {
+:where(.journey-page) button {
   cursor: pointer;
 }
-a {
+:where(.journey-page) a {
   color: inherit;
   text-decoration: none;
 }
-button {
+:where(.journey-page) button {
   color: inherit;
 }
-button:disabled {
+:where(.journey-page) button:disabled {
   cursor: default;
 }
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-summary:focus-visible,
-[tabindex="0"]:focus-visible {
+:where(.journey-page) button:focus-visible,
+:where(.journey-page) a:focus-visible,
+:where(.journey-page) input:focus-visible,
+:where(.journey-page) select:focus-visible,
+:where(.journey-page) summary:focus-visible,
+:where(.journey-page) [tabindex="0"]:focus-visible {
   outline: 3px solid #1468c3;
   outline-offset: 4px;
 }
-svg {
+:where(.journey-page) svg {
   flex-shrink: 0;
 }
-h1,
-h2,
-h3,
-h4,
-p {
+:where(.journey-page) h1,
+:where(.journey-page) h2,
+:where(.journey-page) h3,
+:where(.journey-page) h4,
+:where(.journey-page) p {
   margin: 0;
 }
-h1,
-h2,
-h3,
-h4 {
+:where(.journey-page) h1,
+:where(.journey-page) h2,
+:where(.journey-page) h3,
+:where(.journey-page) h4 {
   font-family: Manrope, "DM Sans", system-ui, sans-serif;
 }
-h1,
-h2,
-h3 {
+:where(.journey-page) h1,
+:where(.journey-page) h2,
+:where(.journey-page) h3 {
   color: var(--ink);
 }
-h1 {
+:where(.journey-page) h1 {
   font-size: 38px;
   line-height: 1.22;
   letter-spacing: -1.35px;
   font-weight: 750;
 }
-h1:focus,
-main:focus {
+:where(.journey-page) h1:focus,
+:where(.journey-page) main:focus {
   outline: none;
 }
-h2 {
+:where(.journey-page) h2 {
   font-size: 20px;
   line-height: 1.4;
   letter-spacing: -0.5px;
   font-weight: 750;
 }
-h3 {
+:where(.journey-page) h3 {
   font-size: 16px;
   line-height: 1.45;
   letter-spacing: -0.3px;
   font-weight: 750;
 }
-p {
+:where(.journey-page) p {
   color: var(--muted);
 }
-button {
+:where(.journey-page) button {
   border: 0;
   background: none;
 }
-::selection {
+:where(.journey-page) ::selection {
   background: #e3d9f5;
 }
-.phase-0 {
+:where(.journey-page) .phase-0 {
   --phase: #7053a5;
   --phase-soft: #f3eff9;
   --phase-line: #e0d7ef;
   --phase-dark: #594080;
 }
-.phase-1 {
+:where(.journey-page) .phase-1 {
   --phase: #257974;
   --phase-soft: #edf6f3;
   --phase-line: #cfe7e0;
   --phase-dark: #1e635e;
 }
-.phase-2 {
+:where(.journey-page) .phase-2 {
   --phase: #3d6fa9;
   --phase-soft: #edf3fa;
   --phase-line: #d4e1f1;
   --phase-dark: #2c5486;
 }
-.sr-only {
+:where(.journey-page) .sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -157,20 +139,7 @@ button {
   white-space: nowrap;
   border: 0;
 }
-.skip-link {
-  position: fixed;
-  left: 18px;
-  top: -90px;
-  z-index: 100;
-  background: #fff;
-  padding: 12px 20px;
-  border: 2px solid #1468c3;
-  border-radius: 6px;
-}
-.skip-link:focus {
-  top: 12px;
-}
-.eyebrow {
+:where(.journey-page) .eyebrow {
   text-transform: uppercase;
   letter-spacing: 1.3px;
   font-size: 10px;
@@ -178,64 +147,7 @@ button {
   color: var(--muted);
   line-height: 1.6;
 }
-.site-header {
-  height: 76px;
-  background: #fff;
-  border-bottom: 1px solid var(--line);
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-.header-inner {
-  max-width: 1440px;
-  padding: 0 48px;
-  height: 100%;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  white-space: nowrap;
-}
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  background: #c91922;
-  color: #fff;
-  border-radius: 8px;
-}
-.brand > span:last-child {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.brand strong {
-  font-size: 17px;
-  letter-spacing: -0.6px;
-}
-.brand-divider {
-  color: #65676a;
-  font-size: 22px;
-  font-weight: 400;
-}
-.brand-name {
-  font-size: 13px;
-  font-weight: 500;
-  color: #596173;
-}
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.search-trigger {
+:where(.journey-page) .search-trigger {
   border: 1px solid var(--line);
   background: #fafbfc;
   display: flex;
@@ -247,11 +159,11 @@ button {
   font-size: 12px;
   min-width: 243px;
 }
-.search-trigger:hover {
+:where(.journey-page) .search-trigger:hover {
   background: #f0f2f5;
   border-color: #cbd0da;
 }
-.search-trigger kbd {
+:where(.journey-page) .search-trigger kbd {
   margin-left: auto;
   font-size: 9px;
   background: #fff;
@@ -262,7 +174,7 @@ button {
   color: #636973;
   font-family: inherit;
 }
-.icon-button {
+:where(.journey-page) .icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -272,29 +184,17 @@ button {
   color: #616875;
   flex-shrink: 0;
 }
-.icon-button:hover {
+:where(.journey-page) .icon-button:hover {
   background: #eff1f5;
   color: #252b37;
 }
-.share-button {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 0 7px 12px;
-  border-left: 1px solid var(--line);
-  font-size: 12px;
-  font-weight: 550;
-}
-.share-button:hover {
-  color: var(--red);
-}
-.main-shell {
+:where(.journey-page) .main-shell {
   max-width: 1328px;
   margin: auto;
   padding: 0 40px 44px;
   min-height: calc(100vh - 153px);
 }
-.hero-eyebrow {
+:where(.journey-page) .hero-eyebrow {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -303,13 +203,13 @@ button {
   color: #616873;
   margin-bottom: 17px;
 }
-.hero-eyebrow > span {
+:where(.journey-page) .hero-eyebrow > span {
   width: 5px;
   height: 5px;
   border-radius: 50%;
   background: var(--red);
 }
-.secondary-button {
+:where(.journey-page) .secondary-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -323,16 +223,16 @@ button {
     background 0.15s,
     border-color 0.15s;
 }
-.secondary-button {
+:where(.journey-page) .secondary-button {
   background: #fff;
   border: 1px solid #d8dde6;
   color: #465269;
 }
-.secondary-button:hover {
+:where(.journey-page) .secondary-button:hover {
   background: #f1f4f8;
   border-color: #aeb9c9;
 }
-.text-action {
+:where(.journey-page) .text-action {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -342,24 +242,24 @@ button {
   line-height: 1.5;
   padding: 0;
 }
-.text-action:hover {
+:where(.journey-page) .text-action:hover {
   color: #173a67;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.perspectives {
+:where(.journey-page) .perspectives {
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid #dfe3e9;
   gap: 16px;
 }
-.tabs {
+:where(.journey-page) .tabs {
   display: flex;
   align-items: stretch;
   gap: 25px;
 }
-.tabs > button {
+:where(.journey-page) .tabs > button {
   position: relative;
   display: flex;
   align-items: center;
@@ -370,7 +270,7 @@ button {
   padding: 15px 0 16px;
   white-space: nowrap;
 }
-.tabs > button::after {
+:where(.journey-page) .tabs > button::after {
   content: "";
   position: absolute;
   bottom: -1px;
@@ -379,24 +279,24 @@ button {
   height: 2px;
   background: transparent;
 }
-.tabs > button:hover {
+:where(.journey-page) .tabs > button:hover {
   color: #293448;
 }
-.tabs > button[aria-selected="true"] {
+:where(.journey-page) .tabs > button[aria-selected="true"] {
   color: #283349;
   font-weight: 700;
 }
-.tabs > button[aria-selected="true"]::after {
+:where(.journey-page) .tabs > button[aria-selected="true"]::after {
   background: #c91922;
 }
-.tabs > button[aria-selected="true"] > svg {
+:where(.journey-page) .tabs > button[aria-selected="true"] > svg {
   color: #c91922;
 }
-.perspective-hint {
+:where(.journey-page) .perspective-hint {
   font-size: 10px;
   color: #636872;
 }
-.perspective-panel {
+:where(.journey-page) .perspective-panel {
   padding-top: 29px;
   outline-offset: 5px;
   animation: reveal 0.2s ease-out;
@@ -411,77 +311,35 @@ button {
     transform: translateY(0);
   }
 }
-.site-footer {
-  max-width: 1328px;
-  margin: 0 auto;
-  padding: 20px 40px 23px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 10px;
-  color: #63676f;
-  gap: 20px;
-}
-.site-footer > div {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.footer-mark {
-  font-weight: 650;
-  color: #60697a;
-}
-.site-footer button {
-  font-size: 10px;
-  color: #5c687a;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0;
-}
-.site-footer button:hover {
-  color: #233750;
-}
-.internal-label {
-  font-size: 8px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border: 1px solid #e0e5eb;
-  border-radius: 4px;
-  padding: 3px 6px;
-  background: #fff;
-  color: #616874;
-}
-.detail-layout {
+:where(.journey-page) .detail-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 288px;
   gap: 43px;
   align-items: start;
 }
-.subheading {
+:where(.journey-page) .subheading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 16px;
 }
-.subheading h2 {
+:where(.journey-page) .subheading h2 {
   font-size: 17px;
   letter-spacing: -0.4px;
 }
-.subheading > span {
+:where(.journey-page) .subheading > span {
   font-size: 10px;
   color: #636872;
   white-space: nowrap;
 }
-.flow-section {
+:where(.journey-page) .flow-section {
   margin-top: 28px;
 }
-.process-content > .flow-section:first-child {
+:where(.journey-page) .process-content > .flow-section:first-child {
   margin-top: 0;
 }
-.process-flow {
+:where(.journey-page) .process-flow {
   list-style: none;
   padding: 24px 25px;
   margin: 0;
@@ -489,17 +347,17 @@ button {
   border-radius: 9px;
   background: #fff;
 }
-.process-flow li {
+:where(.journey-page) .process-flow li {
   position: relative;
   display: flex;
   align-items: start;
   gap: 16px;
   padding-bottom: 25px;
 }
-.process-flow li:last-child {
+:where(.journey-page) .process-flow li:last-child {
   padding-bottom: 0;
 }
-.process-flow li:not(:last-child)::before {
+:where(.journey-page) .process-flow li:not(:last-child)::before {
   content: "";
   position: absolute;
   left: 13px;
@@ -507,7 +365,7 @@ button {
   bottom: 2px;
   border-left: 1px dashed var(--phase-line);
 }
-.flow-number {
+:where(.journey-page) .flow-number {
   position: relative;
   flex-shrink: 0;
   display: grid;
@@ -521,26 +379,26 @@ button {
   font-size: 10px;
   font-weight: 700;
 }
-.process-flow h3 {
+:where(.journey-page) .process-flow h3 {
   font-size: 13px;
   margin: 3px 0 5px;
   letter-spacing: -0.1px;
 }
-.process-flow p {
+:where(.journey-page) .process-flow p {
   font-size: 14px;
   line-height: 1.8;
   max-width: 620px;
 }
-.service-flow-table,
-.operator-examples-table {
+:where(.journey-page) .service-flow-table,
+:where(.journey-page) .operator-examples-table {
   margin-top: 20px;
   max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: 9px;
 }
-.service-flow-table table,
-.operator-examples-table table {
+:where(.journey-page) .service-flow-table table,
+:where(.journey-page) .operator-examples-table table {
   width: 100%;
   min-width: 560px;
   border-collapse: collapse;
@@ -548,59 +406,59 @@ button {
   font-size: 13px;
   text-align: left;
 }
-.service-flow-table caption,
-.operator-examples-table caption {
+:where(.journey-page) .service-flow-table caption,
+:where(.journey-page) .operator-examples-table caption {
   padding: 14px;
   font-weight: 700;
   text-align: left;
 }
-.service-flow-table th,
-.service-flow-table td,
-.operator-examples-table th,
-.operator-examples-table td {
+:where(.journey-page) .service-flow-table th,
+:where(.journey-page) .service-flow-table td,
+:where(.journey-page) .operator-examples-table th,
+:where(.journey-page) .operator-examples-table td {
   padding: 12px 14px;
   border-top: 1px solid var(--line);
   vertical-align: top;
 }
-.service-flow-table thead,
-.operator-examples-table thead {
+:where(.journey-page) .service-flow-table thead,
+:where(.journey-page) .operator-examples-table thead {
   background: var(--phase-soft);
 }
-.service-flow-table tbody th {
+:where(.journey-page) .service-flow-table tbody th {
   width: 27%;
 }
-.service-flow-table td p {
+:where(.journey-page) .service-flow-table td p {
   margin-top: 6px;
 }
-.operator-examples > p {
+:where(.journey-page) .operator-examples > p {
   font-size: 13px;
   line-height: 1.8;
   color: #596677;
 }
-.operator-examples-table tbody th {
+:where(.journey-page) .operator-examples-table tbody th {
   width: 20%;
 }
-.operator-examples-table td:nth-child(2) {
+:where(.journey-page) .operator-examples-table td:nth-child(2) {
   width: 30%;
 }
-.context-column,
-.record-aside {
+:where(.journey-page) .context-column,
+:where(.journey-page) .record-aside {
   display: flex;
   flex-direction: column;
   gap: 25px;
 }
-.context-card {
+:where(.journey-page) .context-card {
   background: var(--phase-soft);
   border: 1px solid var(--phase-line);
   border-radius: 9px;
   padding: 23px;
 }
-.context-card > .eyebrow {
+:where(.journey-page) .context-card > .eyebrow {
   font-size: 8px;
   letter-spacing: 1.1px;
   color: var(--phase-dark);
 }
-.outcome-icon {
+:where(.journey-page) .outcome-icon {
   display: grid;
   place-items: center;
   width: 32px;
@@ -611,46 +469,46 @@ button {
   border-radius: 8px;
   margin: 12px 0 9px;
 }
-.context-card p {
+:where(.journey-page) .context-card p {
   font-size: 11px;
   line-height: 1.8;
   color: #5f687c;
   margin-top: 7px;
 }
-.context-card > .outcome-text {
+:where(.journey-page) .context-card > .outcome-text {
   font-size: 13px;
   font-weight: 550;
   color: #43506a;
   line-height: 1.8;
   margin-top: 0;
 }
-.context-divider {
+:where(.journey-page) .context-divider {
   height: 1px;
   background: var(--phase-line);
   margin: 18px 0;
 }
-.context-card p + .eyebrow {
+:where(.journey-page) .context-card p + .eyebrow {
   display: block;
   margin-top: 17px;
 }
-.context-card .scope-text {
+:where(.journey-page) .context-card .scope-text {
   font-size: 10px;
   line-height: 1.75;
 }
-.context-card h3 {
+:where(.journey-page) .context-card h3 {
   font-size: 15px;
   margin: 8px 0;
 }
-.context-card .text-action {
+:where(.journey-page) .context-card .text-action {
   margin-top: 13px;
 }
-.related > .eyebrow {
+:where(.journey-page) .related > .eyebrow {
   display: block;
   font-size: 8px;
   letter-spacing: 1.1px;
   margin-bottom: 8px;
 }
-.related > a {
+:where(.journey-page) .related > a {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -661,20 +519,20 @@ button {
   padding: 12px 0;
   color: #576984;
 }
-.related > a:hover {
+:where(.journey-page) .related > a:hover {
   color: var(--phase);
 }
-.related > a small {
+:where(.journey-page) .related > a small {
   display: block;
   font-size: 9px;
   font-weight: 400;
   margin-bottom: 2px;
   color: #616771;
 }
-.related > a > svg {
+:where(.journey-page) .related > a > svg {
   color: #636971;
 }
-.next-perspective {
+:where(.journey-page) .next-perspective {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -683,31 +541,31 @@ button {
   padding: 17px 0;
   border-top: 1px solid var(--line);
 }
-.next-perspective > div {
+:where(.journey-page) .next-perspective > div {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 11px;
   color: #606876;
 }
-.next-perspective > div svg {
+:where(.journey-page) .next-perspective > div svg {
   color: #7e6436;
 }
-.next-perspective .text-action {
+:where(.journey-page) .next-perspective .text-action {
   font-size: 11px;
 }
-.section-description {
+:where(.journey-page) .section-description {
   font-size: 12px;
   margin: -4px 0 20px;
   line-height: 1.8;
   max-width: 640px;
 }
-.record-list {
+:where(.journey-page) .record-list {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
-.record-card {
+:where(.journey-page) .record-card {
   display: block;
   padding: 22px 24px;
   border: 1px solid #e0e5ed;
@@ -717,11 +575,11 @@ button {
     box-shadow 0.15s,
     border-color 0.15s;
 }
-.record-card:hover {
+:where(.journey-page) .record-card:hover {
   border-color: #a6b4c8;
   box-shadow: 0 3px 13px #283e6108;
 }
-.record-meta {
+:where(.journey-page) .record-meta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -730,7 +588,7 @@ button {
   font-size: 9px;
   color: #626874;
 }
-.evidence-badge {
+:where(.journey-page) .evidence-badge {
   font-size: 9px;
   line-height: 1.7;
   background: #faf2e4;
@@ -741,32 +599,32 @@ button {
   display: inline-flex;
   align-items: center;
 }
-.record-context {
+:where(.journey-page) .record-context {
   font-size: 11px;
   line-height: 1.6;
 }
-.process-notes {
+:where(.journey-page) .process-notes {
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid var(--line);
 }
-.opportunities .evidence-badge {
+:where(.journey-page) .opportunities .evidence-badge {
   background: #edf4f1;
   border-color: #d3e5db;
   color: #42715c;
 }
-.record-card h3 {
+:where(.journey-page) .record-card h3 {
   font-size: 16px;
   margin-bottom: 7px;
   letter-spacing: -0.3px;
   line-height: 1.55;
 }
-.record-card > p {
+:where(.journey-page) .record-card > p {
   font-size: 12px;
   line-height: 1.8;
   max-width: 650px;
 }
-.record-action {
+:where(.journey-page) .record-action {
   font-size: 10px;
   font-weight: 600;
   margin-top: 15px;
@@ -775,13 +633,13 @@ button {
   gap: 8px;
   color: #4f698e;
 }
-.record-card:hover .record-action {
+:where(.journey-page) .record-card:hover .record-action {
   color: #1c4c8b;
 }
-.show-more {
+:where(.journey-page) .show-more {
   margin-top: 18px;
 }
-.empty-state {
+:where(.journey-page) .empty-state {
   padding: 35px 25px;
   background: #fff;
   border: 1px dashed #d5dce7;
@@ -789,82 +647,82 @@ button {
   text-align: center;
   color: #5d6877;
 }
-.empty-state > svg {
+:where(.journey-page) .empty-state > svg {
   margin-bottom: 12px;
 }
-.empty-state h3 {
+:where(.journey-page) .empty-state h3 {
   font-size: 15px;
   margin-bottom: 8px;
 }
-.empty-state p {
+:where(.journey-page) .empty-state p {
   font-size: 12px;
   max-width: 440px;
   margin: 0 auto 15px;
   line-height: 1.8;
 }
-.evidence-detail {
+:where(.journey-page) .evidence-detail {
   padding: 29px 32px;
   background: #fff;
   border: 1px solid #e1e5ec;
   border-radius: 10px;
   min-width: 0;
 }
-.detail-section + .detail-section {
+:where(.journey-page) .detail-section + .detail-section {
   margin-top: 25px;
 }
-.evidence-examples {
+:where(.journey-page) .evidence-examples {
   list-style: none;
   padding: 0;
   margin: 16px 0 0;
 }
-.evidence-example + .evidence-example {
+:where(.journey-page) .evidence-example + .evidence-example {
   border-top: 1px solid var(--line);
   margin-top: 24px;
   padding-top: 22px;
 }
-.evidence-example h3 {
+:where(.journey-page) .evidence-example h3 {
   font-size: 14px;
   line-height: 1.55;
   margin: 0 0 6px;
 }
-.evidence-example .example-platform {
+:where(.journey-page) .evidence-example .example-platform {
   font-size: 12px;
   margin: 0 0 4px;
 }
-.evidence-example .example-date {
+:where(.journey-page) .evidence-example .example-date {
   color: var(--ink);
   font-size: 12px;
   font-weight: 600;
   margin: 0 0 12px;
 }
-.example-metadata {
+:where(.journey-page) .example-metadata {
   font-size: 12px;
   line-height: 1.7;
   margin: 14px 0 8px;
 }
-.example-metadata > div + div {
+:where(.journey-page) .example-metadata > div + div {
   margin-top: 8px;
 }
-.example-metadata dt {
+:where(.journey-page) .example-metadata dt {
   font-weight: 700;
 }
-.example-metadata dd {
+:where(.journey-page) .example-metadata dd {
   margin: 0;
 }
-.evidence-example .example-limit {
+:where(.journey-page) .evidence-example .example-limit {
   font-size: 12px;
   line-height: 1.7;
 }
-.detail-section h2 {
+:where(.journey-page) .detail-section h2 {
   font-size: 15px;
   margin-bottom: 9px;
   letter-spacing: -0.2px;
 }
-.detail-section p {
+:where(.journey-page) .detail-section p {
   font-size: 14px;
   line-height: 1.9;
 }
-.evidence-limit {
+:where(.journey-page) .evidence-limit {
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -875,7 +733,7 @@ button {
   margin-top: 25px;
   color: #5c687b;
 }
-.evidence-limit h2 {
+:where(.journey-page) .evidence-limit h2 {
   font-family: "DM Sans", sans-serif;
   font-size: 11px;
   font-weight: 650;
@@ -883,15 +741,15 @@ button {
   letter-spacing: 0;
   margin-bottom: 7px;
 }
-.evidence-limit p {
+:where(.journey-page) .evidence-limit p {
   font-size: 11px;
   line-height: 1.85;
   color: #606877;
 }
-.evidence-limit > svg {
+:where(.journey-page) .evidence-limit > svg {
   margin-top: 1px;
 }
-.proposal-label {
+:where(.journey-page) .proposal-label {
   display: flex;
   gap: 9px;
   align-items: center;
@@ -903,32 +761,7 @@ button {
   border-radius: 6px;
   margin-bottom: 26px;
 }
-.toast {
-  position: fixed;
-  bottom: 26px;
-  left: 50%;
-  transform: translate(-50%, 20px);
-  z-index: 100;
-  background: #263346;
-  color: #fff;
-  box-shadow: 0 5px 22px #273c6326;
-  border-radius: 8px;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.15s,
-    transform 0.15s;
-}
-.toast.visible {
-  opacity: 1;
-  transform: translate(-50%, 0);
-  padding: 12px 21px;
-}
-.modal {
+:where(.journey-page) .modal {
   padding: 0;
   border: 1px solid #d6dfe9;
   background: #fff;
@@ -940,11 +773,11 @@ button {
   max-height: 85dvh;
   overflow: auto;
 }
-.modal::backdrop {
+:where(.journey-page) .modal::backdrop {
   background: #202a3c66;
   backdrop-filter: blur(4px);
 }
-.modal-heading {
+:where(.journey-page) .modal-heading {
   padding: 19px 24px;
   border-bottom: 1px solid var(--line);
   display: flex;
@@ -956,11 +789,11 @@ button {
   background: #fff;
   z-index: 2;
 }
-.modal-heading h2 {
+:where(.journey-page) .modal-heading h2 {
   font-size: 17px;
   letter-spacing: -0.4px;
 }
-.search-input-wrap {
+:where(.journey-page) .search-input-wrap {
   margin: 22px 24px 10px;
   border: 1px solid #cbd5e4;
   border-radius: 8px;
@@ -970,11 +803,11 @@ button {
   padding: 13px 15px;
   color: #5f6875;
 }
-.search-input-wrap:focus-within {
+:where(.journey-page) .search-input-wrap:focus-within {
   border-color: #4c77b1;
   box-shadow: 0 0 0 3px #e9f0fa;
 }
-.search-input-wrap input {
+:where(.journey-page) .search-input-wrap input {
   border: 0;
   outline: 0;
   background: none;
@@ -983,22 +816,22 @@ button {
   font-size: 13px;
   color: #39465d;
 }
-.search-input-wrap input:focus-visible {
+:where(.journey-page) .search-input-wrap input:focus-visible {
   outline: none;
 }
-.search-input-wrap input::placeholder {
+:where(.journey-page) .search-input-wrap input::placeholder {
   color: #616770;
 }
-.search-count {
+:where(.journey-page) .search-count {
   font-size: 10px;
   padding: 0 25px 16px;
 }
-.search-results {
+:where(.journey-page) .search-results {
   max-height: 53dvh;
   overflow: auto;
   border-top: 1px solid #edf0f5;
 }
-.search-result {
+:where(.journey-page) .search-result {
   display: flex;
   position: relative;
   flex-direction: column;
@@ -1006,45 +839,45 @@ button {
   border-bottom: 1px solid #edf0f5;
   gap: 5px;
 }
-.search-result:hover {
+:where(.journey-page) .search-result:hover {
   background: #f4f7fb;
 }
-.search-result .eyebrow {
+:where(.journey-page) .search-result .eyebrow {
   font-size: 8px;
   letter-spacing: 0.8px;
 }
-.search-result strong {
+:where(.journey-page) .search-result strong {
   font-size: 13px;
   color: #3b4c68;
   font-weight: 650;
 }
-.search-result > span:not(.eyebrow) {
+:where(.journey-page) .search-result > span:not(.eyebrow) {
   font-size: 11px;
   color: #5e6877;
   line-height: 1.7;
 }
-.search-result > svg {
+:where(.journey-page) .search-result > svg {
   position: absolute;
   right: 24px;
   top: 50%;
   color: #5d6777;
 }
-.search-results .empty-state {
+:where(.journey-page) .search-results .empty-state {
   margin: 20px;
   border: 0;
   padding: 20px 10px;
 }
-.suggestions {
+:where(.journey-page) .suggestions {
   display: flex;
   flex-direction: column;
   padding: 19px 24px 25px;
 }
-.suggestions > span {
+:where(.journey-page) .suggestions > span {
   font-size: 10px;
   color: #616875;
   margin-bottom: 8px;
 }
-.suggestions > button {
+:where(.journey-page) .suggestions > button {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1054,10 +887,10 @@ button {
   font-size: 12px;
   color: #556a88;
 }
-.suggestions > button:hover {
+:where(.journey-page) .suggestions > button:hover {
   color: #254a7d;
 }
-.about-note {
+:where(.journey-page) .about-note {
   font-size: 10px;
   line-height: 1.85;
   color: #606874;
@@ -1066,24 +899,24 @@ button {
   border-radius: 6px;
   border: 1px solid #e7ebf1;
 }
-.about-body {
+:where(.journey-page) .about-body {
   padding: 27px 30px 32px;
 }
-.about-body > h3 {
+:where(.journey-page) .about-body > h3 {
   font-size: 23px;
   margin: 9px 0 14px;
   letter-spacing: -0.6px;
 }
-.about-body > p {
+:where(.journey-page) .about-body > p {
   font-size: 12px;
   line-height: 1.9;
   margin-bottom: 15px;
 }
-.about-body > h4 {
+:where(.journey-page) .about-body > h4 {
   font-size: 14px;
   margin: 21px 0 9px;
 }
-.about-lenses {
+:where(.journey-page) .about-lenses {
   display: grid;
   gap: 15px;
   background: #f5f7fb;
@@ -1092,229 +925,149 @@ button {
   padding: 20px;
   margin: 22px 0;
 }
-.about-lenses > div {
+:where(.journey-page) .about-lenses > div {
   display: flex;
   gap: 13px;
   align-items: start;
   color: #546a87;
 }
-.about-lenses strong {
+:where(.journey-page) .about-lenses strong {
   font-size: 12px;
   color: #4f6686;
 }
-.about-lenses p {
+:where(.journey-page) .about-lenses p {
   font-size: 11px;
   line-height: 1.7;
   margin-top: 3px;
 }
-.about-body > .about-note {
+:where(.journey-page) .about-body > .about-note {
   font-size: 10px;
   margin-bottom: 0;
 }
-.share-fallback {
-  padding: 25px;
-}
-.share-fallback p {
-  font-size: 12px;
-  margin-bottom: 15px;
-}
-.share-fallback input {
-  width: 100%;
-  border: 1px solid #cbd6e5;
-  border-radius: 6px;
-  padding: 11px;
-  color: #4a6081;
-  font-size: 12px;
-}
 @media (min-width: 1500px) {
-  .main-shell {
+  :where(.journey-page) .main-shell {
     padding-top: 9px;
   }
 }
 @media (max-width: 1100px) {
-  .header-inner {
-    padding: 0 30px;
-  }
-  .main-shell {
+  :where(.journey-page) .main-shell {
     padding: 0 30px 35px;
   }
-  .brand-name {
-    font-size: 12px;
-  }
-  .search-trigger {
+  :where(.journey-page) .search-trigger {
     min-width: 190px;
   }
-  .search-trigger kbd {
+  :where(.journey-page) .search-trigger kbd {
     display: none;
   }
-  .header-actions {
-    gap: 9px;
-  }
-  .detail-layout {
+  :where(.journey-page) .detail-layout {
     grid-template-columns: minmax(0, 1fr) 250px;
     gap: 25px;
   }
-  .context-card {
+  :where(.journey-page) .context-card {
     padding: 19px;
   }
-  .perspective-hint {
+  :where(.journey-page) .perspective-hint {
     display: none;
   }
-  .site-footer {
-    padding-left: 30px;
-    padding-right: 30px;
-  }
-  .evidence-detail {
+  :where(.journey-page) .evidence-detail {
     padding: 23px;
   }
 }
 @media (max-width: 800px) {
-  .site-header {
-    height: 65px;
-  }
-  .header-inner {
-    padding: 0 22px;
-    gap: 16px;
-  }
-  .brand > span:last-child {
-    gap: 9px;
-  }
-  .brand-name {
-    font-size: 11px;
-  }
-  .brand strong {
-    font-size: 15px;
-  }
-  .brand-mark {
-    width: 31px;
-    height: 31px;
-  }
-  .header-actions {
-    gap: 5px;
-  }
-  .search-trigger {
+  :where(.journey-page) .search-trigger {
     min-width: 0;
     border: 0;
     background: none;
     padding: 8px;
   }
-  .search-trigger > span {
+  :where(.journey-page) .search-trigger > span {
     display: none;
   }
-  .share-button {
-    border: 0;
-    padding-left: 7px;
-  }
-  .share-button > span {
-    display: none;
-  }
-  .about-trigger {
+  :where(.journey-page) .about-trigger {
     width: 29px;
   }
-  .main-shell {
+  :where(.journey-page) .main-shell {
     padding: 0 22px 30px;
   }
-  .hero-eyebrow {
+  :where(.journey-page) .hero-eyebrow {
     font-size: 8px;
     letter-spacing: 1px;
   }
-  .detail-layout {
+  :where(.journey-page) .detail-layout {
     grid-template-columns: minmax(0, 1fr) 210px;
     gap: 20px;
   }
-  .context-card {
+  :where(.journey-page) .context-card {
     padding: 16px;
   }
-  .context-card > .outcome-text {
+  :where(.journey-page) .context-card > .outcome-text {
     font-size: 11px;
   }
-  .context-card p {
+  :where(.journey-page) .context-card p {
     font-size: 10px;
   }
-  .context-card .scope-text {
+  :where(.journey-page) .context-card .scope-text {
     font-size: 9px;
   }
-  .context-column .eyebrow,
-  .record-aside .eyebrow {
+  :where(.journey-page) .context-column .eyebrow,
+  :where(.journey-page) .record-aside .eyebrow {
     font-size: 7px;
     letter-spacing: 0.9px;
   }
-  .related > a {
+  :where(.journey-page) .related > a {
     font-size: 10px;
   }
-  .subheading h2 {
+  :where(.journey-page) .subheading h2 {
     font-size: 15px;
   }
-  .subheading > span {
+  :where(.journey-page) .subheading > span {
     font-size: 9px;
   }
-  .process-flow {
+  :where(.journey-page) .process-flow {
     padding: 18px;
   }
-  .process-flow p {
+  :where(.journey-page) .process-flow p {
     font-size: 11px;
   }
-  .next-perspective {
+  :where(.journey-page) .next-perspective {
     align-items: start;
     flex-direction: column;
     gap: 10px;
   }
-  .evidence-detail {
+  :where(.journey-page) .evidence-detail {
     padding: 22px;
   }
-  .detail-section p {
+  :where(.journey-page) .detail-section p {
     font-size: 12px;
   }
-  .detail-section h2 {
+  :where(.journey-page) .detail-section h2 {
     font-size: 13px;
   }
-  .evidence-limit {
+  :where(.journey-page) .evidence-limit {
     padding: 14px;
   }
-  .evidence-limit > svg {
+  :where(.journey-page) .evidence-limit > svg {
     display: none;
-  }
-  .site-footer {
-    padding: 20px 22px;
-    font-size: 9px;
-  }
-  .site-footer > div {
-    gap: 10px;
   }
 }
 @media (max-width: 620px) {
-  .header-inner {
-    padding: 0 18px;
-  }
-  .brand-name {
-    display: none;
-  }
-  .brand-divider {
-    display: none;
-  }
-  .brand > span:last-child {
-    gap: 0;
-  }
-  .header-actions {
-    gap: 9px;
-  }
-  .main-shell {
+  :where(.journey-page) .main-shell {
     padding: 0 18px 28px;
   }
-  .hero-eyebrow {
+  :where(.journey-page) .hero-eyebrow {
     font-size: 8px;
     letter-spacing: 1px;
     margin-bottom: 14px;
   }
-  .desktop-break {
+  :where(.journey-page) .desktop-break {
     display: none;
   }
-  .tabs {
+  :where(.journey-page) .tabs {
     gap: 0;
     width: 100%;
     justify-content: space-between;
   }
-  .tabs > button {
+  :where(.journey-page) .tabs > button {
     justify-content: center;
     gap: 6px;
     font-size: 10px;
@@ -1324,198 +1077,180 @@ button {
     text-align: left;
     line-height: 1.55;
   }
-  .tabs > button > svg {
+  :where(.journey-page) .tabs > button > svg {
     width: 15px;
     height: 15px;
   }
-  .tabs > button > span {
+  :where(.journey-page) .tabs > button > span {
     max-width: 105px;
   }
-  .tabs > button:first-child {
+  :where(.journey-page) .tabs > button:first-child {
     justify-content: start;
   }
-  .tabs > button::after {
+  :where(.journey-page) .tabs > button::after {
     left: 3px;
     right: 3px;
   }
-  .perspectives {
+  :where(.journey-page) .perspectives {
     gap: 0;
   }
-  .perspective-panel {
+  :where(.journey-page) .perspective-panel {
     padding-top: 23px;
   }
-  .site-footer {
-    padding: 21px 18px;
-    flex-direction: column;
-    align-items: start;
-    gap: 12px;
-  }
-  .site-footer > div {
-    width: 100%;
-    justify-content: space-between;
-    gap: 13px;
-  }
-  .site-footer button {
-    font-size: 10px;
-  }
-  .detail-layout {
+  :where(.journey-page) .detail-layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 27px;
   }
-  .subheading {
+  :where(.journey-page) .subheading {
     gap: 10px;
     align-items: baseline;
   }
-  .subheading h2 {
+  :where(.journey-page) .subheading h2 {
     font-size: 15px;
   }
-  .subheading > span {
+  :where(.journey-page) .subheading > span {
     font-size: 9px;
   }
-  .process-flow {
+  :where(.journey-page) .process-flow {
     padding: 20px;
   }
-  .process-flow p {
+  :where(.journey-page) .process-flow p {
     font-size: 12px;
     line-height: 1.8;
   }
-  .process-flow h3 {
+  :where(.journey-page) .process-flow h3 {
     font-size: 13px;
   }
-  .context-card {
+  :where(.journey-page) .context-card {
     padding: 21px;
   }
-  .context-card > .eyebrow,
-  .context-column .eyebrow,
-  .record-aside .eyebrow {
+  :where(.journey-page) .context-card > .eyebrow,
+  :where(.journey-page) .context-column .eyebrow,
+  :where(.journey-page) .record-aside .eyebrow {
     font-size: 8px;
     letter-spacing: 1px;
   }
-  .context-card > .outcome-text {
+  :where(.journey-page) .context-card > .outcome-text {
     font-size: 13px;
   }
-  .context-card p {
+  :where(.journey-page) .context-card p {
     font-size: 11px;
   }
-  .context-card .scope-text {
+  :where(.journey-page) .context-card .scope-text {
     font-size: 10px;
   }
-  .related > a {
+  :where(.journey-page) .related > a {
     font-size: 12px;
   }
-  .related > a small {
+  :where(.journey-page) .related > a small {
     font-size: 10px;
   }
-  .next-perspective {
+  :where(.journey-page) .next-perspective {
     font-size: 11px;
     gap: 11px;
   }
-  .next-perspective .text-action {
+  :where(.journey-page) .next-perspective .text-action {
     font-size: 11px;
   }
-  .record-card {
+  :where(.journey-page) .record-card {
     padding: 20px;
   }
-  .record-card h3 {
+  :where(.journey-page) .record-card h3 {
     font-size: 15px;
   }
-  .record-card > p {
+  :where(.journey-page) .record-card > p {
     font-size: 12px;
   }
-  .record-meta {
+  :where(.journey-page) .record-meta {
     font-size: 9px;
   }
-  .record-action {
+  :where(.journey-page) .record-action {
     font-size: 11px;
   }
-  .evidence-detail {
+  :where(.journey-page) .evidence-detail {
     padding: 21px;
   }
-  .detail-section h2 {
+  :where(.journey-page) .detail-section h2 {
     font-size: 14px;
   }
-  .detail-section p {
+  :where(.journey-page) .detail-section p {
     font-size: 12px;
     line-height: 1.9;
   }
-  .evidence-limit h2 {
+  :where(.journey-page) .evidence-limit h2 {
     font-size: 11px;
   }
-  .evidence-limit p {
+  :where(.journey-page) .evidence-limit p {
     font-size: 11px;
   }
-  .proposal-label {
+  :where(.journey-page) .proposal-label {
     align-items: start;
     font-size: 9px;
     line-height: 1.8;
   }
-  .modal {
+  :where(.journey-page) .modal {
     max-width: calc(100vw - 20px);
     border-radius: 10px;
     max-height: 90dvh;
   }
-  .modal-heading {
+  :where(.journey-page) .modal-heading {
     padding: 15px 18px;
   }
-  .modal-heading h2 {
+  :where(.journey-page) .modal-heading h2 {
     font-size: 15px;
   }
-  .search-input-wrap {
+  :where(.journey-page) .search-input-wrap {
     margin: 18px 18px 10px;
     padding: 12px;
     gap: 9px;
   }
-  .search-input-wrap input {
+  :where(.journey-page) .search-input-wrap input {
     font-size: 12px;
   }
-  .search-count {
+  :where(.journey-page) .search-count {
     padding: 0 18px 14px;
     font-size: 10px;
   }
-  .search-result {
+  :where(.journey-page) .search-result {
     padding-left: 18px;
     padding-right: 40px;
   }
-  .search-result > svg {
+  :where(.journey-page) .search-result > svg {
     right: 16px;
   }
-  .search-results {
+  :where(.journey-page) .search-results {
     max-height: 60dvh;
   }
-  .search-result strong {
+  :where(.journey-page) .search-result strong {
     font-size: 12px;
   }
-  .search-result > span:not(.eyebrow) {
+  :where(.journey-page) .search-result > span:not(.eyebrow) {
     font-size: 10px;
   }
-  .about-body {
+  :where(.journey-page) .about-body {
     padding: 23px 20px;
   }
-  .about-body > h3 {
+  :where(.journey-page) .about-body > h3 {
     font-size: 21px;
   }
-  .about-body > p {
+  :where(.journey-page) .about-body > p {
     font-size: 12px;
   }
-  .about-lenses {
+  :where(.journey-page) .about-lenses {
     padding: 17px;
-  }
-  .share-fallback {
-    padding: 20px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .perspective-panel {
+  :where(.journey-page) .perspective-panel {
     animation: none;
   }
-  .secondary-button,
-  .record-card,
-  .toast {
+  :where(.journey-page) .secondary-button,
+  :where(.journey-page) .record-card {
     transition: none;
   }
-  *,
-  *::before,
-  *::after {
+  :where(.journey-page) *,
+  :where(.journey-page) *::before,
+  :where(.journey-page) *::after {
     animation: none;
     transition: none;
     scroll-behavior: auto;
@@ -1523,60 +1258,57 @@ button {
 }
 
 /* The timeline stays in place while its expanded step changes perspective. */
-.timeline-app .site-header {
-  position: relative;
-}
-.timeline-app {
+:where(.journey-page) .timeline-app {
   overflow-anchor: none;
 }
-.timeline-hero {
+:where(.journey-page) .timeline-hero {
   padding: 42px 0 30px;
 }
-.timeline-hero h1 {
+:where(.journey-page) .timeline-hero h1 {
   font-size: clamp(26px, 3.2vw, 42px);
   line-height: 1.25;
   letter-spacing: -1.3px;
 }
-.timeline-hero h1 span {
+:where(.journey-page) .timeline-hero h1 span {
   color: #657082;
 }
-.timeline-hero > p {
+:where(.journey-page) .timeline-hero > p {
   margin-top: 16px;
   color: #596575;
   font-size: 14px;
 }
-.timeline-controls {
+:where(.journey-page) .timeline-controls {
   position: sticky;
   top: 0;
   z-index: 20;
   background: #f7f8fa;
   box-shadow: 0 5px 8px -7px #7b899d;
 }
-.timeline-controls .perspectives {
+:where(.journey-page) .timeline-controls .perspectives {
   padding: 0 4px;
 }
-.timeline-controls .tabs {
+:where(.journey-page) .timeline-controls .tabs {
   flex: 1;
 }
-.timeline-controls .tabs > button {
+:where(.journey-page) .timeline-controls .tabs > button {
   white-space: normal;
 }
-.timeline-app .perspective-panel {
+:where(.journey-page) .timeline-app .perspective-panel {
   padding-top: 30px;
   animation: none;
 }
-.timeline-app .journey-timeline {
+:where(.journey-page) .timeline-app .journey-timeline {
   display: block;
   margin: 0 auto;
   max-width: 1040px;
 }
-.timeline-app .journey-timeline::before {
+:where(.journey-page) .timeline-app .journey-timeline::before {
   content: none;
 }
-.timeline-intro {
+:where(.journey-page) .timeline-intro {
   padding: 0 0 32px 68px;
 }
-.expansion-actions {
+:where(.journey-page) .expansion-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -1585,7 +1317,7 @@ button {
   padding: 0;
   border: 0;
 }
-.expansion-button {
+:where(.journey-page) .expansion-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1602,43 +1334,43 @@ button {
   line-height: 1.4;
   white-space: nowrap;
 }
-.expansion-button:hover {
+:where(.journey-page) .expansion-button:hover {
   background: #edf3f9;
   border-color: #afc2d7;
 }
-.expansion-primary {
+:where(.journey-page) .expansion-primary {
   background: #345578;
   border-color: #345578;
   color: #fff;
 }
-.expansion-primary:hover {
+:where(.journey-page) .expansion-primary:hover {
   background: #264564;
   border-color: #264564;
 }
-.timeline-intro p {
+:where(.journey-page) .timeline-intro p {
   margin: 8px 0;
   font-size: 13px;
 }
-.timeline-order-note {
+:where(.journey-page) .timeline-order-note {
   display: flex;
   align-items: center;
   gap: 7px;
   color: #646e7d;
   font-size: 11px;
 }
-.timeline-phases,
-.timeline-stages,
-.timeline-steps,
-.nested-steps ol {
+:where(.journey-page) .timeline-phases,
+:where(.journey-page) .timeline-stages,
+:where(.journey-page) .timeline-steps,
+:where(.journey-page) .nested-steps ol {
   list-style: none;
   padding: 0;
   margin: 0;
 }
-.timeline-phase {
+:where(.journey-page) .timeline-phase {
   position: relative;
   padding-bottom: 32px;
 }
-.timeline-phase::before {
+:where(.journey-page) .timeline-phase::before {
   content: "";
   position: absolute;
   width: 2px;
@@ -1647,17 +1379,17 @@ button {
   left: 23px;
   background: var(--phase-line);
 }
-.timeline-phase:last-child::before {
+:where(.journey-page) .timeline-phase:last-child::before {
   bottom: 0;
 }
-.timeline-phase-heading {
+:where(.journey-page) .timeline-phase-heading {
   display: flex;
   align-items: center;
   gap: 20px;
   margin-bottom: 20px;
   position: relative;
 }
-.timeline-phase-marker {
+:where(.journey-page) .timeline-phase-marker {
   display: grid;
   place-items: center;
   flex: 0 0 48px;
@@ -1669,16 +1401,16 @@ button {
   font-size: 15px;
   font-weight: 700;
 }
-.timeline-phase-heading h2 {
+:where(.journey-page) .timeline-phase-heading h2 {
   font-size: 24px;
   letter-spacing: -0.6px;
   scroll-margin-top: 90px;
 }
-.timeline-phase-heading .eyebrow {
+:where(.journey-page) .timeline-phase-heading .eyebrow {
   color: var(--phase);
   font-size: 9px;
 }
-.phase-outcome {
+:where(.journey-page) .phase-outcome {
   margin-left: auto;
   display: flex;
   align-items: center;
@@ -1687,12 +1419,12 @@ button {
   font-size: 11px;
   color: #606d7d;
 }
-.timeline-stage {
+:where(.journey-page) .timeline-stage {
   position: relative;
   padding-left: 68px;
   margin-bottom: 12px;
 }
-.stage-node {
+:where(.journey-page) .stage-node {
   position: absolute;
   top: 37px;
   left: 18px;
@@ -1702,32 +1434,32 @@ button {
   border: 2px solid var(--phase);
   border-radius: 50%;
 }
-.stage-open .stage-node {
+:where(.journey-page) .stage-open .stage-node {
   background: var(--phase);
   box-shadow: 0 0 0 5px var(--phase-soft);
 }
-.stage-card {
+:where(.journey-page) .stage-card {
   background: #fff;
   border: 1px solid #dce2e9;
   border-radius: 9px;
   min-width: 0;
 }
-.stage-heading,
-.step-heading {
+:where(.journey-page) .stage-heading,
+:where(.journey-page) .step-heading {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.stage-heading > h3,
-.step-heading > h4 {
+:where(.journey-page) .stage-heading > h3,
+:where(.journey-page) .step-heading > h4 {
   flex: 1;
   min-width: 0;
 }
-.stage-open .stage-card {
+:where(.journey-page) .stage-open .stage-card {
   border-color: var(--phase-line);
   box-shadow: 0 3px 14px #25364a08;
 }
-.stage-toggle {
+:where(.journey-page) .stage-toggle {
   display: flex;
   width: 100%;
   align-items: flex-start;
@@ -1737,27 +1469,27 @@ button {
   border-radius: 9px;
   scroll-margin-top: 90px;
 }
-.stage-toggle:hover {
+:where(.journey-page) .stage-toggle:hover {
   background: #fafbfc;
 }
-.stage-ordinal {
+:where(.journey-page) .stage-ordinal {
   font-family: "DM Sans", sans-serif;
   font-size: 11px;
   font-weight: 600;
   color: var(--phase);
   padding-top: 4px;
 }
-.stage-copy {
+:where(.journey-page) .stage-copy {
   flex: 1;
   min-width: 0;
 }
-.stage-title {
+:where(.journey-page) .stage-title {
   display: block;
   font-size: 16px;
   letter-spacing: -0.2px;
   line-height: 1.5;
 }
-.stage-summary {
+:where(.journey-page) .stage-summary {
   display: block;
   margin-top: 5px;
   color: #606d7d;
@@ -1767,7 +1499,7 @@ button {
   line-height: 1.7;
   min-height: 41px;
 }
-.stage-disclosure {
+:where(.journey-page) .stage-disclosure {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1776,14 +1508,14 @@ button {
   font-weight: 500;
   color: var(--phase);
 }
-.stage-toggle[aria-expanded="true"] .stage-disclosure svg,
-.step-toggle[aria-expanded="true"] > svg {
+:where(.journey-page) .stage-toggle[aria-expanded="true"] .stage-disclosure svg,
+:where(.journey-page) .step-toggle[aria-expanded="true"] > svg {
   transform: rotate(90deg);
 }
-.stage-body {
+:where(.journey-page) .stage-body {
   padding: 0 24px 24px;
 }
-.stage-note {
+:where(.journey-page) .stage-note {
   display: flex;
   gap: 8px;
   align-items: flex-start;
@@ -1795,17 +1527,17 @@ button {
   border-radius: 5px;
   margin-bottom: 20px;
 }
-.stage-note svg {
+:where(.journey-page) .stage-note svg {
   margin-top: 2px;
   color: var(--phase);
 }
-.stage-body > .eyebrow {
+:where(.journey-page) .stage-body > .eyebrow {
   margin: 10px 0;
 }
-.timeline-step {
+:where(.journey-page) .timeline-step {
   border-top: 1px solid #e2e7ee;
 }
-.step-toggle {
+:where(.journey-page) .step-toggle {
   display: flex;
   align-items: center;
   width: 100%;
@@ -1814,22 +1546,22 @@ button {
   text-align: left;
   scroll-margin-top: 90px;
 }
-.step-toggle:hover,
-.step-open > .step-heading > h4 > .step-toggle {
+:where(.journey-page) .step-toggle:hover,
+:where(.journey-page) .step-open > .step-heading > h4 > .step-toggle {
   background: #f7f9fc;
 }
-.step-number {
+:where(.journey-page) .step-number {
   color: #6a7585;
   font-size: 10px;
   font-weight: 500;
 }
-.step-title {
+:where(.journey-page) .step-title {
   flex: 1;
   font-size: 13px;
   line-height: 1.6;
   font-weight: 650;
 }
-.step-condition {
+:where(.journey-page) .step-condition {
   display: inline-block;
   margin-left: 8px;
   padding: 2px 7px;
@@ -1839,56 +1571,56 @@ button {
   font-size: 10px;
   font-weight: 500;
 }
-.step-count {
+:where(.journey-page) .step-count {
   font-family: "DM Sans", sans-serif;
   font-size: 10px;
   font-weight: 400;
   color: #5f6b7b;
   white-space: nowrap;
 }
-.step-body {
+:where(.journey-page) .step-body {
   padding: 12px 8px 20px;
 }
-.step-summary {
+:where(.journey-page) .step-summary {
   font-size: 13px;
   line-height: 1.8;
   color: #596677;
   margin-bottom: 18px;
 }
-.nested-steps {
+:where(.journey-page) .nested-steps {
   border-left: 2px solid var(--phase-line);
   padding-left: 16px;
   margin: 18px 0;
 }
-.nested-steps > .eyebrow {
+:where(.journey-page) .nested-steps > .eyebrow {
   margin-bottom: 12px;
   line-height: 1.8;
 }
-.step-detail .flow-section {
+:where(.journey-page) .step-detail .flow-section {
   margin: 20px 0;
 }
-.step-detail .subheading {
+:where(.journey-page) .step-detail .subheading {
   flex-wrap: wrap;
 }
-.step-detail .subheading h2 {
+:where(.journey-page) .step-detail .subheading h2 {
   font-size: 16px;
 }
-.method-comparison {
+:where(.journey-page) .method-comparison {
   margin-top: 24px;
 }
-.method-comparison .subheading {
+:where(.journey-page) .method-comparison .subheading {
   gap: 12px;
 }
-.method-comparison .subheading > span {
+:where(.journey-page) .method-comparison .subheading > span {
   white-space: normal;
 }
-.method-options {
+:where(.journey-page) .method-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin-top: 14px;
 }
-.method-option {
+:where(.journey-page) .method-option {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1901,21 +1633,21 @@ button {
   text-align: left;
   scroll-margin-top: 90px;
 }
-.method-option:hover,
-.method-option[aria-pressed="true"] {
+:where(.journey-page) .method-option:hover,
+:where(.journey-page) .method-option[aria-pressed="true"] {
   border-color: var(--phase);
   background: var(--phase-soft);
 }
-.method-option strong {
+:where(.journey-page) .method-option strong {
   font-size: 12px;
   line-height: 1.5;
 }
-.method-option > span:not(.method-option-action) {
+:where(.journey-page) .method-option > span:not(.method-option-action) {
   font-size: 11px;
   line-height: 1.6;
   color: #5e6b7c;
 }
-.method-option-action {
+:where(.journey-page) .method-option-action {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -1924,36 +1656,36 @@ button {
   font-size: 10px;
   font-weight: 650;
 }
-.method-process {
+:where(.journey-page) .method-process {
   margin-top: 18px;
   padding: 18px;
   border: 1px solid var(--phase-line);
   border-radius: 7px;
   background: #fff;
 }
-.method-process > h3 {
+:where(.journey-page) .method-process > h3 {
   font-size: 15px;
 }
-.method-process > p {
+:where(.journey-page) .method-process > p {
   margin: 5px 0 17px;
   font-size: 11px;
   color: #5e6b7c;
 }
-.method-process .process-flow h4 {
+:where(.journey-page) .method-process .process-flow h4 {
   font-size: 12px;
   margin: 0 0 3px;
 }
-.step-context {
+:where(.journey-page) .step-context {
   border-top: 1px solid var(--line);
   margin-top: 24px;
   padding-top: 14px;
 }
 
-.method-orientation .method-comparison {
+:where(.journey-page) .method-orientation .method-comparison {
   padding: 16px;
 }
 
-.process-command {
+:where(.journey-page) .process-command {
   margin: 12px 0 0;
   padding: 12px;
   max-width: 100%;
@@ -1964,33 +1696,33 @@ button {
   border-radius: 8px;
   font-size: 0.8rem;
 }
-.step-context > summary {
+:where(.journey-page) .step-context > summary {
   cursor: pointer;
   font-weight: 600;
   font-size: 12px;
   color: #536b89;
 }
-.step-context .context-column {
+:where(.journey-page) .step-context .context-column {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 24px;
   margin-top: 16px;
 }
-.inline-record {
+:where(.journey-page) .inline-record {
   scroll-margin-top: 90px;
 }
-.inline-record > h5 {
+:where(.journey-page) .inline-record > h5 {
   font-family: "Manrope", sans-serif;
   font-size: 24px;
   line-height: 1.5;
   margin: 18px 0 24px;
 }
-.inline-record .detail-layout,
-.problem-disclosure .detail-layout {
+:where(.journey-page) .inline-record .detail-layout,
+:where(.journey-page) .problem-disclosure .detail-layout {
   grid-template-columns: minmax(0, 1fr) 230px;
   gap: 28px;
 }
-.timeline-finish {
+:where(.journey-page) .timeline-finish {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -2003,23 +1735,23 @@ button {
   font-size: 13px;
 }
 @media (max-width: 900px) {
-  .timeline-controls .perspective-hint {
+  :where(.journey-page) .timeline-controls .perspective-hint {
     display: none;
   }
-  .inline-record .detail-layout,
-  .problem-disclosure .detail-layout {
+  :where(.journey-page) .inline-record .detail-layout,
+  :where(.journey-page) .problem-disclosure .detail-layout {
     grid-template-columns: minmax(0, 1fr);
   }
-  .phase-outcome {
+  :where(.journey-page) .phase-outcome {
     max-width: 190px;
     font-size: 10px;
   }
 }
 
-details.problem-disclosure {
+:where(.journey-page) details.problem-disclosure {
   padding: 0;
 }
-.problem-disclosure > summary {
+:where(.journey-page) .problem-disclosure > summary {
   display: block;
   padding: 22px 24px;
   cursor: pointer;
@@ -2027,75 +1759,75 @@ details.problem-disclosure {
   border-radius: inherit;
   scroll-margin-top: 90px;
 }
-.problem-disclosure > summary::-webkit-details-marker {
+:where(.journey-page) .problem-disclosure > summary::-webkit-details-marker {
   display: none;
 }
-.problem-disclosure > summary:hover {
+:where(.journey-page) .problem-disclosure > summary:hover {
   background: var(--phase-soft);
 }
-.problem-heading {
+:where(.journey-page) .problem-heading {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
 }
-.problem-heading > svg {
+:where(.journey-page) .problem-heading > svg {
   margin-top: 4px;
   color: var(--phase);
 }
-.problem-disclosure[open] .problem-heading > svg {
+:where(.journey-page) .problem-disclosure[open] .problem-heading > svg {
   transform: rotate(90deg);
 }
-.problem-title {
+:where(.journey-page) .problem-title {
   font-family: "Manrope", sans-serif;
   font-size: 16px;
   font-weight: 700;
   line-height: 1.55;
 }
-.problem-summary {
+:where(.journey-page) .problem-summary {
   display: block;
   margin-top: 7px;
   font-size: 12px;
   line-height: 1.8;
   max-width: 650px;
 }
-.problem-body {
+:where(.journey-page) .problem-body {
   padding: 24px;
   border-top: 1px solid var(--line);
 }
-.problem-disclosure .evidence-detail {
+:where(.journey-page) .problem-disclosure .evidence-detail {
   padding: 0;
   border: 0;
 }
 @media (max-width: 600px) {
-  .problem-disclosure > summary,
-  .problem-body {
+  :where(.journey-page) .problem-disclosure > summary,
+  :where(.journey-page) .problem-body {
     padding: 16px;
   }
-  .problem-title {
+  :where(.journey-page) .problem-title {
     font-size: 14px;
   }
 }
 @media (max-width: 600px) {
-  .timeline-app .main-shell {
+  :where(.journey-page) .timeline-app .main-shell {
     padding: 0 16px 30px;
   }
-  .timeline-hero {
+  :where(.journey-page) .timeline-hero {
     padding: 28px 0 24px;
   }
-  .timeline-hero h1 {
+  :where(.journey-page) .timeline-hero h1 {
     font-size: 27px;
     letter-spacing: -0.8px;
   }
-  .timeline-hero > p {
+  :where(.journey-page) .timeline-hero > p {
     font-size: 12px;
     line-height: 1.8;
   }
-  .timeline-controls .tabs {
+  :where(.journey-page) .timeline-controls .tabs {
     width: 100%;
     gap: 10px;
   }
-  .timeline-controls .tabs > button {
+  :where(.journey-page) .timeline-controls .tabs > button {
     flex: 1;
     width: auto;
     padding: 12px 0;
@@ -2104,143 +1836,164 @@ details.problem-disclosure {
     font-size: 10px;
     line-height: 1.6;
   }
-  .timeline-controls .tabs > button > svg {
+  :where(.journey-page) .timeline-controls .tabs > button > svg {
     display: none;
   }
-  .timeline-controls .tabs > button > span {
+  :where(.journey-page) .timeline-controls .tabs > button > span {
     max-width: none;
   }
-  .timeline-intro {
+  :where(.journey-page) .timeline-intro {
     padding: 0 0 26px;
   }
-  .expansion-button {
+  :where(.journey-page) .expansion-button {
     flex: 1;
     font-size: 11px;
   }
-  .expansion-primary {
+  :where(.journey-page) .expansion-primary {
     flex-basis: 100%;
   }
-  .timeline-intro p {
+  :where(.journey-page) .timeline-intro p {
     font-size: 12px;
   }
-  .timeline-order-note {
+  :where(.journey-page) .timeline-order-note {
     align-items: flex-start;
     line-height: 1.7;
     font-size: 10px;
   }
-  .timeline-order-note svg {
+  :where(.journey-page) .timeline-order-note svg {
     margin-top: 2px;
   }
-  .timeline-phase::before {
+  :where(.journey-page) .timeline-phase::before {
     left: 13px;
   }
-  .timeline-phase-heading {
+  :where(.journey-page) .timeline-phase-heading {
     gap: 10px;
     flex-wrap: wrap;
   }
-  .timeline-phase-marker {
+  :where(.journey-page) .timeline-phase-marker {
     flex-basis: 28px;
     height: 28px;
     font-size: 11px;
   }
-  .timeline-phase-heading h2 {
+  :where(.journey-page) .timeline-phase-heading h2 {
     font-size: 21px;
   }
-  .phase-outcome {
+  :where(.journey-page) .phase-outcome {
     margin-left: 38px;
     margin-top: -4px;
     max-width: none;
     flex-basis: 100%;
   }
-  .timeline-stage {
+  :where(.journey-page) .timeline-stage {
     padding-left: 38px;
   }
-  .stage-node {
+  :where(.journey-page) .stage-node {
     left: 9px;
     width: 10px;
     height: 10px;
     top: 24px;
   }
-  .stage-toggle {
+  :where(.journey-page) .stage-toggle {
     padding: 15px 12px;
     gap: 7px;
   }
-  .stage-heading,
-  .step-heading {
+  :where(.journey-page) .stage-heading,
+  :where(.journey-page) .step-heading {
     flex-wrap: wrap;
     gap: 0;
   }
-  .stage-heading > h3,
-  .step-heading > h4 {
+  :where(.journey-page) .stage-heading > h3,
+  :where(.journey-page) .step-heading > h4 {
     flex-basis: 100%;
   }
-  .stage-title {
+  :where(.journey-page) .stage-title {
     font-size: 13px;
   }
-  .stage-summary {
+  :where(.journey-page) .stage-summary {
     font-size: 11px;
     min-height: 75px;
   }
-  .stage-ordinal,
-  .stage-disclosure span {
+  :where(.journey-page) .stage-ordinal,
+  :where(.journey-page) .stage-disclosure span {
     display: none;
   }
-  .stage-disclosure {
+  :where(.journey-page) .stage-disclosure {
     padding-top: 1px;
   }
-  .stage-body {
+  :where(.journey-page) .stage-body {
     padding: 0 10px 12px;
   }
-  .stage-note {
+  :where(.journey-page) .stage-note {
     padding: 10px;
     font-size: 11px;
   }
-  .step-toggle {
+  :where(.journey-page) .step-toggle {
     padding: 13px 3px;
     gap: 6px;
     flex-wrap: wrap;
   }
-  .step-title {
+  :where(.journey-page) .step-title {
     font-size: 12px;
     flex-basis: 65%;
   }
-  .step-condition {
+  :where(.journey-page) .step-condition {
     display: block;
     width: fit-content;
     margin: 6px 0 0;
   }
-  .step-count {
+  :where(.journey-page) .step-count {
     order: 1;
     padding-left: 18px;
     flex-basis: 100%;
   }
-  .step-body {
+  :where(.journey-page) .step-body {
     padding: 10px 0 16px;
   }
-  .nested-steps {
+  :where(.journey-page) .nested-steps {
     padding-left: 7px;
   }
-  .step-detail .record-list,
-  .step-context .context-column {
+  :where(.journey-page) .step-detail .record-list,
+  :where(.journey-page) .step-context .context-column {
     grid-template-columns: minmax(0, 1fr);
   }
-  .method-options {
+  :where(.journey-page) .method-options {
     grid-template-columns: minmax(0, 1fr);
   }
-  .method-process {
+  :where(.journey-page) .method-process {
     padding: 12px;
   }
-  .step-detail .next-perspective {
+  :where(.journey-page) .step-detail .next-perspective {
     align-items: flex-start;
     flex-direction: column;
   }
-  .inline-record > h5 {
+  :where(.journey-page) .inline-record > h5 {
     font-size: 20px;
   }
-  .timeline-finish {
+  :where(.journey-page) .timeline-finish {
     margin-left: 38px;
     padding: 14px;
     font-size: 12px;
     align-items: flex-start;
   }
+}
+:where(.journey-page) .journey-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 18px;
+  margin: 0 0 20px;
+}
+:where(.journey-page) .choices-callout {
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  border: 1px solid #ddd4ec;
+  border-radius: 8px;
+  background: #f6f3fb;
+}
+:where(.journey-page) .choices-callout p {
+  margin: 6px 0 10px;
+}
+:where(.journey-page) .choices-callout a {
+  color: #594080;
 }

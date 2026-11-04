@@ -88,7 +88,7 @@ export function routeHref(route: Route): string {
   if (route.lens !== "process") params.set("view", route.lens);
   if (route.item) params.set("item", route.item);
   if (route.stage) params.set("stage", route.stage);
-  return `#/${route.topic}${params.size ? `?${params}` : ""}`;
+  return `#/journey${route.topic === "journey" ? "" : `/${route.topic}`}${params.size ? `?${params}` : ""}`;
 }
 
 // Published problem links follow the content when it is merged or moved into guidance.
@@ -106,7 +106,10 @@ const retiredProblemRoutes = new Map<string, Route>([
 
 /** Invalid or out-of-scope items fall back to their topic rather than showing an unrelated record. */
 export function parseRoute(hash: string): Route {
-  const [path, query] = hash.replace(/^#\/?/, "").split("?");
+  const [path, query] = hash
+    .replace(/^#\/?/, "")
+    .replace(/^journey\//, "")
+    .split("?");
   const topicId =
     path === "managed-dns" || path === "dns-consumers"
       ? "dns"

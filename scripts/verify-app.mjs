@@ -1,0 +1,292 @@
+import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import {
+  cleanup,
+  evaluate,
+  launch,
+  readMeta,
+  withPage,
+} from "../.agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs";
+
+const ownsRun = !process.env.VERIFY_RUN_DIR;
+const evidence = new URL("../artifacts/verify/combined-app/", import.meta.url);
+await fs.mkdir(evidence, { recursive: true });
+if (ownsRun) await launch();
+try {
+  const meta = await readMeta();
+  await withPage(meta, async (cdp) => {
+    const run = (source) => evaluate(cdp, source);
+    const settle = () =>
+      run(
+        "new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))",
+      );
+    const wait = async (source) => {
+      for (let i = 0; i < 100; i++) {
+        if (await run(source).catch(() => false)) return;
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+      throw new Error(`Timed out: ${source}`);
+    };
+    const click = async (selector) => {
+      await run(
+        `(() => { const el = document.querySelector(${JSON.stringify(selector)}); if (!el) throw new Error("Missing control: " + ${JSON.stringify(selector)}); el.click(); })()`,
+      );
+      await settle();
+    };
+    const go = async (suffix) => {
+      await run("window.__verificationDocument = true");
+      const navigation = await cdp.send("Page.navigate", {
+        url: `${meta.url}${suffix}`,
+      });
+      if (navigation.loaderId) await wait("!window.__verificationDocument");
+      await wait(
+        'document.querySelector("main") && !document.querySelector("vite-error-overlay")',
+      );
+      await settle();
+    };
+    const shot = async (name) => {
+      const { data } = await cdp.send("Page.captureScreenshot", {
+        format: "png",
+      });
+      await fs.writeFile(
+        new URL(`${name}.png`, evidence),
+        Buffer.from(data, "base64"),
+      );
+    };
+    const check = async (source, message) =>
+      assert.equal(await run(source), true, message);
+    await cdp.send("Page.enable");
+    await cdp.send("Emulation.setDeviceMetricsOverride", {
+      width: 1440,
+      height: 1000,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
+    await go("");
+    await check(
+      '!!document.getElementById("page-title") && document.querySelectorAll("main").length === 1',
+      "Journey is the sole default page",
+    );
+    await check(
+      'document.querySelector("[data-focus=nav-journey]").getAttribute("aria-current") === "page"',
+      "Journey navigation is active",
+    );
+    await shot("journey-desktop");
+
+    // A purely local expansion must survive a visit to the other page.
+    await click('[data-focus="show-all-steps"]');
+    await run("window.scrollTo(0, 900)");
+    await settle();
+    const journeyPosition = await run("window.scrollY");
+    const expanded = await run(
+      'document.querySelectorAll("button[aria-expanded=true]").length',
+    );
+    assert.ok(expanded > 0);
+    await click('[data-focus="nav-choices"]');
+    await check(
+      '!!document.getElementById("choices-title") && !document.querySelector(".journey-page")',
+      "Choices has its own page",
+    );
+    await click('button[aria-label="x86_64"]');
+    await check(
+      'location.hash.includes("architecture=amd64") && document.querySelector("button[aria-label=x86_64]").getAttribute("aria-pressed") === "true"',
+      "An answer is visible and shareable",
+    );
+    await click('[data-focus="return-journey"]');
+    assert.equal(
+      await run(
+        'document.querySelectorAll("button[aria-expanded=true]").length',
+      ),
+      expanded,
+      "Journey expansion survives page switches",
+    );
+    assert.ok(
+      Math.abs((await run("window.scrollY")) - journeyPosition) < 3,
+      "Journey position survives page switches",
+    );
+    await click('[data-focus="nav-choices"]');
+    await check(
+      'document.querySelector("button[aria-label=x86_64]").getAttribute("aria-pressed") === "true"',
+      "Choices answers survive page switches",
+    );
+    await run("history.back()");
+    await wait('!!document.getElementById("page-title")');
+    await settle();
+    assert.ok(
+      Math.abs((await run("window.scrollY")) - journeyPosition) < 3,
+      "Back restores the previous page position",
+    );
+    await run("history.forward()");
+    await wait('!!document.getElementById("choices-title")');
+    await check(
+      'document.querySelector("button[aria-label=x86_64]").getAttribute("aria-pressed") === "true"',
+      "Forward restores Choices answers",
+    );
+
+    // Enter Choices from the relevant Journey explanation, then resume that step.
+    await go("#/journey/approach");
+    await click(".choices-callout a");
+    await check(
+      '!!document.getElementById("choices-title")',
+      "Contextual link opens Choices",
+    );
+    await click('[data-focus="return-journey"]');
+    await check(
+      'location.hash === "#/journey/approach" && !!document.querySelector(".choices-callout")',
+      "Contextual return restores the step",
+    );
+
+    // Full loads exercise both old standalone URL formats and their canonical forms.
+    await go("?view=map#host-addressing=static");
+    await wait('!!document.getElementById("choices-title")');
+    await check(
+      'document.querySelector(".tree").dataset.view === "map" && document.querySelector("button[data-decision=host-addressing][data-option=static]").getAttribute("aria-pressed") === "true"',
+      "Legacy Choices link retains mode and answers",
+    );
+    await check(
+      '!location.search.includes("view=") && location.hash.startsWith("#/choices?mode=map")',
+      "Legacy mode is canonicalized once",
+    );
+    await click('button[aria-label="DHCP"]');
+    await check(
+      '!location.hash.includes("host-addressing=static") && document.querySelector("button[aria-label=DHCP]").getAttribute("aria-pressed") === "true"',
+      "Changing an answer updates the current page",
+    );
+    await run("history.back()");
+    await wait(
+      'document.querySelector("button[data-decision=host-addressing][data-option=static]")?.getAttribute("aria-pressed") === "true"',
+    );
+    const savedChoices = await run("location.href");
+    await run("window.__verificationDocument = true");
+    await cdp.send("Page.reload");
+    await wait("!window.__verificationDocument");
+    await wait(
+      'document.querySelector("button[data-decision=host-addressing][data-option=static]")?.getAttribute("aria-pressed") === "true"',
+    );
+    await check(
+      'document.querySelector(".tree").dataset.view === "map"',
+      "Refresh retains Choices mode",
+    );
+    assert.equal(await run("location.href"), savedChoices);
+    // The same Share control must describe the active page when clipboard access fails.
+    await run(
+      'Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: () => Promise.reject(new Error("unavailable")) } })',
+    );
+    await click('button[aria-label="Share this view"]');
+    await wait('!!document.querySelector("dialog[open]")');
+    assert.equal(
+      await run('document.querySelector("input[readonly]").value'),
+      savedChoices,
+    );
+    await click('button[aria-label="Close dialog"]');
+
+    await go("#/dns?view=problems&item=owner-wait");
+    await wait('!!document.getElementById("page-title")');
+    await check(
+      'document.getElementById("tab-problems").getAttribute("aria-selected") === "true" && !!document.getElementById("record-owner-wait")',
+      "Legacy Journey record link remains usable",
+    );
+    await click('button[aria-label="Search the journey"]');
+    await check(
+      '!!document.querySelector("dialog[open]")',
+      "Journey search opens",
+    );
+    await click('button[aria-label="Close dialog"]');
+
+    await click('button[aria-label="Share this view"]');
+    await wait('!!document.querySelector("dialog[open]")');
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: "k",
+      code: "KeyK",
+      modifiers: 2,
+      windowsVirtualKeyCode: 75,
+    });
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "k",
+      code: "KeyK",
+      modifiers: 2,
+      windowsVirtualKeyCode: 75,
+    });
+    await settle();
+    await check(
+      'document.querySelectorAll("dialog[open]").length === 1',
+      "Search shortcut respects the shared dialog",
+    );
+    await click('button[aria-label="Close dialog"]');
+
+    // Real content in both layouts must fit a phone, tablet, and desktop.
+    for (const width of [320, 390, 768, 1440]) {
+      await cdp.send("Emulation.setDeviceMetricsOverride", {
+        width,
+        height: 1000,
+        deviceScaleFactor: 1,
+        mobile: false,
+      });
+      for (const [page, hash] of [
+        ["journey", "#/journey"],
+        ["choices", "#/choices?mode=map&host-addressing=static"],
+      ]) {
+        await go(hash);
+        await run("window.scrollTo(0, 0)");
+        await settle();
+        await check(
+          "document.documentElement.scrollWidth <= document.documentElement.clientWidth",
+          `${page} fits ${width}px`,
+        );
+        await check(
+          'document.querySelectorAll("main").length === 1 && document.querySelectorAll(".app-navigation [aria-current=page]").length === 1',
+          "One main landmark and one current page",
+        );
+        await shot(`${page}-${width}`);
+      }
+    }
+    await go("");
+    await run("window.__verificationDocument = true");
+    await cdp.send("Page.reload");
+    await wait(
+      '!window.__verificationDocument && !!document.getElementById("page-title")',
+    );
+    await settle();
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: "Tab",
+      code: "Tab",
+      windowsVirtualKeyCode: 9,
+    });
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "Tab",
+      code: "Tab",
+      windowsVirtualKeyCode: 9,
+    });
+    await check(
+      'document.activeElement?.classList.contains("app-skip-link")',
+      "Keyboard navigation starts with the skip link",
+    );
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyDown",
+      key: "Enter",
+      code: "Enter",
+      windowsVirtualKeyCode: 13,
+      text: "\r",
+      unmodifiedText: "\r",
+    });
+    await cdp.send("Input.dispatchKeyEvent", {
+      type: "keyUp",
+      key: "Enter",
+      code: "Enter",
+      windowsVirtualKeyCode: 13,
+    });
+    await check(
+      'document.activeElement?.id === "main-content"',
+      "Skip link focuses active page content",
+    );
+    console.log(
+      "PASS: page navigation, retained state, history, contextual return, legacy links, refresh, sharing, search, keyboard access, and 320/390/768/1440px layouts.",
+    );
+  });
+} finally {
+  if (ownsRun) await cleanup();
+}
