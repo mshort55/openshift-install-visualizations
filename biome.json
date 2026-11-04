@@ -50,7 +50,10 @@
   },
   "overrides": [
     {
-      "includes": ["src/pages/journey/styles.css"],
+      "includes": [
+        "src/pages/journey/styles.css",
+        "src/pages/prerequisites/styles.css"
+      ],
       "linter": {
         "rules": {
           "style": {

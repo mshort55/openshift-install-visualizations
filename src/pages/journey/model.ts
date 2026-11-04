@@ -89,6 +89,8 @@ export interface Problem {
   outcome: string;
   limit: string;
   kind: "Reported experience" | "Historical evidence";
+  /** Explains why a retained account has no active intervention yet. */
+  researchQuestion?: string;
 }
 
 export type OpportunityBasis =
@@ -101,12 +103,18 @@ export interface Opportunity {
   topics: [string, ...string[]];
   title: string;
   summary: string;
+  /** Editorial investigation priority, independent of the customer's applicability. */
+  priority: "recommended" | "candidate";
+  applicability: string;
   /** Distinguishes reported problems from tasks and acceptance requirements. */
   basis: [OpportunityBasis, ...OpportunityBasis[]];
   intervention: string;
   existing: string;
+  alternative: string;
   investigate: string;
   measure: string;
+  stopWhen: string;
+  owners: string;
 }
 
 export interface Route {

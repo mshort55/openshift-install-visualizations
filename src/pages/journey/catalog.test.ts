@@ -19,7 +19,8 @@ import {
 // Content is the app's navigation model. Broken edges make otherwise valid UI routes dead ends.
 describe("journey content integrity", () => {
   test("the approved problems cover preparation, installation and post-installation without filling evidence gaps", () => {
-    expect(problems).toHaveLength(21);
+    expect(problems).toHaveLength(22);
+    expect(opportunities).toHaveLength(10);
     expect(
       stages.map(
         (stage) =>
@@ -27,7 +28,7 @@ describe("journey content integrity", () => {
             (problem) => stageForTopic(problem.topic)?.id === stage.id,
           ).length,
       ),
-    ).toEqual([2, 6, 0, 3, 0, 5, 2, 3]);
+    ).toEqual([2, 6, 0, 3, 0, 6, 2, 3]);
   });
   test("ordered stages cover every detailed topic exactly once in its phase", () => {
     expect(new Set(stages.map((stage) => stage.id)).size).toBe(stages.length);
@@ -108,7 +109,8 @@ describe("journey content integrity", () => {
           idea.basis.some(
             (basis) => basis.kind === "problem" && basis.id === problem.id,
           ),
-        ),
+        ) || Boolean(problem.researchQuestion),
+        problem.id,
       ).toBe(true);
     }
     for (const opportunity of opportunities) {
@@ -147,7 +149,7 @@ describe("journey content integrity", () => {
     ).toHaveLength(1);
     expect(
       opportunitiesFor("storage").filter(
-        (idea) => idea.id === "storage-outcome",
+        (idea) => idea.id === "first-workload",
       ),
     ).toHaveLength(1);
     expect(ancestorsOf("dns").map((topic) => topic.id)).toEqual([
@@ -221,7 +223,7 @@ describe("shareable navigation and discovery", () => {
       expect(
         parseRoute(`#/${topic}?view=opportunities&item=precise-handoffs`),
       ).toEqual({
-        topic: "dns",
+        topic: "networking",
         lens: "opportunities",
         item: "precise-handoffs",
       });
@@ -254,8 +256,7 @@ describe("shareable navigation and discovery", () => {
       ),
     ).toEqual({
       topic: "acceptance",
-      lens: "opportunities",
-      item: "confidence-rehearsal",
+      lens: "process",
     });
     expect(parseRoute("#/preboot-readiness")).toEqual({
       topic: "media",
@@ -267,7 +268,7 @@ describe("shareable navigation and discovery", () => {
     });
     expect(
       parseRoute("#/storage?view=opportunities&item=storage-outcome").item,
-    ).toBe("storage-outcome");
+    ).toBe("first-workload");
   });
 
   test("related and phase links open the problem at its main step", () => {
@@ -309,10 +310,8 @@ describe("shareable navigation and discovery", () => {
         });
       }
     }
-    expect(
-      parseRoute("#/access?view=opportunities&item=storage-outcome"),
-    ).toEqual({
-      topic: "access",
+    expect(parseRoute("#/dns?view=opportunities&item=first-workload")).toEqual({
+      topic: "dns",
       lens: "opportunities",
     });
   });
@@ -344,10 +343,150 @@ describe("shareable navigation and discovery", () => {
           result.route.topic === "acceptance",
       ),
     ).toBe(true);
-    const rehearsal = opportunities.find(
-      (idea) => idea.id === "confidence-rehearsal",
-    );
-    expect(rehearsal?.basis).toContainEqual({ kind: "task", id: "backups" });
+    expect(
+      searchJourney("current media workflow").some(
+        (result) => result.route.item === "boot-handoff",
+      ),
+    ).toBe(true);
+  });
+
+  test("every previously published opportunity link reaches its replacement or retained guidance", () => {
+    const published = [
+      {
+        id: "network-translation",
+        topics: ["networking", "addressing", "workload-network"],
+        destination:
+          "#/journey/workloads?view=opportunities&item=first-workload",
+      },
+      {
+        id: "precise-handoffs",
+        topics: ["dns", "routing", "networking"],
+        destination:
+          "#/journey/networking?view=opportunities&item=precise-handoffs",
+      },
+      {
+        id: "whole-deployment-fit",
+        topics: ["hardware", "physical-storage"],
+        destination:
+          "#/journey/approach?view=opportunities&item=fewer-prerequisites",
+      },
+      {
+        id: "constraint-led-choice",
+        topics: ["approach", "assisted", "agent-based", "ipi", "upi"],
+        destination:
+          "#/journey/approach?view=opportunities&item=fewer-prerequisites",
+      },
+      {
+        id: "reusable-deployment-configuration",
+        topics: ["configuration"],
+        destination:
+          "#/journey/configuration?view=opportunities&item=reusable-deployment-configuration",
+      },
+      {
+        id: "offline-outcome-kit",
+        topics: ["content", "disconnected"],
+        destination:
+          "#/journey/content?view=opportunities&item=offline-outcome-kit",
+      },
+      {
+        id: "clear-boot-handoff",
+        topics: ["media", "management", "hosts"],
+        destination: "#/journey/media?view=problems&item=boot-handoff",
+      },
+      {
+        id: "actionable-progress",
+        topics: ["progress", "bootstrap", "hosts"],
+        destination:
+          "#/journey/progress?view=opportunities&item=supported-recovery",
+      },
+      {
+        id: "earlier-dependency-feedback",
+        topics: ["routing", "progress", "recovery"],
+        destination:
+          "#/journey/networking?view=opportunities&item=precise-handoffs",
+      },
+      {
+        id: "retry-continuity",
+        topics: ["recovery", "media"],
+        destination:
+          "#/journey/progress?view=opportunities&item=supported-recovery",
+      },
+      {
+        id: "outcome-plan",
+        topics: [
+          "platform-operators",
+          "completion",
+          "workloads",
+          "access",
+          "configuration",
+        ],
+        destination:
+          "#/journey/workloads?view=opportunities&item=first-workload",
+      },
+      {
+        id: "storage-outcome",
+        topics: ["storage", "storage-drivers", "physical-storage"],
+        destination:
+          "#/journey/workloads?view=opportunities&item=first-workload",
+      },
+      {
+        id: "rehearse-access",
+        topics: ["access"],
+        destination: "#/journey/access?view=opportunities&item=rehearse-access",
+      },
+      {
+        id: "first-vm-guidance",
+        topics: ["workloads"],
+        destination:
+          "#/journey/workloads?view=opportunities&item=first-workload",
+      },
+      {
+        id: "confidence-rehearsal",
+        topics: ["acceptance", "backups", "storage-drivers"],
+        destination: "#/journey/acceptance",
+      },
+      {
+        id: "diagnostic-handover",
+        topics: ["acceptance", "operations"],
+        destination:
+          "#/journey/support?view=opportunities&item=diagnostic-handover",
+      },
+      {
+        id: "dependency-aware-change",
+        topics: ["upgrades", "operations"],
+        destination: "#/journey/upgrades",
+      },
+    ];
+    for (const record of published) {
+      const oldTopics = new Set([
+        "journey",
+        ...record.topics.flatMap((topic) =>
+          ancestorsOf(topic).map((entry) => entry.id),
+        ),
+      ]);
+      for (const topic of oldTopics) {
+        for (const prefix of ["#/", "#/journey/"]) {
+          const link = `${prefix}${topic}?view=opportunities&item=${record.id}`;
+          expect(routeHref(parseRoute(link)), link).toBe(record.destination);
+        }
+      }
+    }
+  });
+
+  test("search includes applicability, alternatives, owners and decision rules", () => {
+    for (const [query, id] of [
+      ["recommended infrastructure preparation", "precise-handoffs"],
+      ["migration intended first workload", "migration-preparation"],
+      ["variable reference", "reusable-deployment-configuration"],
+      ["collector entitlement", "diagnostic-handover"],
+      ["false degraded", "misleading-health"],
+      ["project selector September 2026", "first-vm-blocked"],
+    ] satisfies [string, string][]) {
+      expect(
+        searchJourney(query).some((result) => result.route.item === id),
+        query,
+      ).toBe(true);
+    }
   });
 
   test("search finds problem details and multiword concepts with working destinations", () => {

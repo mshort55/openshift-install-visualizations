@@ -1,10 +1,12 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { topicById } from "../pages/journey/catalog";
 import { selectionTarget } from "../pages/journey/navigation";
+import { prerequisitesTarget } from "../pages/prerequisites/model";
 import {
   type AppRoute,
   appHref,
+  defaultPrerequisites,
   emptyChoices,
   journeyHome,
   parseLocation,
@@ -23,6 +25,30 @@ type ScrollAction =
   | { id: string; top: number };
 export type NavigationBehavior = "new" | "preserve" | "retain";
 
+function pageTitle(route: AppRoute): string {
+  switch (route.page) {
+    case "journey":
+      return topicById.get(route.view.topic)?.title ?? "Journey";
+    case "choices":
+      return "Agent-based choices";
+    case "prerequisites":
+      return "Network prerequisites";
+  }
+}
+
+function pageTarget(route: AppRoute): string {
+  switch (route.page) {
+    case "journey":
+      return route.view.item
+        ? `record-${route.view.item}`
+        : selectionTarget(route.view);
+    case "choices":
+      return "choices-title";
+    case "prerequisites":
+      return prerequisitesTarget(route.view);
+  }
+}
+
 function position(): Position {
   return {
     scroll: window.scrollY,
@@ -40,19 +66,22 @@ export function useAppNavigation() {
   const visits = useRef({
     journey: route.page === "journey" ? route : journeyHome,
     choices: route.page === "choices" ? route : emptyChoices,
+    prerequisites:
+      route.page === "prerequisites" ? route : defaultPrerequisites,
   });
   const positions = useRef<Partial<Record<AppRoute["page"], Position>>>({});
 
-  const remember = () => {
+  const remember = useCallback(() => {
     const saved = position();
     positions.current[current.current.page] = saved;
     window.history.replaceState(saved, "");
-  };
+  }, []);
 
   const select = (next: AppRoute) => {
     current.current = next;
     if (next.page === "journey") visits.current.journey = next;
-    else visits.current.choices = next;
+    else if (next.page === "choices") visits.current.choices = next;
+    else visits.current.prerequisites = next;
     setRoute(next);
   };
 
@@ -70,7 +99,8 @@ export function useAppNavigation() {
       action.current = saved.success ? saved.data : "new";
       current.current = next;
       if (next.page === "journey") visits.current.journey = next;
-      else visits.current.choices = next;
+      else if (next.page === "choices") visits.current.choices = next;
+      else visits.current.prerequisites = next;
       setRoute(next);
     };
     let scrollTimer: number | undefined;
@@ -100,9 +130,12 @@ export function useAppNavigation() {
   }, []);
 
   useLayoutEffect(() => {
-    document.title = `${route.page === "journey" ? (topicById.get(route.view.topic)?.title ?? "Journey") : "Agent-based choices"} · OpenShift Installation Journey`;
+    document.title = `${pageTitle(route)} · OpenShift Installation Journey`;
     const pending = action.current;
-    if (pending === "retain") return;
+    if (pending === "retain") {
+      remember();
+      return;
+    }
     const frame = requestAnimationFrame(() => {
       if (typeof pending === "object" && "id" in pending) {
         const target = document.getElementById(pending.id);
@@ -119,22 +152,24 @@ export function useAppNavigation() {
           ?.focus({ preventScroll: true });
         window.scrollTo({ top: pending.scroll, behavior: "instant" });
       } else {
-        const id =
-          route.page === "journey"
-            ? route.view.item
-              ? `record-${route.view.item}`
-              : selectionTarget(route.view)
-            : "choices-title";
+        const id = pageTarget(route);
         const target = document.getElementById(id);
         if (pending !== "initial" || id !== "page-title")
           target?.focus({ preventScroll: true });
-        if (id === "page-title" || id === "choices-title")
+        if (
+          id === "page-title" ||
+          id === "choices-title" ||
+          id === "prerequisites-title"
+        )
           window.scrollTo({ top: 0, behavior: "instant" });
         else target?.scrollIntoView({ block: "start", behavior: "instant" });
       }
+      // Focus events run before scroll restoration; save the completed position
+      // now so an immediate Back/Forward cannot reuse that intermediate value.
+      remember();
     });
     return () => cancelAnimationFrame(frame);
-  }, [route]);
+  }, [route, remember]);
 
   const navigate = (next: AppRoute, behavior: NavigationBehavior = "new") => {
     const normalized = parseLocation(appHref(next));
@@ -169,5 +204,6 @@ export function useAppNavigation() {
     openPage,
     journey: visits.current.journey,
     choices: visits.current.choices,
+    prerequisites: visits.current.prerequisites,
   };
 }

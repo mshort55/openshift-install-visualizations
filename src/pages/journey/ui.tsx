@@ -51,6 +51,9 @@ function hasContext(id: string): boolean {
 }
 
 const choicesLinkContext = createContext<ReactNode>(null);
+const prerequisitesLinksContext = createContext<ReadonlyMap<string, ReactNode>>(
+  new Map(),
+);
 
 /** Keeps expanded Journey sections alive while another page is open. */
 export function useJourneySession() {
@@ -317,6 +320,13 @@ function About({ onClose }: { onClose: () => void }) {
           need investigation.
         </p>
         <p>
+          Recommended next investigations are editorial priorities, separate
+          from the customer goals each idea applies to. The post-installation
+          evidence is weighted toward virtualization administrators; it does not
+          establish the same priorities for every OpenShift workload. Reported
+          fixes still need verification on the applicable build.
+        </p>
+        <p>
           Each customer example separates when it was reported from when the
           experience occurred. A study report date is not an incident date.
           Unknown timing and disputed call dates remain visible. Evidence labels
@@ -493,6 +503,7 @@ function TimelineStep({
   number: string;
   expansion: TimelineExpansion;
 }) {
+  const prerequisitesLink = useContext(prerequisitesLinksContext).get(topic.id);
   const open = expansion.topicOpen(topic.id);
   const selected =
     route.topic === topic.id ||
@@ -583,6 +594,9 @@ function TimelineStep({
         {open && (
           <div className="step-body">
             <p className="step-summary">{topic.summary}</p>
+            {route.lens === "process" && prerequisitesLink && (
+              <p className="prerequisites-callout">{prerequisitesLink}</p>
+            )}
             {(!isGroup || route.lens !== "process") && (
               <div className="step-detail">
                 {route.lens === "process" ? (
@@ -652,6 +666,48 @@ function Timeline({
   };
   return (
     <div className="journey-timeline">
+      {route.lens === "opportunities" && (
+        <section
+          className="opportunity-overview"
+          aria-labelledby="opportunity-overview-title"
+        >
+          <span className="eyebrow">Where to investigate first</span>
+          <h2 id="opportunity-overview-title">
+            Recommended next investigations
+          </h2>
+          <p>
+            Start with these customer tasks. Recommendations reflect the
+            evidence and a bounded first test, not proven benefit or problem
+            frequency. Each idea also states when it applies.
+          </p>
+          <ul>
+            {opportunities
+              .filter((idea) => idea.priority === "recommended")
+              .map((idea) => (
+                <li key={idea.id}>
+                  <JourneyLink
+                    to={{
+                      topic: idea.topics[0],
+                      lens: "opportunities",
+                      item: idea.id,
+                    }}
+                    navigate={navigate}
+                    focusId={`recommended-${idea.id}`}
+                  >
+                    <span>{idea.title}</span>
+                    <Icon name="arrow" size={16} />
+                  </JourneyLink>
+                </li>
+              ))}
+          </ul>
+          <p className="opportunity-overview-note">
+            The timeline below keeps all {opportunities.length} candidate
+            opportunities in journey order. Historical boot-handoff evidence
+            remains a research question; broader update planning stays in
+            lifecycle guidance.
+          </p>
+        </section>
+      )}
       <div className="timeline-intro">
         <div className="timeline-intro-heading">
           <span className="eyebrow">
@@ -662,7 +718,7 @@ function Timeline({
           {route.lens === "problems"
             ? "Show all problems to scan their summaries. Expand a problem in place for its evidence, outcome and limits."
             : route.lens === "opportunities"
-              ? "Show all opportunities to scan their summaries. Expand an opportunity in place for its basis, existing capabilities and proposed test."
+              ? "Show all opportunities to scan their summaries and applicability. Expand an idea for its customer basis, proposed improvement, smaller alternative and decision test."
               : "Show all steps to scan the complete outline, or open a stage to explore one area. Open a step for its explanation."}
         </p>
         <fieldset className="expansion-actions" aria-label="Journey expansion">
@@ -1110,6 +1166,7 @@ function RecordDisclosure({
         id={`record-${record.id}`}
         data-focus={`record-${record.id}`}
         aria-labelledby={`record-title-${record.id}`}
+        aria-describedby={`record-meta-${record.id}${"kind" in record ? "" : ` record-applicability-${record.id}`} record-summary-${record.id}`}
         onClick={(event) => {
           event.preventDefault();
           expansion.setKeys([`${lens}:${record.id}`], !open);
@@ -1118,21 +1175,39 @@ function RecordDisclosure({
             navigate({ topic: topic.id, lens }, true);
         }}
       >
-        <span className="record-meta">
+        <span className="record-meta" id={`record-meta-${record.id}`}>
           <span className="evidence-badge">
             {"kind" in record ? record.kind : "Idea to investigate"}
           </span>
+          {!("kind" in record) && record.priority === "recommended" && (
+            <span className="priority-badge">
+              Recommended next investigation
+            </span>
+          )}
+          {"kind" in record && record.researchQuestion && (
+            <span className="research-badge">Needs current evidence</span>
+          )}
           {"kind" in record && (
             <span className="record-context">{record.context}</span>
           )}
         </span>
+        {!("kind" in record) && (
+          <span
+            className="record-applicability"
+            id={`record-applicability-${record.id}`}
+          >
+            Applies to: {record.applicability}
+          </span>
+        )}
         <span className="record-heading">
           <span className="record-title" id={`record-title-${record.id}`}>
             {record.title}
           </span>
           <Icon name="chevron" size={18} />
         </span>
-        <span className="record-summary">{record.summary}</span>
+        <span className="record-summary" id={`record-summary-${record.id}`}>
+          {record.summary}
+        </span>
       </summary>
       {open && (
         <div className="record-body">
@@ -1224,26 +1299,34 @@ function ProblemDetail({
             <Icon name="arrow" size={16} />
           </JourneyLink>
         </div>
-        <div className="related">
-          <span className="eyebrow">Connected opportunities</span>
-          {connected.map((opportunity) => (
-            <JourneyLink
-              key={opportunity.id}
-              to={{
-                topic: opportunity.topics[0],
-                lens: "opportunities",
-                item: opportunity.id,
-              }}
-              navigate={navigate}
-            >
-              <span>
-                <small>Idea to investigate</small>
-                {opportunity.title}
-              </span>
-              <Icon name="arrow" size={16} />
-            </JourneyLink>
-          ))}
-        </div>
+        {problem.researchQuestion && (
+          <div className="context-card research-question">
+            <span className="eyebrow">Needs current evidence</span>
+            <p>{problem.researchQuestion}</p>
+          </div>
+        )}
+        {connected.length > 0 && (
+          <div className="related">
+            <span className="eyebrow">Connected opportunities</span>
+            {connected.map((opportunity) => (
+              <JourneyLink
+                key={opportunity.id}
+                to={{
+                  topic: opportunity.topics[0],
+                  lens: "opportunities",
+                  item: opportunity.id,
+                }}
+                navigate={navigate}
+              >
+                <span>
+                  <small>Idea to investigate</small>
+                  {opportunity.title}
+                </span>
+                <Icon name="arrow" size={16} />
+              </JourneyLink>
+            ))}
+          </div>
+        )}
       </aside>
     </div>
   );
@@ -1269,15 +1352,20 @@ function OpportunityDetail({
         </div>
         {[
           {
-            title: "Shape the smallest useful intervention",
+            title: "Proposed improvement",
             text: opportunity.intervention,
           },
           { title: "Build on what already exists", text: opportunity.existing },
+          { title: "A smaller alternative", text: opportunity.alternative },
           {
             title: "Investigate before committing",
             text: opportunity.investigate,
           },
           { title: "What we would observe", text: opportunity.measure },
+          {
+            title: "When to stop or narrow the idea",
+            text: opportunity.stopWhen,
+          },
         ].map((section) => (
           <div className="detail-section" key={section.title}>
             <h2>{section.title}</h2>
@@ -1286,6 +1374,10 @@ function OpportunityDetail({
         ))}
       </article>
       <aside className="record-aside">
+        <div className="context-card">
+          <span className="eyebrow">Who should investigate</span>
+          <p>{opportunity.owners}</p>
+        </div>
         <div className="context-card">
           <span className="eyebrow">The customer’s task</span>
           <h3>{topic.title}</h3>
@@ -1340,11 +1432,13 @@ export function JourneyPage({
   navigate,
   session,
   choicesLink,
+  prerequisitesLinks,
 }: {
   route: Route;
   navigate: Navigate;
   session: ReturnType<typeof useJourneySession>;
   choicesLink: ReactNode;
+  prerequisitesLinks: ReadonlyMap<string, ReactNode>;
 }) {
   const expansion = useTimelineExpansion(route, session);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -1362,68 +1456,73 @@ export function JourneyPage({
   }, [aboutOpen]);
   return (
     <choicesLinkContext.Provider value={choicesLink}>
-      <div className="journey-page">
-        <div className="app timeline-app">
-          <main id="main-content" className="main-shell" tabIndex={-1}>
-            <div className="journey-tools">
-              <button
-                type="button"
-                className="search-trigger"
-                aria-label="Search the journey"
-                onClick={() => setSearchOpen(true)}
+      <prerequisitesLinksContext.Provider value={prerequisitesLinks}>
+        <div className="journey-page">
+          <div className="app timeline-app">
+            <main id="main-content" className="main-shell" tabIndex={-1}>
+              <div className="journey-tools">
+                <button
+                  type="button"
+                  className="search-trigger"
+                  aria-label="Search the journey"
+                  onClick={() => setSearchOpen(true)}
+                >
+                  <Icon name="search" size={17} />
+                  <span>Search the journey</span>
+                  <kbd>⌘ / Ctrl K</kbd>
+                </button>
+                <button
+                  type="button"
+                  className="icon-button about-trigger"
+                  onClick={() => setAboutOpen(true)}
+                  aria-label="About this journey"
+                >
+                  <Icon name="info" size={20} />
+                </button>
+              </div>
+              <section className="timeline-hero">
+                <span className="eyebrow hero-eyebrow">
+                  <span />
+                  The customer experience
+                </span>
+                <h1 id="page-title" tabIndex={-1}>
+                  OpenShift on bare metal.
+                  <br />
+                  <span>The installation journey.</span>
+                </h1>
+                <p>
+                  Follow a customer from planning to useful workloads and
+                  operational handover on bare metal. Expand a step for
+                  decisions, prerequisites, and details for the applicable
+                  installation method.
+                </p>
+              </section>
+              <div className="timeline-controls">
+                <LensTabs route={route} navigate={navigate} />
+              </div>
+              <div
+                id="perspective-content"
+                role="tabpanel"
+                aria-labelledby={`tab-${route.lens}`}
+                className="perspective-panel"
               >
-                <Icon name="search" size={17} />
-                <span>Search the journey</span>
-                <kbd>⌘ / Ctrl K</kbd>
-              </button>
-              <button
-                type="button"
-                className="icon-button about-trigger"
-                onClick={() => setAboutOpen(true)}
-                aria-label="About this journey"
-              >
-                <Icon name="info" size={20} />
-              </button>
-            </div>
-            <section className="timeline-hero">
-              <span className="eyebrow hero-eyebrow">
-                <span />
-                The customer experience
-              </span>
-              <h1 id="page-title" tabIndex={-1}>
-                OpenShift on bare metal.
-                <br />
-                <span>The installation journey.</span>
-              </h1>
-              <p>
-                Follow a customer from planning to useful workloads and
-                operational handover on bare metal. Expand a step for decisions,
-                prerequisites, and details for the applicable installation
-                method.
-              </p>
-            </section>
-            <div className="timeline-controls">
-              <LensTabs route={route} navigate={navigate} />
-            </div>
-            <div
-              id="perspective-content"
-              role="tabpanel"
-              aria-labelledby={`tab-${route.lens}`}
-              className="perspective-panel"
-            >
-              <Timeline
-                route={route}
+                <Timeline
+                  route={route}
+                  navigate={navigate}
+                  expansion={expansion}
+                />
+              </div>
+            </main>
+            {searchOpen && (
+              <Search
                 navigate={navigate}
-                expansion={expansion}
+                onClose={() => setSearchOpen(false)}
               />
-            </div>
-          </main>
-          {searchOpen && (
-            <Search navigate={navigate} onClose={() => setSearchOpen(false)} />
-          )}
-          {aboutOpen && <About onClose={() => setAboutOpen(false)} />}
+            )}
+            {aboutOpen && <About onClose={() => setAboutOpen(false)} />}
+          </div>
         </div>
-      </div>
+      </prerequisitesLinksContext.Provider>
     </choicesLinkContext.Provider>
   );
 }

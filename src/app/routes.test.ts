@@ -1,5 +1,10 @@
 import { describe, expect, test } from "vitest";
 import { topics } from "../pages/journey/catalog";
+import {
+  journeyPrerequisites,
+  type PrerequisitesTarget,
+  prerequisitesHome,
+} from "../pages/prerequisites/model";
 import { appHref, journeyHome, parseLocation } from "./routes";
 
 describe("combined app links", () => {
@@ -55,5 +60,63 @@ describe("combined app links", () => {
       "journey",
     );
     expect(appHref(parseLocation("#/choices?view=problems"))).toBe("#/choices");
+  });
+
+  test("shares prerequisite scenarios at a section or a specific handoff", () => {
+    for (const target of [
+      "overview",
+      "addressing",
+      "dns",
+      "management",
+      "tickets/network",
+      "tickets/bmc",
+      "firewall",
+      "sources",
+    ] satisfies PrerequisitesTarget[]) {
+      for (const addressing of ["dhcp", "static"] satisfies (
+        | "dhcp"
+        | "static"
+      )[]) {
+        for (const dns of ["pending", "published"] satisfies (
+          | "pending"
+          | "published"
+        )[]) {
+          const route = {
+            page: "prerequisites",
+            view: { target, addressing, dns },
+          } satisfies Parameters<typeof appHref>[0];
+          expect(parseLocation(appHref(route))).toEqual(route);
+        }
+      }
+    }
+  });
+
+  test("recovers unknown prerequisite sections and scenarios without changing page", () => {
+    expect(
+      parseLocation(
+        "#/prerequisites/unknown?addressing=invalid&dns=invalid&mode=map&view=problems",
+      ),
+    ).toEqual({ page: "prerequisites", view: prerequisitesHome });
+    expect(
+      appHref(
+        parseLocation("#/prerequisites/dns/?addressing=static&dns=published"),
+      ),
+    ).toBe("#/prerequisites/dns?addressing=static&dns=published");
+    expect(
+      appHref(
+        parseLocation("#/prerequisites/tickets/missing?addressing=static"),
+      ),
+    ).toBe("#/prerequisites?addressing=static");
+  });
+
+  test("each contextual prerequisite entry belongs to an existing Journey topic", () => {
+    for (const [topic, target] of journeyPrerequisites) {
+      expect(topics.some((item) => item.id === topic)).toBe(true);
+      const view = { ...prerequisitesHome, target };
+      expect(parseLocation(appHref({ page: "prerequisites", view }))).toEqual({
+        page: "prerequisites",
+        view,
+      });
+    }
   });
 });

@@ -8,6 +8,8 @@ import {
   withPage,
 } from "../.agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs";
 
+import { verifyPrerequisites } from "./verify-prerequisites.mjs";
+
 const ownsRun = !process.env.VERIFY_RUN_DIR;
 const evidence = new URL("../artifacts/verify/combined-app/", import.meta.url);
 await fs.mkdir(evidence, { recursive: true });
@@ -33,12 +35,17 @@ try {
       );
       await settle();
     };
-    const go = async (suffix) => {
+    const go = async (suffix, reload = false) => {
       await run("window.__verificationDocument = true");
       const navigation = await cdp.send("Page.navigate", {
         url: `${meta.url}${suffix}`,
       });
-      if (navigation.loaderId) await wait("!window.__verificationDocument");
+      if (reload && !navigation.loaderId) {
+        await settle();
+        await cdp.send("Page.reload");
+      }
+      if (reload || navigation.loaderId)
+        await wait("!window.__verificationDocument");
       await wait(
         'document.querySelector("main") && !document.querySelector("vite-error-overlay")',
       );
@@ -220,7 +227,7 @@ try {
     for (const [lens, count, showLabel, expandLabel, first, second] of [
       [
         "problems",
-        21,
+        22,
         "Show All Problems",
         "Expand all details",
         "owner-wait",
@@ -228,10 +235,10 @@ try {
       ],
       [
         "opportunities",
-        17,
+        10,
         "Show all opportunities",
         "Expand all opportunities",
-        "network-translation",
+        "fewer-prerequisites",
         "precise-handoffs",
       ],
     ]) {
@@ -336,28 +343,112 @@ try {
       );
     }
 
-    await go("#/storage-behavior?view=opportunities&item=confidence-rehearsal");
+    await go("#/storage?view=opportunities&item=storage-outcome");
     await check(
-      'document.getElementById("record-confidence-rehearsal").parentElement.open && document.getElementById("step-acceptance").getAttribute("aria-expanded") === "true"',
+      'document.getElementById("record-first-workload").parentElement.open && document.getElementById("step-workloads").getAttribute("aria-expanded") === "true"',
       "Legacy opportunity links open the disclosure at its assigned step",
     );
     await run("window.__verificationDocument = true");
     await cdp.send("Page.reload");
     await wait(
-      '!window.__verificationDocument && document.getElementById("record-confidence-rehearsal")?.parentElement.open',
+      '!window.__verificationDocument && document.getElementById("record-first-workload")?.parentElement.open',
     );
     await settle();
-    await click("#record-confidence-rehearsal");
+    await click("#record-first-workload");
     await run("history.back()");
     await wait(
-      'document.getElementById("record-confidence-rehearsal")?.parentElement.open',
+      'document.getElementById("record-first-workload")?.parentElement.open',
     );
     await check(
-      'location.hash.includes("item=confidence-rehearsal")',
+      'location.hash.includes("item=first-workload")',
       "Back restores the shared opportunity disclosure",
     );
 
-    // Real content in both layouts must fit a phone, tablet, and desktop.
+    // Recommendations must open the full card with keyboard and browser-history support.
+    for (const id of [
+      "precise-handoffs",
+      "first-workload",
+      "supported-recovery",
+    ]) {
+      await go("#/journey?view=opportunities");
+      await check(
+        'document.querySelectorAll(".opportunity-overview a").length === 3 && document.querySelectorAll("details.record-card").length === 0',
+        "The overview links to three investigations without duplicating full cards",
+      );
+      await run(
+        `document.querySelector('[data-focus="recommended-${id}"]').focus()`,
+      );
+      for (const type of ["keyDown", "keyUp"]) {
+        await cdp.send("Input.dispatchKeyEvent", {
+          type,
+          key: "Enter",
+          code: "Enter",
+          windowsVirtualKeyCode: 13,
+          ...(type === "keyDown" ? { text: "\r" } : {}),
+        });
+      }
+      await wait(`document.getElementById("record-${id}")?.parentElement.open`);
+      await settle();
+      await check(
+        `document.activeElement.id === "record-${id}" && !!document.getElementById("record-${id}").querySelector(".priority-badge") && !!document.getElementById("record-${id}").querySelector(".record-applicability")`,
+        "Recommendation opens and focuses the card with independent priority and applicability",
+      );
+      await check(
+        `document.getElementById("record-${id}").parentElement.textContent.includes("A smaller alternative") && document.getElementById("record-${id}").parentElement.textContent.includes("When to stop or narrow the idea") && document.getElementById("record-${id}").parentElement.textContent.includes("Who should investigate")`,
+        "Expanded recommendations include alternatives, decision rules and owners",
+      );
+      await run("history.back()");
+      await wait('location.hash === "#/journey?view=opportunities"');
+      await settle();
+      await check(
+        `document.activeElement.dataset.focus === "recommended-${id}"`,
+        "Back restores focus to the recommendation link",
+      );
+    }
+    await go("#/journey?view=opportunities");
+    await click('[data-focus="show-all-steps"]');
+    await check(
+      'document.querySelectorAll("details.record-card .record-applicability").length === 10 && document.querySelectorAll("details.record-card .priority-badge").length === 3',
+      "Every opportunity has applicability and only the recommended investigations have priority badges",
+    );
+    await go("#/media?view=opportunities&item=clear-boot-handoff", true);
+    await check(
+      'location.hash === "#/journey/media?view=problems&item=boot-handoff" && document.getElementById("record-boot-handoff").parentElement.open && !!document.querySelector(".research-question") && !document.querySelector(".opportunity-overview")',
+      "Retired boot opportunity opens retained evidence and its research question",
+    );
+    for (const [old, topic] of [
+      ["confidence-rehearsal", "acceptance"],
+      ["dependency-aware-change", "upgrades"],
+    ]) {
+      await go(`#/journey?view=opportunities&item=${old}`, true);
+      await check(
+        `location.hash === "#/journey/${topic}" && document.getElementById("step-${topic}").getAttribute("aria-expanded") === "true"`,
+        "Retired acceptance and lifecycle opportunities reach retained process guidance",
+      );
+    }
+    await go("#/journey/observability?view=problems&item=misleading-health");
+    await check(
+      'document.getElementById("record-misleading-health").parentElement.open && document.querySelectorAll(".evidence-example").length === 2 && document.querySelector(".record-body").textContent.includes("alert-rule records closed with fixes recorded") && document.querySelector(".record-body").textContent.includes("current behavior remains unverified")',
+      "The new monitoring account preserves separate examples and fix-verification limits",
+    );
+    await go("#/journey/workloads?view=problems&item=first-vm-blocked");
+    await check(
+      'document.querySelectorAll(".evidence-example").length === 3 && document.querySelector(".record-body").textContent.includes("separate study") && document.querySelector(".record-body").textContent.includes("reservation blocker")',
+      "The new project-context study remains distinct from the pilot reservation error",
+    );
+
+    await verifyPrerequisites({
+      cdp,
+      run,
+      settle,
+      wait,
+      click,
+      go,
+      shot,
+      check,
+    });
+
+    // Real content in all three layouts must fit a phone, tablet, and desktop.
     for (const width of [320, 390, 768, 1440]) {
       await cdp.send("Emulation.setDeviceMetricsOverride", {
         width,
@@ -367,17 +458,30 @@ try {
       });
       for (const [page, hash] of [
         ["journey", "#/journey"],
+        ["opportunity-overview", "#/journey?view=opportunities"],
+        [
+          "new-evidence",
+          "#/journey/observability?view=problems&item=misleading-health",
+        ],
         [
           "opportunities",
           "#/journey/networking?view=opportunities&item=network-translation",
         ],
         ["choices", "#/choices?mode=map&host-addressing=static"],
+        ["prerequisites", "#/prerequisites?addressing=static&dns=published"],
+        ["prerequisites-handoff", "#/prerequisites/tickets/network"],
       ]) {
         await go(hash);
         await run(
           page === "opportunities"
-            ? 'document.getElementById("record-network-translation").scrollIntoView()'
-            : "window.scrollTo(0, 0)",
+            ? 'document.getElementById("record-first-workload").scrollIntoView()'
+            : page === "new-evidence"
+              ? 'document.getElementById("record-misleading-health").scrollIntoView()'
+              : page === "opportunity-overview"
+                ? 'document.querySelector(".opportunity-overview").scrollIntoView()'
+                : page === "prerequisites-handoff"
+                  ? 'document.getElementById("prerequisites-tickets-network").scrollIntoView()'
+                  : "window.scrollTo(0, 0)",
         );
         await settle();
         await check(
@@ -433,7 +537,7 @@ try {
       "Skip link focuses active page content",
     );
     console.log(
-      "PASS: page navigation, retained state, history, contextual return, legacy links, refresh, sharing, search, problem/opportunity disclosures and bulk controls, keyboard access, and 320/390/768/1440px layouts.",
+      "PASS: prerequisite scenarios and handoffs, page navigation, retained state, history, contextual return, legacy links, refresh, sharing, search, problem/opportunity disclosures and bulk controls, keyboard access, and 320/390/768/1440px layouts.",
     );
   });
 } finally {

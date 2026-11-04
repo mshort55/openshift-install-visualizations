@@ -597,7 +597,7 @@ export const topics: Topic[] = [
       "Required installation name resolution is prepared, and any deferred external records have an owner and a deadline before shared access.",
     owners: "DNS team, installation owner, and cluster administrator.",
     scope:
-      "Red Hat explicitly permits external-record deferral for Assisted installations with cluster-managed networking or single-node OpenShift. Multi-node user-managed networking, including Agent platform: none, requires cluster DNS before installation. Hosts still need name resolution for installation dependencies.",
+      "Red Hat explicitly permits external-record deferral for Assisted installations with cluster-managed networking or single-node OpenShift. The linked Agent managed bare-metal example also supports deferral based on release-4.22 source review; the monitoring workstation still needs API name resolution. That example has not been validated through a five-node lab installation. Multi-node user-managed networking, including Agent platform: none, requires cluster DNS before installation. Hosts still need name resolution for installation dependencies.",
     flow: [
       {
         title: "Define names and prepare host DNS",

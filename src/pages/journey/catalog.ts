@@ -104,6 +104,52 @@ const retiredProblemRoutes = new Map<string, Route>([
   ["physical-evidence-gap", { topic: "hosts", lens: "process" }],
 ]);
 
+// Retired opportunity links follow the replacement or the retained research/guidance.
+const retiredOpportunityRoutes = new Map<string, Route>([
+  [
+    "constraint-led-choice",
+    { topic: "approach", lens: "opportunities", item: "fewer-prerequisites" },
+  ],
+  [
+    "whole-deployment-fit",
+    { topic: "approach", lens: "opportunities", item: "fewer-prerequisites" },
+  ],
+  [
+    "network-translation",
+    { topic: "workloads", lens: "opportunities", item: "first-workload" },
+  ],
+  [
+    "outcome-plan",
+    { topic: "workloads", lens: "opportunities", item: "first-workload" },
+  ],
+  [
+    "storage-outcome",
+    { topic: "workloads", lens: "opportunities", item: "first-workload" },
+  ],
+  [
+    "first-vm-guidance",
+    { topic: "workloads", lens: "opportunities", item: "first-workload" },
+  ],
+  [
+    "earlier-dependency-feedback",
+    { topic: "networking", lens: "opportunities", item: "precise-handoffs" },
+  ],
+  [
+    "actionable-progress",
+    { topic: "progress", lens: "opportunities", item: "supported-recovery" },
+  ],
+  [
+    "retry-continuity",
+    { topic: "progress", lens: "opportunities", item: "supported-recovery" },
+  ],
+  [
+    "clear-boot-handoff",
+    { topic: "media", lens: "problems", item: "boot-handoff" },
+  ],
+  ["confidence-rehearsal", { topic: "acceptance", lens: "process" }],
+  ["dependency-aware-change", { topic: "upgrades", lens: "process" }],
+]);
+
 /** Invalid or out-of-scope items fall back to their topic rather than showing an unrelated record. */
 export function parseRoute(hash: string): Route {
   const [path, query] = hash
@@ -136,6 +182,8 @@ export function parseRoute(hash: string): Route {
     if (problem) return { topic: problem.topic, lens, item };
   }
   if (lens === "opportunities" && item) {
+    const retired = retiredOpportunityRoutes.get(item);
+    if (retired) return { ...retired };
     const opportunity = opportunitiesFor(topic).find(
       (opportunity) => opportunity.id === item,
     );
@@ -204,6 +252,7 @@ export function searchJourney(query: string): SearchResult[] {
         problem.outcome,
         problem.limit,
         problem.context,
+        problem.researchQuestion ?? "",
         ...problem.examples.flatMap((example) => [
           example.title,
           example.platform,
@@ -225,7 +274,19 @@ export function searchJourney(query: string): SearchResult[] {
       title: opportunity.title,
       summary: opportunity.summary,
       context: "Improvement opportunity",
-      searchText: `${opportunity.intervention} ${opportunity.existing} ${opportunity.investigate}`,
+      searchText: [
+        opportunity.priority === "recommended"
+          ? "Recommended next investigation"
+          : "",
+        opportunity.applicability,
+        opportunity.intervention,
+        opportunity.existing,
+        opportunity.alternative,
+        opportunity.investigate,
+        opportunity.measure,
+        opportunity.stopWhen,
+        opportunity.owners,
+      ].join(" "),
       route: {
         topic: opportunity.topics[0],
         lens: "opportunities" as const,

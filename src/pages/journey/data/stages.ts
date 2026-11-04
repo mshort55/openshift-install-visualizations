@@ -22,7 +22,7 @@ export const stages: JourneyStage[] = [
       problems:
         "Hardware fit and installation-path constraints can add work before deployment.",
       opportunities:
-        "Explain method responsibilities and check feasibility before committing to a design.",
+        "Compare supported paths to remove avoidable prerequisites while preserving workload fit and operating requirements.",
     },
   },
   {
@@ -36,7 +36,7 @@ export const stages: JourneyStage[] = [
       problems:
         "Owner handoffs, connectivity corrections, content delivery and reusable configuration can delay deployment preparation.",
       opportunities:
-        "Translate site requirements into clear requests and prepare reusable configuration, content and boot media.",
+        "Verify prerequisites where they are consumed, reuse working configuration and prepare offline content through first use.",
     },
     note: "Teams can prepare services in parallel. Distinguish agreed settings, prepared services and checks verified from the booted hosts.",
   },
@@ -51,7 +51,7 @@ export const stages: JourneyStage[] = [
       problems:
         "No separate problem account is assigned to host boot and discovery.",
       opportunities:
-        "Observe real physical installations and connect each host’s state to a useful next action.",
+        "Current physical-install observations are needed before choosing a new boot-handoff intervention.",
     },
     note: "Host installation and bootstrap overlap.",
   },
@@ -66,7 +66,7 @@ export const stages: JourneyStage[] = [
       problems:
         "Image provisioning, cross-tool diagnosis and recovery can interrupt installation; each account retains its original platform context.",
       opportunities:
-        "Explain progress, identify the owner of a failure and preserve context through retry.",
+        "Connect a failed attempt to its resource, actual inputs, evidence and supported next action.",
     },
     note: "A failed attempt can return to preparation. Correct the dependency before retrying.",
   },
@@ -81,7 +81,7 @@ export const stages: JourneyStage[] = [
       problems:
         "No separate problem account is assigned to base-cluster verification.",
       opportunities:
-        "Carry the intended workload and its remaining tasks across the installation boundary.",
+        "The first-workload opportunity connects this milestone to remaining configuration and demonstrated use.",
     },
   },
   {
@@ -100,9 +100,9 @@ export const stages: JourneyStage[] = [
       process:
         "Install and configure the components required for the intended workloads.",
       problems:
-        "Platform, storage, network and identity configuration can remain after base installation; effective permissions may still be difficult to inspect.",
+        "Platform, storage, network and identity configuration can remain after installation. Effective access and misleading health displays can complicate use and diagnosis.",
       opportunities:
-        "Guide setup through a representative workload operation and verify effective access.",
+        "Verify delegated access through a real task; connect storage and network configuration to the first-workload investigation.",
     },
     note: "Tasks can run in parallel where their dependencies allow. Select additional components according to workload and site requirements.",
   },
@@ -117,7 +117,7 @@ export const stages: JourneyStage[] = [
       problems:
         "VM creation and workload migration can remain blocked after the target cluster is installed.",
       opportunities:
-        "Guide first-workload configuration choices and verify the remaining work between an installed cluster and a useful outcome.",
+        "Complete the customer's actual first workload, with separate preparation when that workload must be migrated.",
     },
   },
   {
@@ -131,7 +131,7 @@ export const stages: JourneyStage[] = [
       problems:
         "Diagnostic access, operating skills and agreed security policies can still need work before teams can support the intended environment.",
       opportunities:
-        "Link workload and restore results to known restrictions, operating instructions and named support contacts.",
+        "Enable evidence collection and escalation, and agree the initial security baseline when policy rollout is required.",
     },
     note: "Complete operational preparation before handover. The platform team retains cluster operations after application teams receive access.",
   },

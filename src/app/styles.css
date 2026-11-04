@@ -150,6 +150,10 @@ h1:focus {
   text-decoration: none;
   font-size: 13px;
 }
+.app-return-wide {
+  max-width: 1440px;
+  padding-inline: 32px;
+}
 .app-return a:hover {
   color: #594080;
   text-decoration: underline;
@@ -270,6 +274,10 @@ h1:focus {
   .app-navigation a {
     flex: 1;
     text-align: center;
+    padding-inline: 10px;
+  }
+  .app-return-wide {
+    padding-inline: 16px;
   }
   .app-share {
     margin-left: auto;

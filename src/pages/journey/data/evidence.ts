@@ -859,6 +859,8 @@ export const problems: Problem[] = [
     topic: "media",
     relatedTopics: ["management", "hosts"],
     title: "Historical ISO workflows left the next action unclear",
+    researchQuestion:
+      "Observe a current supported media-to-host workflow before choosing a product change. Identify the actual boot path, host identification and next-action difficulty; historical usability findings do not establish a present BMC, firmware or PXE defect.",
     summary:
       "Participants were unsure whether copying a URL, downloading an image and hosting it were alternatives or consecutive tasks.",
     context:
@@ -932,7 +934,7 @@ export const problems: Problem[] = [
     summary:
       "An installed cluster can still leave an administrator unable to complete VM configuration or resolve a resource-reservation error.",
     context:
-      "Virtualization pilot · reported 2025 and 2026 · on-premises",
+      "2025–2026 on-premises pilot reports · separate 2026 CNV 4.22 study",
     examples: [
       {
         title: "Completing the VM configuration",
@@ -968,12 +970,30 @@ export const problems: Problem[] = [
         limitation:
           "The error was not log-verified and its cause is unknown. A named physical server does not prove OCP nodes ran directly on it.",
       },
+      {
+        title: "Missing project context in a newer VM flow",
+        platform: "CNV 4.22 live-cluster usability study",
+        reported: {
+          kind: "study",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "individual session dates were not supplied in the study finding.",
+        },
+        basis: "Research report",
+        finding:
+          "Two participants missed the project selector on their first pass and corrected the selection after it was pointed out. The report describes a later presentation change as fixed in 4.23 and 5.",
+        limitation:
+          "This is a separate study, not a follow-up to the pilot or evidence of its reservation-error cause. The mixed study included three usability sessions, two demos and two internal pilots; it does not establish prevalence. Release inclusion and the effect of the reported fix were not independently tested.",
+      },
     ],
     impact: "The intended VMs and their availability tests could not proceed.",
     outcome:
-      "Training helped. In a later 2026 report, volume-selection improvements were reported in progress and newer namespace navigation was shown. The retained notes do not establish that these changes resolved the pilot’s difficulties or the reservation error.",
+      "Training helped the pilot. In a later 2026 report, volume-selection improvements were reported in progress and newer namespace navigation was shown; resolution of the pilot's difficulties or reservation error is unconfirmed. Separately, the 2026 study reports a project-selector change in later releases. Verify the applicable build and actual task before proposing another creation-flow change.",
     limit:
-      "These are two reports from one pilot. Similar alerts were reported in 2025 and 2026; continuous failure throughout that interval is unproven. Hardware capacity and unconnected storage are not established as the error’s cause; blocked HA testing is not proof that HA failed.",
+      "The first two examples are reports from one pilot. Similar alerts were reported in 2025 and 2026; continuous failure is unproven. Hardware capacity and unconnected storage are not established as the error's cause; blocked HA testing is not proof that HA failed. The separate study concerns project selection and cannot explain or resolve the reservation blocker.",
     kind: "Reported experience",
   },
   {
@@ -1370,426 +1390,380 @@ export const problems: Problem[] = [
       "Conditional on migration being an intended first workload. VMware workload migration is not the same as installing OpenShift on VMware; later migration operations remain outside the core installation sequence.",
     kind: "Reported experience",
   },
+  {
+    id: "misleading-health",
+    topic: "observability",
+    relatedTopics: [],
+    title:
+      "Health and alert displays can send diagnosis in the wrong direction",
+    summary:
+      "A misleading health state or a lost alert filter can lead an operator to investigate unrelated evidence.",
+    context: "2026 CNV 4.22 study · issue follow-up checked in 2026",
+    examples: [
+      {
+        title: "A degraded state without a matching explanation",
+        platform:
+          "CNV 4.22 study; linked defect reproduction used a CNV nightly",
+        reported: { kind: "study", date: "2026" },
+        occurred: {
+          kind: "unknown",
+          detail: "the finding does not separately date each study session.",
+        },
+        basis: "Research report",
+        finding:
+          "The study reports a false Degraded state without corresponding alerts. Participants searched other visible alerts for an explanation. Linked engineering records describe distinct alert-rule defects, including a false operator-health signal and an incorrectly divided alert threshold.",
+        limitation:
+          "The linked reproduction names OCP 4.22.0 with a CNV 4.99 nightly; it does not establish a defect in every generally available 4.22 deployment. The two alert defects have different mechanisms and are not independent observations of the same symptom.",
+      },
+      {
+        title: "Losing the selected alert category",
+        platform: "Virtualization overview and alert-list navigation",
+        reported: { kind: "study", date: "2026" },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "the report does not separately date this navigation observation.",
+        },
+        basis: "Research report",
+        finding:
+          "Selecting an alert category reportedly opened an unfiltered list. The operator lost the severity context of the selection. Later issue discussion distinguishes this behavior from filtering by project.",
+        limitation:
+          "The issue has conflicting resolution and fix-build information. Project filtering and severity filtering must be tested separately on the target release; current behavior remains unverified.",
+      },
+    ],
+    impact:
+      "Operators can spend time on unrelated alerts or infer a connection that the health display does not establish.",
+    outcome:
+      "The later issue check found both alert-rule records closed with fixes recorded. The alert-category record was closed with a non-implementation resolution while also listing fix versions and builds. These records update the study's follow-up status but do not verify behavior in a running product.",
+    limit:
+      "This small study combines usability sessions, demos and internal pilots. It establishes bounded diagnostic difficulties, not prevalence, an initial-install failure or a generic Agent progress defect. Verify applicable fixes and reproduce remaining behavior before adding new product work.",
+    kind: "Reported experience",
+  },
 ];
 
 export const opportunities: Opportunity[] = [
   {
-    id: "network-translation",
-    topics: ["networking", "addressing", "workload-network"],
-    title: "Explain the network from the customer’s starting point",
-    summary:
-      "Connect the familiar site network to the cluster and workload configuration it requires.",
-    intervention:
-      "Start with one existing-VLAN workload scenario. Show the physical-to-workload path, intended project and network attachment, responsible owner at each layer and applicable configuration. Mark external segments that have not been observed.",
-    existing:
-      "Existing capabilities include network configuration tools and VM networking flows. The proposed increment is explanation and verification across the whole path.",
-    investigate:
-      "Observe the current supported workflow with a user who knows their site network but is new to OpenShift. Include a missing attachment and an unresolved physical task.",
-    measure:
-      "Correct mapping, successful connectivity, wrong-layer changes and specialist clarification cycles. Establish a baseline before setting targets.",
-    basis: [
-      {
-        kind: "problem",
-        id: "network-layers",
-      },
-      {
-        kind: "problem",
-        id: "workload-network-gap",
-      },
+    id: "fewer-prerequisites",
+    topics: [
+      "approach",
+      "hardware",
+      "physical-storage",
+      "topology",
+      "assisted",
+      "agent-based",
+      "ipi",
+      "upi",
     ],
+    title: "Remove avoidable infrastructure prerequisites",
+    summary:
+      "Compare supported deployment paths by the total work each requires, including the first workload and later operation.",
+    priority: "candidate",
+    applicability: "Deployment planning",
+    basis: [
+      { kind: "problem", id: "method-choice" },
+      { kind: "problem", id: "owner-wait" },
+      { kind: "problem", id: "feasibility" },
+      { kind: "problem", id: "offline-content" },
+    ],
+    intervention:
+      "For one constrained site, identify which external requests, services or content-hosting arrangements each supported path removes, retains or moves to another owner. Include available hardware, storage connections and the intended workload. Distinguish unsupported, insufficient and unverified conditions, including what a small pilot cannot prove.",
+    existing:
+      "Installer alternatives and feasibility guidance already exist. Self-contained installation is generally available from OCP 4.22.18 and removes the initial external-registry requirement for its supplied content. Storage Operators are excluded, and later content still needs delivery. DNS timing depends on the method and networking mode; do not assume the same deferral on every path.",
+    alternative:
+      "Use a short comparison of supported paths and their owner responsibilities before building another selection interface.",
+    investigate:
+      "Compare two applicable paths with the infrastructure owners for one actual customer goal. Check the complete preparation, first-use and operating work, including funding, approvals and planned purchases. Confirm the exact release and support boundaries.",
+    measure:
+      "External requests actually removed, new work introduced, consequential fit gaps found early and whether the intended workload remains achievable.",
+    stopWhen:
+      "Reject a path that shifts a larger burden into storage, access or ongoing operation, or violates a fixed site requirement. Keep existing guidance if it resolves the decision.",
+    owners:
+      "Installer architecture, field engineering and the customer's infrastructure owners.",
   },
   {
     id: "precise-handoffs",
-    topics: ["dns", "routing", "networking"],
-    title: "Make prerequisite requests precise and testable",
-    summary:
-      "Give infrastructure owners the exact request and the evidence needed to close it.",
-    intervention:
-      "For one supported site design, prepare addresses, records and source-to-destination flow requests. Record the owner, requested action, completion condition and dated evidence, with a state of waiting, declared complete, verified or unknown.",
-    existing:
-      "Installer validations and documented network prerequisites already exist. Required DNS records and their timing depend on the installation configuration; confirm them before treating a pending DNS request as safe to defer.",
-    investigate:
-      "Test whether complete requests and evidence of completion reduce clarification. Keep technical verification separate from change approval and pending owner action; a record cannot remove staffing or scheduling constraints.",
-    measure:
-      "Request rework, unresolved assumptions, correct identification of the responsible team and time to establish technical readiness.",
-    basis: [
-      {
-        kind: "problem",
-        id: "owner-wait",
-      },
-      {
-        kind: "problem",
-        id: "late-dependency",
-      },
+    topics: [
+      "networking",
+      "dns",
+      "routing",
+      "addressing",
+      "hosts",
+      "media",
+      "progress",
+      "recovery",
     ],
+    title: "Verify prerequisites in the actual environment",
+    summary:
+      "Give each owner a precise request and a check from the host or component that needs the dependency.",
+    priority: "recommended",
+    applicability: "Infrastructure preparation",
+    basis: [
+      { kind: "problem", id: "owner-wait" },
+      { kind: "problem", id: "late-dependency" },
+      { kind: "problem", id: "network-layers" },
+    ],
+    intervention:
+      "Connect a request to its consumer, destination, responsible owner and completion condition. Return the expected and observed result with the check's location, time and configuration. Keep waiting, approval, declared completion, verified behavior and unknown conditions distinct. Preliminary checks can help work proceed while physical preparation continues, but do not prove the final host or workload path.",
+    existing:
+      "Assisted and Agent workflows already provide configuration and prerequisite checks. First establish their coverage for the selected method. Machine-local commissioning and environment-checking tools elsewhere demonstrate useful evidence patterns; they do not prove a missing OpenShift validator.",
+    alternative:
+      "Compare a clearer request template and a scheduled session with the infrastructure owners before adding tooling to the customer's existing ticket or inventory system.",
+    investigate:
+      "Observe one real prerequisite request and its correction loop. Compare current guidance with an owner-specific request and an applicable check. Test from the relevant environment; a successful laptop request does not establish target-host connectivity. Identify whether delay comes from ambiguity, incorrect delivery, capacity or approval.",
+    measure:
+      "Clarification cycles, active rework, false assurances and time from a detectable failure to useful owner action. Record external queue time separately.",
+    stopWhen:
+      "Ship a request or documentation correction if that solves the task. Do not expand a validator when staffing, procurement or approval accounts for the remaining wait.",
+    owners:
+      "Installer validation, infrastructure enablement and the team responsible for each dependency.",
   },
   {
-    id: "whole-deployment-fit",
-    topics: ["hardware", "physical-storage"],
-    title: "Establish feasibility for the intended workload",
-    summary:
-      "Surface missing capacity, connections and commitments before setup effort accumulates.",
-    intervention:
-      "Start with one workload and storage path. Separate confirmed inventory from planned purchases, physical prerequisites and platform overhead. Distinguish unsupported, insufficient and unverified conditions, and show which production questions a small pilot cannot answer.",
-    existing:
-      "Published platform and workload requirements are building blocks. The research does not provide a universal sizing formula or a reliable resource-overhead benchmark.",
-    investigate:
-      "Compare a complete intended deployment with the customer’s actual inventory. Separate product compatibility from procurement and funding constraints. Use existing requirements guidance if it resolves the uncertainty without another interface.",
-    measure:
-      "Earlier discovery of consequential gaps, avoided configuration rework and accuracy of feasibility expectations.",
-    basis: [
-      {
-        kind: "problem",
-        id: "feasibility",
-      },
+    id: "first-workload",
+    topics: [
+      "workloads",
+      "platform-operators",
+      "completion",
+      "storage",
+      "storage-drivers",
+      "physical-storage",
+      "workload-network",
+      "networking",
+      "addressing",
+      "configuration",
+      "access",
     ],
+    title: "Complete the intended first workload",
+    summary:
+      "Follow one customer's workload through the remaining configuration and actual use, keeping its project and unproven requirements visible.",
+    priority: "recommended",
+    applicability: "First workload; strongest evidence is virtualization",
+    basis: [
+      { kind: "problem", id: "missing-dependencies" },
+      { kind: "problem", id: "storage-not-usable" },
+      { kind: "problem", id: "workload-network-gap" },
+      { kind: "problem", id: "first-vm-blocked" },
+      { kind: "problem", id: "feasibility" },
+      { kind: "problem", id: "network-layers" },
+      { kind: "task", id: "acceptance" },
+      { kind: "task", id: "backups" },
+    ],
+    intervention:
+      "Start with the operation the customer needs. Connect its actual storage, network, image, capacity and user dependencies in a small, inspectable sequence. Keep project context visible and mark unobserved physical segments. Distinguish installed components, configured services, a running workload and accepted application behavior. Add maintenance or recovery checks only where the agreed outcome requires them.",
+    existing:
+      "VM creation, Operator setup, storage profiles and storage checkups already address parts of this task. The general Virtualization cluster-checkup framework is Technology Preview; verify the exact check's support status before making it a production acceptance dependency. Newer research reports project-selector changes, but their effect on the applicable build must be tested. Existing hints and automation have already helped customers succeed.",
+    alternative:
+      "Compare targeted wording or project-context corrections and a short supported task recipe with a guided sequence. Preserve the customer's existing configuration tools.",
+    investigate:
+      "Observe one real customer's unresolved first-workload path before constructing a test. Reproduce a demonstrated boundary, such as an incomplete storage profile, in a lab. Test other boundaries separately. Verify reported fixes before redesigning the flow. Investigate the reservation error independently; clearer configuration choices do not establish its cause or remedy.",
+    measure:
+      "Successful intended tasks, wrong-project or wrong-layer actions, missed dependencies, specialist help and accurate understanding of what remains untested. A bootable sample does not prove application readiness or availability.",
+    stopWhen:
+      "Keep the smallest current-flow correction that resolves the observed task. Do not impose a universal Operator bundle or extend one successful sample into a production-readiness claim.",
+    owners:
+      "A shared onboarding lead with virtualization, storage, networking and workload owners.",
   },
   {
-    id: "constraint-led-choice",
-    topics: ["approach", "assisted", "agent-based", "ipi", "upi"],
-    title: "Explain installer choices through ownership and constraints",
-    summary:
-      "Help engineers and customers understand what each path automates and still requires.",
-    intervention:
-      "Begin with host control, connectivity and existing provisioning practices. Explain the compatible choices and the work each owner retains.",
-    existing:
-      "The four installer families and orchestration layers already address different environments. This proposal improves selection and explanation rather than adding another installer.",
-    investigate:
-      "Check current selection guidance against representative constrained sites. Keep topology, installer family and orchestration as separate decisions.",
-    measure:
-      "Correct explanation of responsibilities, applicable-document selection and avoided incompatible starts.",
-    basis: [
-      {
-        kind: "problem",
-        id: "method-choice",
-      },
+    id: "supported-recovery",
+    topics: [
+      "progress",
+      "bootstrap",
+      "hosts",
+      "recovery",
+      "media",
+      "platform-operators",
+      "observability",
+      "workloads",
     ],
+    title: "Diagnose a failed attempt and continue safely",
+    summary:
+      "Connect the failed task to its responsible resource, actual inputs, diagnostic evidence and next supported action.",
+    priority: "recommended",
+    applicability: "Failed provisioning or configuration",
+    basis: [
+      { kind: "problem", id: "unclear-progress" },
+      { kind: "problem", id: "retry-work" },
+      { kind: "problem", id: "late-dependency" },
+      { kind: "problem", id: "image-distribution-timeout" },
+      { kind: "problem", id: "first-vm-blocked" },
+      { kind: "problem", id: "misleading-health" },
+    ],
+    intervention:
+      "Preserve the path from the requested task to a resource or external job, its inputs, relevant events and owner. Show what changed before the next action. Distinguish an observed condition, a suspected cause and an unresolved investigation. Keep continued monitoring, supported repair and a planned new installation separate.",
+    existing:
+      "Agent diagnostics, provisioning errors and AAP job output and relaunch already exist. AAP relaunch reapplies prompts and can use current template defaults; it is not necessarily an identical replay. Recorded alert defects have fix follow-up, so verify the relevant build before adding explanations around a faulty status. There is no universal safe resume.",
+    alternative:
+      "Try a contextual link to the failing job and a maintained recovery recipe before building another diagnostic console or attempt-history view.",
+    investigate:
+      "Begin with the reported vSphere ACM-to-AAP configuration failure and a controlled invalid input in a lab. Find the job, inspect the failure, review the input change and use the supported rerun. Then test the actual bare-metal route before generalizing. Separately investigate the VM reservation blocker using the exact error, release, VM specification, events and resources. Retain an explicit unknown if that evidence is unavailable.",
+    measure:
+      "Time to the correct component, supported action selection, unnecessary repeated work and useful escalation. Keep the Nutanix image-staging account separate from bare-metal image pulling and mirroring.",
+    stopWhen:
+      "Keep a link or error-message correction if it resolves the burden. Do not infer Agent recovery behavior from an AAP experiment or turn reported finalizer removal and disk cleanup into general instructions.",
+    owners:
+      "Provisioning, ACM, AAP and support owners; Virtualization engineering for the reservation blocker and health-status follow-up.",
   },
   {
     id: "reusable-deployment-configuration",
     topics: ["configuration"],
-    title: "Reuse deployment configuration across sites and releases",
+    title: "Reuse a working deployment configuration",
     summary:
-      "Separate reusable settings from site-specific inputs and prepare reviewable changes through the team’s existing automation.",
-    intervention:
-      "Use one working deployment recipe to prepare another site or a bounded release change. Identify site values, known applicable changes and unresolved questions; produce configuration and a short runbook for review.",
-    existing:
-      "Participants already maintain playbooks, configuration files and working automation. Respect the actual source of truth and connectivity; do not require GitOps in every environment.",
-    investigate:
-      "Compare the proposal with the customer’s existing recipe and guidance. Narrow it to a maintained example or clearer variable documentation if that solves the task. Do not promise automatic conversion or compatibility.",
-    measure:
-      "Correct site values, identified release-dependent changes, preserved working settings, usable reviewed output and repeated information gathering.",
+      "Prepare another site or bounded release change with reviewable differences and maintained examples that fit the team's automation.",
+    priority: "candidate",
+    applicability: "Repeated deployments or release adaptation",
     basis: [
-      {
-        kind: "problem",
-        id: "repeatable-configuration",
-      },
+      { kind: "problem", id: "repeatable-configuration" },
+      { kind: "problem", id: "method-choice" },
+      { kind: "problem", id: "missing-dependencies" },
     ],
+    intervention:
+      "Start from a working recipe. Separate reusable choices from site values and secret references, show where each value comes from and produce the inputs its actual consumer needs. Maintain a tested example for a specific route and release pair, with a named maintainer and explicit unresolved compatibility questions.",
+    existing:
+      "Customers already use working playbooks, installation files, ACM templates and Git-managed configuration. Current template and automation tools can produce reviewable output. Some teams require inspection or internal approval before applying configuration, and field connectivity can make continuous GitOps unsuitable.",
+    alternative:
+      "A precise variable reference and maintained integration example may solve the task without a recipe generator.",
+    investigate:
+      "Compare the current recipe, clearer documentation and a small generator on one next-site deployment and one bounded release change. Use the customer's actual review process, source of truth and connectivity. Do not promise automatic conversion or compatibility beyond the exercised case.",
+    measure:
+      "Correct site substitutions, preserved customization, identified release-dependent changes, usable reviewed output and maintenance effort for the example itself.",
+    stopWhen:
+      "Prefer the maintained example when automation adds little value to a low-frequency workflow. Stop expanding release coverage when it cannot be maintained and verified.",
+    owners:
+      "Configuration tooling, integration documentation and a named maintainer of each supported example.",
   },
   {
     id: "offline-outcome-kit",
-    topics: ["content", "disconnected"],
-    title: "Prepare an offline kit around the intended outcome",
+    topics: ["content", "disconnected", "image-access"],
+    title: "Prepare offline content through first use",
     summary:
-      "Connect installation content to workload dependencies and usable local guidance.",
-    intervention:
-      "Start with one disconnected workload scenario. Prepare a version-scoped content manifest, local instructions and a receipt at each permitted transfer hop. Test content preparation and delivery separately.",
-    existing:
-      "Mirroring and documented disconnected workflows already exist, and one organization uses a working custom artifact-distribution system. The proposed kit remains an untested intervention; it is not a remedy for every management-connectivity restriction.",
-    investigate:
-      "Determine which missing artifacts or approval boundaries actually block the selected workload. Rehearse with one required artifact missing and online documentation unavailable. Test whether receipts help before adding them to a working distribution flow.",
-    measure:
-      "Content completeness, successful local task completion and repeated transfers caused by missed dependencies.",
+      "Check that the destination can supply the selected workload's content and the tools needed to investigate a failure.",
+    priority: "candidate",
+    applicability: "Disconnected or restricted environments",
     basis: [
-      {
-        kind: "problem",
-        id: "offline-content",
-      },
+      { kind: "problem", id: "offline-content" },
+      { kind: "task", id: "support" },
     ],
-  },
-  {
-    id: "clear-boot-handoff",
-    topics: ["media", "management", "hosts"],
-    title: "Connect media creation to physical host readiness",
-    summary:
-      "Make artifact delivery, boot and discovery understandable for the selected method.",
     intervention:
-      "Walk through one real supported boot path from generation to the correctly identified hosts and installation disks.",
+      "Define the release, applicable Operators, workload or guest images, diagnostic collector images and local instructions needed for one outcome. Check completeness before dispatch and at the destination. Keep downloaded, transferred, imported and consumable content distinct, with artifact identity visible.",
     existing:
-      "ISO/PXE workflows, discovery and validations are existing capabilities. BMC reachability and media-source reachability remain separate checks.",
+      "oc-mirror v2 provides inventory and failure information, and some customers already have working distribution across permitted hops. A mirror-to-disk dry run checks the local cache; some Operator-image failures are logged while processing continues. Neither proves destination usability. Self-contained installation removes only the initial registry requirement for its supplied content.",
+    alternative:
+      "Add a completeness explanation around existing mirroring and transfer tools. Test a manifest or receipt at a real boundary before requiring another bundle or transfer system.",
     investigate:
-      "Observe current physical installs and document BMC models, firmware, boot choices and media-fetch behavior before choosing a product change.",
+      "Rehearse one selected offline workload with a required artifact missing and online documentation unavailable. Include the applicable support collector and local instructions. Compare with the customer's current workflow and identify the exact content that must be requested through an approved path.",
     measure:
-      "Correct host identification, first successful boot, handoff clarification and reproducible points of failure.",
-    basis: [
-      {
-        kind: "problem",
-        id: "boot-handoff",
-      },
-    ],
-  },
-  {
-    id: "actionable-progress",
-    topics: ["progress", "bootstrap", "hosts"],
-    title: "Connect build status to the responsible resource and job",
-    summary:
-      "Help operators follow the failed stage into the relevant configuration, tool and diagnostic evidence.",
-    intervention:
-      "Follow one provisioning failure and one external configuration-job failure. Connect the top-level state to the affected resource, job logs and supported next action.",
-    existing:
-      "Assisted and Agent-based workflows already expose validation, progress and diagnostics. First establish which current explanation or transition is insufficient.",
-    investigate:
-      "Observe provisioning, external configuration-job and platform-specific image-transfer failures separately. Confirm the component and stage responsible; the Nutanix image account does not establish a defect in the reference Agent workflow.",
-    measure:
-      "Time to find the failed component, correct wait-versus-repair decisions and successful handoff to the responsible owner.",
-    basis: [
-      {
-        kind: "problem",
-        id: "unclear-progress",
-      },
-      {
-        kind: "problem",
-        id: "image-distribution-timeout",
-      },
-    ],
-  },
-  {
-    id: "earlier-dependency-feedback",
-    topics: ["routing", "progress", "recovery"],
-    title: "Connect dependency failures to their owner and correction",
-    summary:
-      "Expose the failed endpoint and useful evidence at the earliest demonstrated point.",
-    intervention:
-      "Reproduce one late dependency failure, identify when it becomes detectable, and connect the check to the responsible team’s correction.",
-    existing:
-      "Existing prerequisite validations and diagnostic checks may already cover the condition. The gap can be timing, coverage, explanation or handoff.",
-    investigate:
-      "Check the exact method, host, endpoint, previous validation and failure transition. Move a check earlier only where the reproduction supports it.",
-    measure:
-      "Delay between detectable failure and actionable explanation, avoided repeated work and successful owner handoff.",
-    basis: [
-      {
-        kind: "problem",
-        id: "late-dependency",
-      },
-    ],
-  },
-  {
-    id: "retry-continuity",
-    topics: ["recovery", "media"],
-    title: "Guide cleanup, correction and the next supported attempt",
-    summary:
-      "Help operators identify what failed, what needs repair and which work can safely continue.",
-    intervention:
-      "Record one failed attempt and follow it through correction. Compare corrected inputs with the failed attempt and identify checks to repeat. Distinguish continued monitoring, repair and a planned new installation, and retain safe reusable inputs.",
-    existing:
-      "Wait commands can be rerun for monitoring; generated media and consumed configuration have specific lifecycles. There is no universal safe resume for every failed attempt.",
-    investigate:
-      "Follow a failed provisioning run and an external configuration-job failure. Identify the supported cleanup or rerun procedure and which inputs must be preserved. Do not assume context was lost or that every attempt must start over.",
-    measure:
-      "Correct recovery-path selection, time to identify required cleanup and repeated manual setup.",
-    basis: [
-      {
-        kind: "problem",
-        id: "retry-work",
-      },
-    ],
-  },
-  {
-    id: "outcome-plan",
-    topics: [
-      "platform-operators",
-      "completion",
-      "workloads",
-      "access",
-      "configuration",
-    ],
-    title: "Carry the intended workload across the installation boundary",
-    summary:
-      "Show the configuration and verification still needed between base installation and the intended platform or workload.",
-    intervention:
-      "Start with one supported workload scenario. Connect identity, certificates, required services, owners and workload verification across creation and post-install workflows. Distinguish installed, configured and demonstrated working, including useful partial readiness. Include migration preparation only when it is the intended first use.",
-    existing:
-      "Installer validation and workload post-installation guidance already exist. Test continuity and remaining-work visibility against current capabilities.",
-    investigate:
-      "Compare the actual supported dependency set with what users believe is complete after installation. Avoid assuming every workload needs the same Operators.",
-    measure:
-      "Representative task completion, missed critical dependencies and perceived readiness compared with observed behavior.",
-    basis: [
-      {
-        kind: "problem",
-        id: "missing-dependencies",
-      },
-      {
-        kind: "problem",
-        id: "first-vm-blocked",
-      },
-      {
-        kind: "problem",
-        id: "migration-workload-readiness",
-      },
-      {
-        kind: "problem",
-        id: "repeatable-configuration",
-      },
-    ],
-  },
-  {
-    id: "storage-outcome",
-    topics: ["storage", "storage-drivers", "physical-storage"],
-    title: "Guide storage setup by the operation it must support",
-    summary:
-      "Connect the physical system, driver, configuration and representative workload behavior.",
-    intervention:
-      "Prototype one supported external-storage path through integration, default class/profile and first workload. Explain the profile’s consequences for the required operation, identify an owner for missing physical work, and use examples applicable to the provider and release.",
-    existing:
-      "Storage postconfiguration and workload self-validation already exist. The proposed increment is guidance through the complete selected path and its unresolved physical dependencies.",
-    investigate:
-      "Use a scenario with an available array but incomplete configuration. Verify provider and release support; do not prescribe one product or access mode universally.",
-    measure:
-      "Successful first workload, correct identification of the missing layer and demonstrated required behavior.",
-    basis: [
-      {
-        kind: "problem",
-        id: "storage-not-usable",
-      },
-      {
-        kind: "problem",
-        id: "feasibility",
-      },
-    ],
+      "Missing content at destination, repeated transfers, successful local tasks and preparation or maintenance effort. Keep content approval and management reachability separate.",
+    stopWhen:
+      "Retain the current system if it already completes the task reliably. Do not use a successful archive transfer or mirror command as a readiness guarantee.",
+    owners:
+      "Disconnected installation, content distribution and support enablement for the selected workload.",
   },
   {
     id: "rehearse-access",
     topics: ["access"],
-    title: "Rehearse the task as the receiving user",
+    title: "Verify delegated access through a real task",
     summary:
-      "Make effective access visible in the context of the workload and project.",
-    intervention:
-      "Follow one intended user from directory/group mapping through effective permissions to a representative task. Confirm the intended project and explain the binding, group and scope behind the action. Test with the user’s actual privileges; prepare a reviewable correction where Git owns configuration.",
-    existing:
-      "Role bindings, identity integration and authorization checks are existing building blocks. Some participants manage declarative permissions in Git and use the UI for investigation. Respect that source of truth when proposing a correction.",
-    investigate:
-      "Determine whether the obstacle is a missing permission, misunderstood scope, navigation or external identity synchronization.",
-    measure:
-      "Task success with intended privileges and fewer trial-and-error role changes.",
+      "Follow a user's identity, groups, permissions and project context through the action they need to perform.",
+    priority: "candidate",
+    applicability: "Delegated administration or team access",
     basis: [
-      {
-        kind: "problem",
-        id: "effective-access",
-      },
-      {
-        kind: "problem",
-        id: "identity-group-integration",
-      },
+      { kind: "problem", id: "identity-group-integration" },
+      { kind: "problem", id: "effective-access" },
     ],
-  },
-  {
-    id: "first-vm-guidance",
-    topics: ["workloads"],
-    title: "Guide the first VM’s configuration choices",
-    summary:
-      "Keep the intended project visible and explain image, boot-volume, instance-type and network choices.",
     intervention:
-      "Start with one supported first-VM task. Carry project context through creation, explain consequential choices and highlight context changes. Include template-based creation where it matches the team’s workflow.",
+      "Explain the first known failing boundary from identity-provider recognition and group synchronization through bindings, namespace, authorization and the console action. Identify who owns the correction and prepare a reviewable change in the team's source of truth.",
     existing:
-      "Start with the current creation flow and available guidance. Earlier research records volume-selection work underway and newer namespace navigation; their effectiveness for this account is unconfirmed.",
+      "LDAP synchronization supports previews and automation. Role bindings and authorization checks already exist. A scoped authorization answer does not prove admission, quota or runtime success. Impersonation requires authority and explicit group context; a username alone does not reproduce a complete login.",
+    alternative:
+      "Use existing authorization tools with a task-specific explanation before adding another role or permissions view.",
     investigate:
-      "Compare current and proposed guidance on one real task. Treat reservation-error diagnosis separately. Narrow the intervention if clearer wording or project context is sufficient.",
+      "Observe an ordinary user performing a defined task in the intended project. Distinguish identity synchronization, missing permissions, navigation and workload dependencies. Test with the user's actual privileges and respect Git-owned configuration where applicable.",
     measure:
-      "Correct project and configuration choices, successful creation, misunderstood terms, context changes and help required.",
-    basis: [
-      {
-        kind: "problem",
-        id: "first-vm-blocked",
-      },
-    ],
-  },
-  {
-    id: "confidence-rehearsal",
-    topics: ["acceptance", "backups", "storage-drivers"],
-    title: "Demonstrate customer-specific readiness",
-    summary:
-      "Replace assumed readiness with evidence from the customer’s required behavior.",
-    intervention:
-      "Agree a small acceptance plan for a representative workload and selected maintenance, recovery or security-policy requirements. Record passed, failed, untested and out-of-scope results against the workload, release and configuration. Identify checks to reconsider after a relevant change, with limits and ownership explicit.",
-    existing:
-      "Monitoring, backup tools, workload checks and recovery procedures already exist. No single green badge proves every production requirement.",
-    investigate:
-      "Co-design a bounded rehearsal with the operating team. Include data, secrets and external dependencies where the scenario needs them. Test whether teams understand partial readiness and which results need rechecking; automatic invalidation rules are not established.",
-    measure:
-      "Correct understanding of what is proven, successful selected recovery tasks and fewer unresolved handover dependencies.",
-    basis: [
-      {
-        kind: "task",
-        id: "acceptance",
-      },
-      {
-        kind: "task",
-        id: "backups",
-      },
-      {
-        kind: "problem",
-        id: "security-policy-rollout",
-      },
-    ],
+      "Task completion at intended privilege, correct explanation of a denial and fewer unnecessary role changes.",
+    stopWhen:
+      "Keep a focused explanation or navigation correction if it resolves the problem. Do not grant broad administrator access to compensate for an unexplained failure.",
+    owners:
+      "Identity, RBAC and console teams with the customer's access administrator.",
   },
   {
     id: "diagnostic-handover",
-    topics: ["acceptance", "operations"],
-    title: "Rehearse diagnosis with the team that will operate the environment",
+    topics: ["support", "acceptance", "operations"],
+    title: "Enable the operating team to collect evidence and escalate",
     summary:
-      "Test whether the receiving operator can find evidence and identify the next support action.",
-    intervention:
-      "Begin with one failed workload task. Guide evidence collection, preview what will be shared and record attempted fixes and results. Request inaccessible infrastructure evidence from its owner, then rehearse the support handoff with the receiving operator.",
-    existing:
-      "Logs, must-gather and support workflows already exist. The increment is making the applicable path usable to the team’s actual skills and access.",
-    investigate:
-      "Observe a representative diagnostic task without installation specialists guiding every step. Use the reported skill, evidence-collection and infrastructure-access barriers to distinguish what the receiving operator needs; do not assume a failed formal handover.",
-    measure:
-      "Independent diagnosis, useful evidence collection and a clear escalation path.",
+      "Use a representative diagnostic task to identify missing knowledge, access, collector content or support arrangements.",
+    priority: "candidate",
+    applicability: "Operations and support preparation",
     basis: [
-      {
-        kind: "task",
-        id: "operations",
-      },
-      {
-        kind: "problem",
-        id: "unclear-progress",
-      },
-      {
-        kind: "problem",
-        id: "support-evidence-gap",
-      },
-      {
-        kind: "problem",
-        id: "operating-knowledge-gap",
-      },
+      { kind: "problem", id: "support-evidence-gap" },
+      { kind: "problem", id: "operating-knowledge-gap" },
+      { kind: "problem", id: "misleading-health" },
+      { kind: "task", id: "operations" },
     ],
+    intervention:
+      "Guide the receiving operator through collecting and reviewing applicable evidence, recording attempted corrections and requesting inaccessible infrastructure information from its owner. Confirm the support route and entitlement. Include a case where accurate escalation is the useful outcome.",
+    existing:
+      "Agent logs, must-gather, feature-specific collector images and support processes already exist. Some infrastructure is outside the operator's access. Restricted environments need the relevant collector content and local instructions prepared in advance. Expert escalation can be appropriate.",
+    alternative:
+      "Compare existing instructions alone with the same instructions plus one observed support exercise before building a new collection interface.",
+    investigate:
+      "Have someone other than the original builder perform a realistic diagnostic task with their actual access. Separate unfamiliar tools, unavailable permissions, missing collector images and support-entitlement barriers. Verify applicable status fixes rather than teaching a workaround around a corrected defect.",
+    measure:
+      "Useful evidence collected, accurate ownership and escalation, and tasks completed without the original builders guiding each step. Separate collection work from support queue time.",
+    stopWhen:
+      "Keep a runbook or training exercise if it resolves the task. Do not treat every escalation as failed handover or assume a collector can obtain inaccessible infrastructure evidence.",
+    owners:
+      "Support enablement, the receiving operations team and external infrastructure owners.",
   },
   {
-    id: "dependency-aware-change",
-    topics: ["upgrades", "operations"],
-    title: "Plan updates across the whole deployment",
+    id: "migration-preparation",
+    topics: ["workloads"],
+    title: "Prepare an existing workload for migration",
     summary:
-      "Bring integration compatibility and disconnected content into the same change plan.",
-    intervention:
-      "Choose one dependency-bearing update. Record core release, Operators, storage and network configuration and test the representative workload path.",
-    existing:
-      "Core cluster updates and mirroring already provide useful capabilities. Preserve successful flows while investigating the specific add-on or content gap.",
-    investigate:
-      "Reproduce a reported integration problem on a known version pair and distinguish support limits from product behavior.",
-    measure:
-      "Earlier detection of incompatible dependencies, complete content preparation and successful representative workload checks.",
+      "Check the source, guest, mappings and application preparation before treating a healthy target cluster as sufficient.",
+    priority: "candidate",
+    applicability: "Migration is the intended first workload",
     basis: [
-      {
-        kind: "task",
-        id: "upgrades",
-      },
-      {
-        kind: "problem",
-        id: "offline-content",
-      },
+      { kind: "problem", id: "migration-workload-readiness" },
+      { kind: "problem", id: "workload-network-gap" },
     ],
+    intervention:
+      "Make migration a distinct goal at intake. Connect source and target compatibility, guest devices, disk conversion, storage and network mappings, and application pre/post actions. Separate unsupported, unverified and ready-to-test conditions.",
+    existing:
+      "MTV already provides mappings and inspection. Deep Inspection in MTV 2.12 is Technology Preview; neither inspection nor a healthy target proves that the application will start and function after a move.",
+    alternative:
+      "Use the existing migration assessment with a supported preparation example before creating another assessment tool.",
+    investigate:
+      "Select one real migration task on a supported path and rehearse it in a lab. Verify application startup and connectivity after the move. Keep the source and guest-specific findings separate from installing OpenShift on a hypervisor.",
+    measure:
+      "Consequential blockers found before migration effort, correct mappings and successful intended application behavior.",
+    stopWhen:
+      "Stop at the supported evidence boundary when a source or guest is incompatible. Do not expand first-workload preparation into a general fleet-migration program.",
+    owners: "Migration tooling, Virtualization and the application owner.",
+  },
+  {
+    id: "security-agreement",
+    topics: ["acceptance", "security", "access"],
+    title: "Agree and validate the initial security baseline",
+    summary:
+      "Help security and application teams test policy effects and agree enforcement when it is part of initial acceptance.",
+    priority: "candidate",
+    applicability: "Security-policy rollout is required for acceptance",
+    basis: [
+      { kind: "problem", id: "security-policy-rollout" },
+      { kind: "task", id: "acceptance" },
+    ],
+    intervention:
+      "Agree policy intent, affected applications, exception ownership and the enforcement decision. Use a scoped trial with representative workloads to prepare a reviewable change and the product's supported reversal procedure.",
+    existing:
+      "RHACS already provides policy dry runs and enforcement choices. Kubernetes admission controls have separate behavior and are not interchangeable. Deploying a security component does not settle policy agreement or prove workload compatibility.",
+    alternative:
+      "Use current policy tools with a joint application-team working session before adding a guided rollout interface.",
+    investigate:
+      "Compare current tooling and a facilitated policy trial on one required baseline. Identify whether the remaining work is technical configuration, missing guidance or agreement among the responsible teams.",
+    measure:
+      "Unresolved policy disagreements, avoidable configuration rework and completion of the agreed rollout task.",
+    stopWhen:
+      "Keep the working session or documentation correction if it is sufficient. Do not make policy rollout a prerequisite for customers whose initial acceptance does not require it, or imply that software can decide risk acceptance.",
+    owners:
+      "Security adoption and application-team representatives with the platform administrator.",
   },
 ];

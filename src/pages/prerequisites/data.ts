@@ -1,0 +1,48 @@
+/** Illustrative inventory shared by the topology, BMC map and address handoff. */
+export const exampleNodes = [
+  {
+    name: "cp-0",
+    role: "Control plane",
+    address: "10.20.30.21",
+    bmc: "10.20.40.21",
+    mac: "02:00:00:00:30:21",
+    port: "01",
+    rendezvous: true,
+  },
+  {
+    name: "cp-1",
+    role: "Control plane",
+    address: "10.20.30.22",
+    bmc: "10.20.40.22",
+    mac: "02:00:00:00:30:22",
+    port: "02",
+    rendezvous: false,
+  },
+  {
+    name: "cp-2",
+    role: "Control plane",
+    address: "10.20.30.23",
+    bmc: "10.20.40.23",
+    mac: "02:00:00:00:30:23",
+    port: "03",
+    rendezvous: false,
+  },
+  {
+    name: "worker-0",
+    role: "Worker",
+    address: "10.20.30.24",
+    bmc: "10.20.40.24",
+    mac: "02:00:00:00:30:24",
+    port: "04",
+    rendezvous: false,
+  },
+  {
+    name: "worker-1",
+    role: "Worker",
+    address: "10.20.30.25",
+    bmc: "10.20.40.25",
+    mac: "02:00:00:00:30:25",
+    port: "05",
+    rendezvous: false,
+  },
+];
