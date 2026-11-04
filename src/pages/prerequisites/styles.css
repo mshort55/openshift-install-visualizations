@@ -1,68 +1,7 @@
 .prerequisites-page {
-  --accent-blue: var(--blue-40);
-  --accent-orange: var(--orange-30);
-  --bar-thin: 3px;
-  --blue-10: #e0f0ff;
-  --blue-20: #b9dafc;
-  --blue-40: #4394e5;
-  --blue-50: #0066cc;
-  --blue-60: #004d99;
-  --blue-70: #003366;
-  --diagram-box-bg: var(--gray-90);
-  --diagram-box-border: var(--gray-60);
-  --edge: var(--gray-20);
-  --font-display: Manrope, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
-  --font-text: "DM Sans", system-ui, sans-serif;
-  --gray-10: #f2f2f2;
-  --gray-20: #e0e0e0;
-  --gray-30: #c7c7c7;
-  --gray-40: #a3a3a3;
-  --gray-50: #707070;
-  --gray-60: #4d4d4d;
-  --gray-90: #1f1f1f;
-  --gray-95: #151515;
-  --ink: var(--gray-95);
-  --label-spacing: 2px;
-  --orange-10: #ffe8cc;
-  --orange-30: #f8ae54;
-  --orange-50: #ca6c0f;
-  --orange-70: #732e00;
-  --purple-10: #ece6ff;
-  --purple-20: #d0c5f4;
-  --purple-40: #876fd4;
-  --purple-50: #5e40be;
-  --purple-60: #3d2785;
-  --purple-70: #21134d;
-  --quiet: var(--gray-60);
-  --radius-badge: 6px;
-  --radius-box: 10px;
-  --radius-canvas: 16px;
-  --radius-card: 14px;
-  --rh-red-60: #a60000;
-  --space-lg: 24px;
-  --space-md: 16px;
-  --space-sm: 8px;
-  --space-xl: 32px;
-  --space-xs: 4px;
-  --success-green-10: #e9f7df;
-  --success-green-30: #afdc8f;
-  --success-green-60: #3d7317;
-  --success-green-70: #204d00;
-  --success-green-80: #183301;
-  --surface-base: var(--gray-95);
-  --surface-border: var(--gray-60);
-  --surface-border-light: var(--gray-50);
-  --text-label-sm: 700 11px / 1 var(--font-display);
-  --text-muted: var(--gray-40);
-  --text-primary: var(--white);
-  --text-secondary: var(--gray-30);
-  --white: #ffffff;
-}
-.prerequisites-page {
-  max-width: 1440px;
+  max-width: var(--page-width);
   margin: auto;
-  padding: var(--space-xl);
+  padding: var(--page-gutter);
 }
 .prerequisites-page .eyebrow {
   font: var(--text-label-sm);
@@ -143,9 +82,9 @@
   font-size: 13px;
 }
 .prerequisites-page .choice:has(input:checked) {
-  background: var(--blue-10);
-  border-color: var(--blue-50);
-  color: var(--blue-70);
+  background: var(--selection-bg);
+  border-color: var(--selection-border);
+  color: var(--selection-text);
 }
 .prerequisites-page .choice input {
   accent-color: var(--blue-50);
@@ -671,7 +610,7 @@
   font-size: 12px;
 }
 .prerequisites-page .flow b {
-  color: var(--blue-50);
+  color: var(--link-hover);
 }
 .prerequisites-page .evidence {
   display: grid;
@@ -683,9 +622,6 @@
   font-size: 12px;
 }
 @media (max-width: 1100px) {
-  .prerequisites-page {
-    padding: var(--space-lg);
-  }
   .prerequisites-page .node-grid,
   .prerequisites-page .bmc-grid {
     gap: var(--space-sm);
@@ -710,9 +646,6 @@
   }
 }
 @media (max-width: 760px) {
-  .prerequisites-page {
-    padding: var(--space-md);
-  }
   .prerequisites-page .hero {
     display: block;
   }
@@ -811,7 +744,7 @@
   font-family: var(--font-display);
 }
 .prerequisites-page h1 {
-  font-size: clamp(26px, 3vw, 36px);
+  font-size: var(--text-page-title);
   line-height: 1.2;
   max-width: 1000px;
 }
@@ -827,11 +760,11 @@
   margin-top: 12px;
 }
 .prerequisites-page a {
-  color: var(--blue-60);
+  color: var(--link);
   text-underline-offset: 3px;
 }
 .prerequisites-page a:hover {
-  color: var(--blue-50);
+  color: var(--link-hover);
 }
 .prerequisites-page code {
   font-family: var(--font-mono);
@@ -842,9 +775,9 @@
   overflow-wrap: anywhere;
   margin: 16px 0 0;
   padding: 20px;
-  background: #151515;
-  color: #f2f2f2;
-  border-radius: 10px;
+  background: var(--surface-base);
+  color: var(--gray-10);
+  border-radius: var(--radius-box);
   font-size: 13px;
 }
 .prerequisites-page :is(h2, h3, summary) {
@@ -867,12 +800,12 @@
   z-index: 5;
   padding: 14px 0;
   margin: 12px 0;
-  background: #f7f8fa;
+  background: var(--page-bg);
   border-bottom: 1px solid var(--edge);
   gap: 12px 24px;
 }
 .prerequisites-page .topnav [data-active="true"] a {
-  color: #594080;
+  color: var(--selection-text);
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 7px;

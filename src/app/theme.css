@@ -1,0 +1,90 @@
+:root {
+  --font-display: Manrope, sans-serif;
+  --font-text: "DM Sans", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --text-label-sm: 700 11px / 1.4 var(--font-display);
+  --text-page-title: clamp(26px, 3vw, 36px);
+  --label-spacing: 2px;
+  --white: #ffffff;
+  --gray-10: #f2f2f2;
+  --gray-20: #e0e0e0;
+  --gray-30: #c7c7c7;
+  --gray-40: #a3a3a3;
+  --gray-50: #707070;
+  --gray-60: #4d4d4d;
+  --gray-90: #1f1f1f;
+  --gray-95: #151515;
+  --blue-10: #e0f0ff;
+  --blue-20: #b9dafc;
+  --blue-40: #4394e5;
+  --blue-50: #0066cc;
+  --blue-60: #004d99;
+  --blue-70: #003366;
+  --orange-10: #ffe8cc;
+  --orange-30: #f8ae54;
+  --orange-50: #ca6c0f;
+  --orange-70: #732e00;
+  --purple-10: #ece6ff;
+  --purple-20: #d0c5f4;
+  --purple-40: #876fd4;
+  --purple-50: #5e40be;
+  --purple-60: #3d2785;
+  --purple-70: #21134d;
+  --success-green-10: #e9f7df;
+  --success-green-30: #afdc8f;
+  --success-green-60: #3d7317;
+  --success-green-70: #204d00;
+  --success-green-80: #183301;
+  --brand-red: #c91922;
+  --rh-red-60: #a60000;
+  --page-bg: #f7f8fa;
+  --ink: var(--gray-95);
+  --muted: var(--gray-60);
+  --quiet: var(--gray-60);
+  --line: var(--gray-20);
+  --edge: var(--gray-20);
+  --surface: var(--white);
+  --selection-bg: var(--blue-10);
+  --selection-border: var(--blue-50);
+  --selection-text: var(--blue-70);
+  --link: var(--blue-60);
+  --link-hover: var(--blue-50);
+  --focus: var(--blue-50);
+  --radius-badge: 6px;
+  --radius-box: 10px;
+  --radius-card: 14px;
+  --radius-canvas: 16px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --page-width: 1440px;
+  --page-gutter: var(--space-xl);
+  --bar-thin: 3px;
+  --surface-base: var(--gray-95);
+  --surface-border: var(--gray-60);
+  --surface-border-light: var(--gray-50);
+  --diagram-box-bg: var(--gray-90);
+  --diagram-box-border: var(--gray-60);
+  --text-primary: var(--white);
+  --text-secondary: var(--gray-30);
+  --text-muted: var(--gray-40);
+  --accent-blue: var(--blue-40);
+  --accent-orange: var(--orange-30);
+  --shadow-dialog: 0 24px 100px #15151538;
+  --shadow-toast: 0 5px 22px #15151526;
+  --backdrop: #15151566;
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --page-gutter: var(--space-lg);
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --page-gutter: var(--space-md);
+  }
+}

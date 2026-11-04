@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
+import { Icon } from "../../app/Icon";
 import "./styles.css";
 import {
   type Answers,
@@ -58,7 +59,10 @@ function OptionBranch({
         disabled={!option.enabled}
         onClick={(event) => onAnswer(decision, option.id, event.currentTarget)}
       >
-        <span className="option-label">{option.label}</span>
+        <span className="option-label">
+          {option.label}
+          {option.selected && <Icon name="check" size={16} />}
+        </span>
         <span className="option-summary">{option.summary}</span>
       </button>
       {option.selected ? (
@@ -214,58 +218,60 @@ export function ChoicesPage({
             marked NMState is configuration you write as NMState. A selected
             answer shows one example value from the Red Hat documentation.
           </p>
-          <fieldset className="modes">
-            <legend>How to show options</legend>
-            <button
-              type="button"
-              className="mode"
-              aria-pressed={mode === "path"}
-              onClick={() => {
-                anchorRef.current = {
-                  decision: "",
-                  option: "",
-                  top: 0,
-                  scrollY: window.scrollY,
-                };
-                onChange(answers, "path");
-              }}
-            >
-              Step through
-            </button>
-            <button
-              type="button"
-              className="mode"
-              aria-pressed={mode === "map"}
-              onClick={() => {
-                anchorRef.current = {
-                  decision: "",
-                  option: "",
-                  top: 0,
-                  scrollY: window.scrollY,
-                };
-                onChange(answers, "map");
-              }}
-            >
-              See every option
-            </button>
-          </fieldset>
-          <p>
-            <button
-              type="button"
-              className="text-button"
-              onClick={() => {
-                anchorRef.current = {
-                  decision: "",
-                  option: "",
-                  top: 0,
-                  scrollY: window.scrollY,
-                };
-                onChange(new Map(), mode);
-              }}
-            >
-              Clear choices
-            </button>
-          </p>
+          <div className="controlbar">
+            <fieldset className="modes">
+              <legend>How to show options</legend>
+              <button
+                type="button"
+                className="mode"
+                aria-pressed={mode === "path"}
+                onClick={() => {
+                  anchorRef.current = {
+                    decision: "",
+                    option: "",
+                    top: 0,
+                    scrollY: window.scrollY,
+                  };
+                  onChange(answers, "path");
+                }}
+              >
+                Step through
+              </button>
+              <button
+                type="button"
+                className="mode"
+                aria-pressed={mode === "map"}
+                onClick={() => {
+                  anchorRef.current = {
+                    decision: "",
+                    option: "",
+                    top: 0,
+                    scrollY: window.scrollY,
+                  };
+                  onChange(answers, "map");
+                }}
+              >
+                See every option
+              </button>
+            </fieldset>
+            <p>
+              <button
+                type="button"
+                className="text-button"
+                onClick={() => {
+                  anchorRef.current = {
+                    decision: "",
+                    option: "",
+                    top: 0,
+                    scrollY: window.scrollY,
+                  };
+                  onChange(new Map(), mode);
+                }}
+              >
+                Clear choices
+              </button>
+            </p>
+          </div>
         </header>
         <div className="tree" data-view={mode}>
           {tree.roots.map((node) => (

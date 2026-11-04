@@ -1,21 +1,15 @@
 .journey-page {
-  font-family:
-    "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  color: #232938;
-  background: #f7f8fa;
+  --phase: var(--blue-50);
+  --phase-soft: var(--blue-10);
+  --phase-line: var(--blue-20);
+  --phase-dark: var(--blue-70);
+  font-family: var(--font-text);
+  color: var(--ink);
+  background: var(--page-bg);
   font-synthesis: none;
   font-weight: 400;
-  line-height: 1.55;
+  line-height: 1.6;
   font-size: 14px;
-  --ink: #232938;
-  --muted: #636b7a;
-  --line: #e2e5eb;
-  --red: #c91922;
-  --phase: #6c55a4;
-  --phase-soft: #f1edf8;
-  --phase-line: #ddd4ec;
-  --surface: #fff;
   color-scheme: light;
 }
 :where(.journey-page) * {
@@ -54,8 +48,8 @@
 :where(.journey-page) select:focus-visible,
 :where(.journey-page) summary:focus-visible,
 :where(.journey-page) [tabindex="0"]:focus-visible {
-  outline: 3px solid #1468c3;
-  outline-offset: 4px;
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
 }
 :where(.journey-page) svg {
   flex-shrink: 0;
@@ -71,28 +65,29 @@
 :where(.journey-page) h2,
 :where(.journey-page) h3,
 :where(.journey-page) h4 {
-  font-family: Manrope, "DM Sans", system-ui, sans-serif;
+  font-family: var(--font-display);
 }
 :where(.journey-page) h1,
 :where(.journey-page) h2,
 :where(.journey-page) h3 {
   color: var(--ink);
+  font-size: 18px;
+  line-height: 1.4;
+  font-weight: 700;
 }
 :where(.journey-page) h1 {
-  font-size: 38px;
-  line-height: 1.22;
-  letter-spacing: -1.35px;
-  font-weight: 750;
+  font-size: var(--text-page-title);
+  line-height: 1.2;
+  font-weight: 700;
 }
 :where(.journey-page) h1:focus,
 :where(.journey-page) main:focus {
   outline: none;
 }
 :where(.journey-page) h2 {
-  font-size: 20px;
-  line-height: 1.4;
-  letter-spacing: -0.5px;
-  font-weight: 750;
+  font-size: 24px;
+  line-height: 1.3;
+  font-weight: 700;
 }
 :where(.journey-page) h3 {
   font-size: 16px;
@@ -108,25 +103,7 @@
   background: none;
 }
 :where(.journey-page) ::selection {
-  background: #e3d9f5;
-}
-:where(.journey-page) .phase-0 {
-  --phase: #7053a5;
-  --phase-soft: #f3eff9;
-  --phase-line: #e0d7ef;
-  --phase-dark: #594080;
-}
-:where(.journey-page) .phase-1 {
-  --phase: #257974;
-  --phase-soft: #edf6f3;
-  --phase-line: #cfe7e0;
-  --phase-dark: #1e635e;
-}
-:where(.journey-page) .phase-2 {
-  --phase: #3d6fa9;
-  --phase-soft: #edf3fa;
-  --phase-line: #d4e1f1;
-  --phase-dark: #2c5486;
+  background: var(--blue-10);
 }
 :where(.journey-page) .sr-only {
   position: absolute;
@@ -149,29 +126,29 @@
 }
 :where(.journey-page) .search-trigger {
   border: 1px solid var(--line);
-  background: #fafbfc;
+  background: var(--gray-10);
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #626977;
-  border-radius: 7px;
+  color: var(--muted);
+  border-radius: var(--radius-box);
   padding: 8px 10px;
   font-size: 12px;
   min-width: 243px;
 }
 :where(.journey-page) .search-trigger:hover {
-  background: #f0f2f5;
-  border-color: #cbd0da;
+  background: var(--gray-10);
+  border-color: var(--gray-30);
 }
 :where(.journey-page) .search-trigger kbd {
   margin-left: auto;
   font-size: 9px;
-  background: #fff;
-  border: 1px solid #e3e6ec;
-  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-badge);
   line-height: 20px;
   padding: 0 5px;
-  color: #636973;
+  color: var(--muted);
   font-family: inherit;
 }
 :where(.journey-page) .icon-button {
@@ -180,41 +157,35 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: 6px;
-  color: #616875;
+  border-radius: var(--radius-badge);
+  color: var(--muted);
   flex-shrink: 0;
 }
 :where(.journey-page) .icon-button:hover {
-  background: #eff1f5;
-  color: #252b37;
+  background: var(--gray-10);
+  color: var(--ink);
 }
 :where(.journey-page) .main-shell {
-  max-width: 1328px;
+  max-width: var(--page-width);
   margin: auto;
-  padding: 0 40px 44px;
+  padding: 0 var(--page-gutter) 44px;
   min-height: calc(100vh - 153px);
 }
 :where(.journey-page) .hero-eyebrow {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 9px;
-  letter-spacing: 1.55px;
-  color: #616873;
-  margin-bottom: 17px;
-}
-:where(.journey-page) .hero-eyebrow > span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--red);
+  letter-spacing: var(--label-spacing);
+  color: var(--rh-red-60);
+  margin-bottom: var(--space-md);
+  font: var(--text-label-sm);
 }
 :where(.journey-page) .secondary-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border-radius: 6px;
+  border-radius: var(--radius-badge);
   font-size: 11px;
   font-weight: 600;
   padding: 11px 14px;
@@ -224,13 +195,13 @@
     border-color 0.15s;
 }
 :where(.journey-page) .secondary-button {
-  background: #fff;
-  border: 1px solid #d8dde6;
-  color: #465269;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
 }
 :where(.journey-page) .secondary-button:hover {
-  background: #f1f4f8;
-  border-color: #aeb9c9;
+  background: var(--gray-10);
+  border-color: var(--gray-30);
 }
 :where(.journey-page) .text-action {
   display: inline-flex;
@@ -238,12 +209,12 @@
   gap: 7px;
   font-size: 12px;
   font-weight: 600;
-  color: #385e8a;
+  color: var(--link);
   line-height: 1.5;
   padding: 0;
 }
 :where(.journey-page) .text-action:hover {
-  color: #173a67;
+  color: var(--blue-70);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -251,50 +222,46 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #dfe3e9;
   gap: 16px;
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
 }
 :where(.journey-page) .tabs {
   display: flex;
   align-items: stretch;
-  gap: 25px;
+  gap: var(--space-xs);
 }
 :where(.journey-page) .tabs > button {
   position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #606775;
-  padding: 15px 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: var(--space-sm) var(--space-md);
   white-space: nowrap;
-}
-:where(.journey-page) .tabs > button::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-badge);
 }
 :where(.journey-page) .tabs > button:hover {
-  color: #293448;
+  color: var(--link);
+  border-color: var(--selection-border);
 }
 :where(.journey-page) .tabs > button[aria-selected="true"] {
-  color: #283349;
+  color: var(--selection-text);
   font-weight: 700;
-}
-:where(.journey-page) .tabs > button[aria-selected="true"]::after {
-  background: #c91922;
+  background: var(--selection-bg);
+  border-color: var(--selection-border);
 }
 :where(.journey-page) .tabs > button[aria-selected="true"] > svg {
-  color: #c91922;
+  color: var(--blue-50);
 }
 :where(.journey-page) .perspective-hint {
   font-size: 10px;
-  color: #636872;
+  color: var(--muted);
 }
 :where(.journey-page) .perspective-panel {
   padding-top: 29px;
@@ -330,7 +297,7 @@
 }
 :where(.journey-page) .subheading > span {
   font-size: 10px;
-  color: #636872;
+  color: var(--muted);
   white-space: nowrap;
 }
 :where(.journey-page) .flow-section {
@@ -343,9 +310,9 @@
   list-style: none;
   padding: 24px 25px;
   margin: 0;
-  border: 1px solid #e0e5ed;
-  border-radius: 9px;
-  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
 }
 :where(.journey-page) .process-flow li {
   position: relative;
@@ -373,7 +340,7 @@
   width: 27px;
   height: 27px;
   background: var(--phase-soft);
-  color: var(--phase);
+  color: var(--phase-dark);
   border: 1px solid var(--phase-line);
   border-radius: 50%;
   font-size: 10px;
@@ -395,7 +362,7 @@
   max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: var(--radius-card);
 }
 :where(.journey-page) .service-flow-table table,
 :where(.journey-page) .operator-examples-table table {
@@ -433,7 +400,7 @@
 :where(.journey-page) .operator-examples > p {
   font-size: 13px;
   line-height: 1.8;
-  color: #596677;
+  color: var(--muted);
 }
 :where(.journey-page) .operator-examples-table tbody th {
   width: 20%;
@@ -450,7 +417,7 @@
 :where(.journey-page) .context-card {
   background: var(--phase-soft);
   border: 1px solid var(--phase-line);
-  border-radius: 9px;
+  border-radius: var(--radius-card);
   padding: 23px;
 }
 :where(.journey-page) .context-card > .eyebrow {
@@ -463,22 +430,22 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  background: #ffffff9c;
+  background: var(--surface);
   color: var(--phase);
   border: 1px solid var(--phase-line);
-  border-radius: 8px;
+  border-radius: var(--radius-box);
   margin: 12px 0 9px;
 }
 :where(.journey-page) .context-card p {
   font-size: 11px;
   line-height: 1.8;
-  color: #5f687c;
+  color: var(--muted);
   margin-top: 7px;
 }
 :where(.journey-page) .context-card > .outcome-text {
   font-size: 13px;
   font-weight: 550;
-  color: #43506a;
+  color: var(--ink);
   line-height: 1.8;
   margin-top: 0;
 }
@@ -515,22 +482,22 @@
   gap: 14px;
   font-size: 11px;
   font-weight: 550;
-  border-bottom: 1px solid #e2e6ed;
+  border-bottom: 1px solid var(--line);
   padding: 12px 0;
-  color: #576984;
+  color: var(--link);
 }
 :where(.journey-page) .related > a:hover {
-  color: var(--phase);
+  color: var(--link-hover);
 }
 :where(.journey-page) .related > a small {
   display: block;
   font-size: 9px;
   font-weight: 400;
   margin-bottom: 2px;
-  color: #616771;
+  color: var(--muted);
 }
 :where(.journey-page) .related > a > svg {
-  color: #636971;
+  color: var(--muted);
 }
 :where(.journey-page) .next-perspective {
   display: flex;
@@ -546,10 +513,10 @@
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  color: #606876;
+  color: var(--muted);
 }
 :where(.journey-page) .next-perspective > div svg {
-  color: #7e6436;
+  color: var(--orange-70);
 }
 :where(.journey-page) .next-perspective .text-action {
   font-size: 11px;
@@ -568,16 +535,13 @@
 :where(.journey-page) .record-card {
   display: block;
   padding: 22px 24px;
-  border: 1px solid #e0e5ed;
-  border-radius: 9px;
-  background: #fff;
-  transition:
-    box-shadow 0.15s,
-    border-color 0.15s;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  transition: border-color 0.15s;
 }
 :where(.journey-page) .record-card:hover {
-  border-color: #a6b4c8;
-  box-shadow: 0 3px 13px #283e6108;
+  border-color: var(--gray-30);
 }
 :where(.journey-page) .record-meta {
   display: flex;
@@ -586,16 +550,16 @@
   gap: 9px;
   margin-bottom: 12px;
   font-size: 9px;
-  color: #626874;
+  color: var(--muted);
 }
 :where(.journey-page) .evidence-badge {
   font-size: 9px;
   line-height: 1.7;
-  background: #faf2e4;
-  color: #866028;
-  border: 1px solid #f0e1c7;
+  background: var(--orange-10);
+  color: var(--orange-70);
+  border: 1px solid var(--orange-30);
   padding: 2px 7px;
-  border-radius: 4px;
+  border-radius: var(--radius-badge);
   display: inline-flex;
   align-items: center;
 }
@@ -606,22 +570,22 @@
 :where(.journey-page) .priority-badge,
 :where(.journey-page) .research-badge {
   padding: 2px 7px;
-  border: 1px solid #c8d9ec;
-  border-radius: 4px;
-  background: #edf3fa;
-  color: #345578;
+  border: 1px solid var(--blue-20);
+  border-radius: var(--radius-badge);
+  background: var(--blue-10);
+  color: var(--blue-70);
   font-size: 10px;
   line-height: 1.7;
 }
 :where(.journey-page) .research-badge {
-  background: #f4f5f7;
-  border-color: #d9dee5;
-  color: #505c6c;
+  background: var(--gray-10);
+  border-color: var(--line);
+  color: var(--muted);
 }
 :where(.journey-page) .record-applicability {
   display: block;
   margin-bottom: 9px;
-  color: #505e70;
+  color: var(--muted);
   font-size: 11px;
   line-height: 1.6;
 }
@@ -631,9 +595,9 @@
   border-top: 1px solid var(--line);
 }
 :where(.journey-page) .opportunities .evidence-badge {
-  background: #edf4f1;
-  border-color: #d3e5db;
-  color: #42715c;
+  background: var(--blue-10);
+  border-color: var(--blue-20);
+  color: var(--blue-70);
 }
 :where(.journey-page) .record-card h3 {
   font-size: 16px;
@@ -653,21 +617,21 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #4f698e;
+  color: var(--link);
 }
 :where(.journey-page) .record-card:hover .record-action {
-  color: #1c4c8b;
+  color: var(--blue-70);
 }
 :where(.journey-page) .show-more {
   margin-top: 18px;
 }
 :where(.journey-page) .empty-state {
   padding: 35px 25px;
-  background: #fff;
-  border: 1px dashed #d5dce7;
-  border-radius: 8px;
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-box);
   text-align: center;
-  color: #5d6877;
+  color: var(--muted);
 }
 :where(.journey-page) .empty-state > svg {
   margin-bottom: 12px;
@@ -684,9 +648,9 @@
 }
 :where(.journey-page) .evidence-detail {
   padding: 29px 32px;
-  background: #fff;
-  border: 1px solid #e1e5ec;
-  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-box);
   min-width: 0;
 }
 :where(.journey-page) .detail-section + .detail-section {
@@ -749,24 +713,24 @@
   align-items: flex-start;
   gap: 12px;
   padding: 19px;
-  background: #f5f7fa;
-  border: 1px solid #e5e9f0;
-  border-radius: 7px;
+  background: var(--gray-10);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-box);
   margin-top: 25px;
-  color: #5c687b;
+  color: var(--muted);
 }
 :where(.journey-page) .evidence-limit h2 {
-  font-family: "DM Sans", sans-serif;
+  font-family: var(--font-text);
   font-size: 11px;
   font-weight: 650;
-  color: #59687f;
+  color: var(--muted);
   letter-spacing: 0;
   margin-bottom: 7px;
 }
 :where(.journey-page) .evidence-limit p {
   font-size: 11px;
   line-height: 1.85;
-  color: #606877;
+  color: var(--muted);
 }
 :where(.journey-page) .evidence-limit > svg {
   margin-top: 1px;
@@ -776,27 +740,27 @@
   gap: 9px;
   align-items: center;
   font-size: 10px;
-  color: #46705e;
-  background: #f0f7f3;
-  border: 1px solid #dae9e1;
+  color: var(--blue-70);
+  background: var(--blue-10);
+  border: 1px solid var(--blue-20);
   padding: 12px;
-  border-radius: 6px;
+  border-radius: var(--radius-badge);
   margin-bottom: 26px;
 }
 :where(.journey-page) .modal {
   padding: 0;
-  border: 1px solid #d6dfe9;
-  background: #fff;
+  border: 1px solid var(--line);
+  background: var(--surface);
   color: var(--ink);
-  border-radius: 13px;
-  box-shadow: 0 24px 100px #12263f38;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-dialog);
   max-width: calc(100vw - 30px);
   width: 660px;
   max-height: 85dvh;
   overflow: auto;
 }
 :where(.journey-page) .modal::backdrop {
-  background: #202a3c66;
+  background: var(--backdrop);
   backdrop-filter: blur(4px);
 }
 :where(.journey-page) .modal-heading {
@@ -808,7 +772,7 @@
   gap: 15px;
   position: sticky;
   top: 0;
-  background: #fff;
+  background: var(--surface);
   z-index: 2;
 }
 :where(.journey-page) .modal-heading h2 {
@@ -817,17 +781,17 @@
 }
 :where(.journey-page) .search-input-wrap {
   margin: 22px 24px 10px;
-  border: 1px solid #cbd5e4;
-  border-radius: 8px;
+  border: 1px solid var(--gray-30);
+  border-radius: var(--radius-box);
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 13px 15px;
-  color: #5f6875;
+  color: var(--muted);
 }
 :where(.journey-page) .search-input-wrap:focus-within {
-  border-color: #4c77b1;
-  box-shadow: 0 0 0 3px #e9f0fa;
+  border-color: var(--blue-50);
+  box-shadow: 0 0 0 3px var(--blue-10);
 }
 :where(.journey-page) .search-input-wrap input {
   border: 0;
@@ -836,13 +800,13 @@
   min-width: 0;
   width: 100%;
   font-size: 13px;
-  color: #39465d;
+  color: var(--ink);
 }
 :where(.journey-page) .search-input-wrap input:focus-visible {
   outline: none;
 }
 :where(.journey-page) .search-input-wrap input::placeholder {
-  color: #616770;
+  color: var(--muted);
 }
 :where(.journey-page) .search-count {
   font-size: 10px;
@@ -851,18 +815,18 @@
 :where(.journey-page) .search-results {
   max-height: 53dvh;
   overflow: auto;
-  border-top: 1px solid #edf0f5;
+  border-top: 1px solid var(--line);
 }
 :where(.journey-page) .search-result {
   display: flex;
   position: relative;
   flex-direction: column;
   padding: 17px 50px 17px 24px;
-  border-bottom: 1px solid #edf0f5;
+  border-bottom: 1px solid var(--line);
   gap: 5px;
 }
 :where(.journey-page) .search-result:hover {
-  background: #f4f7fb;
+  background: var(--gray-10);
 }
 :where(.journey-page) .search-result .eyebrow {
   font-size: 8px;
@@ -870,19 +834,19 @@
 }
 :where(.journey-page) .search-result strong {
   font-size: 13px;
-  color: #3b4c68;
+  color: var(--ink);
   font-weight: 650;
 }
 :where(.journey-page) .search-result > span:not(.eyebrow) {
   font-size: 11px;
-  color: #5e6877;
+  color: var(--muted);
   line-height: 1.7;
 }
 :where(.journey-page) .search-result > svg {
   position: absolute;
   right: 24px;
   top: 50%;
-  color: #5d6777;
+  color: var(--muted);
 }
 :where(.journey-page) .search-results .empty-state {
   margin: 20px;
@@ -896,7 +860,7 @@
 }
 :where(.journey-page) .suggestions > span {
   font-size: 10px;
-  color: #616875;
+  color: var(--muted);
   margin-bottom: 8px;
 }
 :where(.journey-page) .suggestions > button {
@@ -905,21 +869,21 @@
   align-items: center;
   text-align: left;
   padding: 10px 0;
-  border-bottom: 1px solid #e8edf4;
+  border-bottom: 1px solid var(--line);
   font-size: 12px;
-  color: #556a88;
+  color: var(--link);
 }
 :where(.journey-page) .suggestions > button:hover {
-  color: #254a7d;
+  color: var(--blue-70);
 }
 :where(.journey-page) .about-note {
   font-size: 10px;
   line-height: 1.85;
-  color: #606874;
-  background: #f5f7fa;
+  color: var(--muted);
+  background: var(--gray-10);
   padding: 15px;
-  border-radius: 6px;
-  border: 1px solid #e7ebf1;
+  border-radius: var(--radius-badge);
+  border: 1px solid var(--line);
 }
 :where(.journey-page) .about-body {
   padding: 27px 30px 32px;
@@ -941,9 +905,9 @@
 :where(.journey-page) .about-lenses {
   display: grid;
   gap: 15px;
-  background: #f5f7fb;
-  border: 1px solid #e3e8f0;
-  border-radius: 8px;
+  background: var(--gray-10);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-box);
   padding: 20px;
   margin: 22px 0;
 }
@@ -951,11 +915,11 @@
   display: flex;
   gap: 13px;
   align-items: start;
-  color: #546a87;
+  color: var(--link);
 }
 :where(.journey-page) .about-lenses strong {
   font-size: 12px;
-  color: #4f6686;
+  color: var(--link);
 }
 :where(.journey-page) .about-lenses p {
   font-size: 11px;
@@ -966,15 +930,7 @@
   font-size: 10px;
   margin-bottom: 0;
 }
-@media (min-width: 1500px) {
-  :where(.journey-page) .main-shell {
-    padding-top: 9px;
-  }
-}
 @media (max-width: 1100px) {
-  :where(.journey-page) .main-shell {
-    padding: 0 30px 35px;
-  }
   :where(.journey-page) .search-trigger {
     min-width: 190px;
   }
@@ -1007,13 +963,6 @@
   }
   :where(.journey-page) .about-trigger {
     width: 29px;
-  }
-  :where(.journey-page) .main-shell {
-    padding: 0 22px 30px;
-  }
-  :where(.journey-page) .hero-eyebrow {
-    font-size: 8px;
-    letter-spacing: 1px;
   }
   :where(.journey-page) .detail-layout {
     grid-template-columns: minmax(0, 1fr) 210px;
@@ -1073,14 +1022,6 @@
   }
 }
 @media (max-width: 620px) {
-  :where(.journey-page) .main-shell {
-    padding: 0 18px 28px;
-  }
-  :where(.journey-page) .hero-eyebrow {
-    font-size: 8px;
-    letter-spacing: 1px;
-    margin-bottom: 14px;
-  }
   :where(.journey-page) .desktop-break {
     display: none;
   }
@@ -1108,10 +1049,6 @@
   }
   :where(.journey-page) .tabs > button:first-child {
     justify-content: start;
-  }
-  :where(.journey-page) .tabs > button::after {
-    left: 3px;
-    right: 3px;
   }
   :where(.journey-page) .perspectives {
     gap: 0;
@@ -1212,7 +1149,7 @@
   }
   :where(.journey-page) .modal {
     max-width: calc(100vw - 20px);
-    border-radius: 10px;
+    border-radius: var(--radius-box);
     max-height: 90dvh;
   }
   :where(.journey-page) .modal-heading {
@@ -1284,30 +1221,30 @@
   overflow-anchor: none;
 }
 :where(.journey-page) .timeline-hero {
-  padding: 42px 0 30px;
+  padding: 0 0 var(--space-lg);
 }
 :where(.journey-page) .timeline-hero h1 {
-  font-size: clamp(26px, 3.2vw, 42px);
-  line-height: 1.25;
-  letter-spacing: -1.3px;
+  font-size: var(--text-page-title);
+  line-height: 1.2;
+  max-width: 1000px;
 }
 :where(.journey-page) .timeline-hero h1 span {
-  color: #657082;
+  color: var(--ink);
 }
 :where(.journey-page) .timeline-hero > p {
-  margin-top: 16px;
-  color: #596575;
-  font-size: 14px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 16px;
+  max-width: 900px;
 }
 :where(.journey-page) .timeline-controls {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: #f7f8fa;
-  box-shadow: 0 5px 8px -7px #7b899d;
+  background: var(--page-bg);
 }
 :where(.journey-page) .timeline-controls .perspectives {
-  padding: 0 4px;
+  padding: 12px 20px;
 }
 :where(.journey-page) .timeline-controls .tabs {
   flex: 1;
@@ -1334,9 +1271,9 @@
   scroll-margin-top: 90px;
   margin: 0 0 28px 68px;
   padding: 22px;
-  border: 1px solid #d6e0ec;
-  border-radius: 9px;
-  background: #f0f5fa;
+  border: 1px solid var(--blue-20);
+  border-radius: var(--radius-card);
+  background: var(--blue-10);
 }
 :where(.journey-page) .opportunity-overview h2 {
   margin: 8px 0;
@@ -1347,7 +1284,7 @@
   max-width: 740px;
   font-size: 12px;
   line-height: 1.8;
-  color: #505e70;
+  color: var(--muted);
 }
 :where(.journey-page) .opportunity-overview ul {
   display: grid;
@@ -1365,17 +1302,17 @@
   height: 100%;
   min-height: 44px;
   padding: 12px;
-  border: 1px solid #c5d4e5;
-  border-radius: 6px;
-  background: #fff;
-  color: #345578;
+  border: 1px solid var(--blue-20);
+  border-radius: var(--radius-badge);
+  background: var(--surface);
+  color: var(--blue-70);
   font-size: 13px;
   font-weight: 600;
   line-height: 1.6;
 }
 :where(.journey-page) .opportunity-overview a:hover {
-  border-color: #718fb1;
-  background: #f8fafc;
+  border-color: var(--blue-50);
+  background: var(--gray-10);
 }
 :where(.journey-page) .opportunity-overview .opportunity-overview-note {
   font-size: 11px;
@@ -1405,28 +1342,28 @@
   gap: 6px;
   flex-shrink: 0;
   min-height: 38px;
-  padding: 8px 12px;
-  border: 1px solid #d9e0e9;
-  border-radius: 5px;
-  background: #fff;
-  color: #42678e;
-  font-size: 11px;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-badge);
+  background: var(--surface);
+  color: var(--link);
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.4;
   white-space: nowrap;
 }
 :where(.journey-page) .expansion-button:hover {
-  background: #edf3f9;
-  border-color: #afc2d7;
+  background: var(--blue-10);
+  border-color: var(--blue-20);
 }
 :where(.journey-page) .expansion-primary {
-  background: #345578;
-  border-color: #345578;
-  color: #fff;
+  background: var(--blue-50);
+  border-color: var(--blue-50);
+  color: var(--surface);
 }
 :where(.journey-page) .expansion-primary:hover {
-  background: #264564;
-  border-color: #264564;
+  background: var(--blue-60);
+  border-color: var(--blue-60);
 }
 :where(.journey-page) .timeline-intro p {
   margin: 8px 0;
@@ -1436,7 +1373,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  color: #646e7d;
+  color: var(--muted);
   font-size: 11px;
 }
 :where(.journey-page) .timeline-phases,
@@ -1451,12 +1388,24 @@
   position: relative;
   padding-bottom: 32px;
 }
+:where(.journey-page) .timeline-phase.phase-1 {
+  --phase: var(--orange-50);
+  --phase-soft: var(--orange-10);
+  --phase-line: var(--orange-30);
+  --phase-dark: var(--orange-70);
+}
+:where(.journey-page) .timeline-phase.phase-2 {
+  --phase: var(--purple-50);
+  --phase-soft: var(--purple-10);
+  --phase-line: var(--purple-20);
+  --phase-dark: var(--purple-70);
+}
 :where(.journey-page) .timeline-phase::before {
   content: "";
   position: absolute;
   width: 2px;
-  top: 24px;
-  bottom: -24px;
+  top: 40px;
+  bottom: -40px;
   left: 23px;
   background: var(--phase-line);
 }
@@ -1465,30 +1414,43 @@
 }
 :where(.journey-page) .timeline-phase-heading {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
   margin-bottom: 20px;
   position: relative;
+}
+:where(.journey-page) .phase-heading-panel {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: var(--space-md);
+  padding: var(--space-md) 20px;
+  background: color-mix(in srgb, var(--phase-soft) 50%, var(--white));
+  border: 1px solid var(--phase-line);
+  border-radius: var(--radius-card);
 }
 :where(.journey-page) .timeline-phase-marker {
   display: grid;
   place-items: center;
   flex: 0 0 48px;
   height: 48px;
+  margin-top: var(--space-md);
   background: var(--phase-soft);
-  border: 1px solid var(--phase-line);
+  border: 1px solid var(--phase);
   border-radius: 50%;
-  color: var(--phase);
+  color: var(--phase-dark);
   font-size: 15px;
   font-weight: 700;
 }
 :where(.journey-page) .timeline-phase-heading h2 {
+  color: var(--ink);
   font-size: 24px;
   letter-spacing: -0.6px;
   scroll-margin-top: 90px;
 }
 :where(.journey-page) .timeline-phase-heading .eyebrow {
-  color: var(--phase);
+  color: var(--phase-dark);
   font-size: 9px;
 }
 :where(.journey-page) .phase-outcome {
@@ -1498,7 +1460,7 @@
   gap: 7px;
   max-width: 260px;
   font-size: 11px;
-  color: #606d7d;
+  color: var(--muted);
 }
 :where(.journey-page) .timeline-stage {
   position: relative;
@@ -1511,7 +1473,7 @@
   left: 18px;
   width: 12px;
   height: 12px;
-  background: #f7f8fa;
+  background: var(--page-bg);
   border: 2px solid var(--phase);
   border-radius: 50%;
 }
@@ -1520,9 +1482,10 @@
   box-shadow: 0 0 0 5px var(--phase-soft);
 }
 :where(.journey-page) .stage-card {
-  background: #fff;
-  border: 1px solid #dce2e9;
-  border-radius: 9px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--phase);
+  border-radius: var(--radius-card);
   min-width: 0;
 }
 :where(.journey-page) .stage-heading,
@@ -1537,27 +1500,27 @@
   min-width: 0;
 }
 :where(.journey-page) .stage-open .stage-card {
-  border-color: var(--phase-line);
-  box-shadow: 0 3px 14px #25364a08;
+  border-color: var(--selection-border);
+  border-top-color: var(--phase);
 }
 :where(.journey-page) .stage-toggle {
   display: flex;
   width: 100%;
   align-items: flex-start;
   gap: 16px;
-  padding: 23px 24px;
+  padding: var(--space-lg);
   text-align: left;
-  border-radius: 9px;
+  border-radius: var(--radius-card);
   scroll-margin-top: 90px;
 }
 :where(.journey-page) .stage-toggle:hover {
-  background: #fafbfc;
+  background: var(--gray-10);
 }
 :where(.journey-page) .stage-ordinal {
-  font-family: "DM Sans", sans-serif;
+  font-family: var(--font-text);
   font-size: 11px;
   font-weight: 600;
-  color: var(--phase);
+  color: var(--phase-dark);
   padding-top: 4px;
 }
 :where(.journey-page) .stage-copy {
@@ -1573,21 +1536,20 @@
 :where(.journey-page) .stage-summary {
   display: block;
   margin-top: 5px;
-  color: #606d7d;
-  font-family: "DM Sans", sans-serif;
-  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--font-text);
+  font-size: 14px;
   font-weight: 400;
   line-height: 1.7;
-  min-height: 41px;
 }
 :where(.journey-page) .stage-disclosure {
   display: flex;
   align-items: center;
   gap: 6px;
   padding-top: 4px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--phase);
+  color: var(--link);
 }
 :where(.journey-page) .stage-toggle[aria-expanded="true"] .stage-disclosure svg,
 :where(.journey-page) .step-toggle[aria-expanded="true"] > svg {
@@ -1602,10 +1564,10 @@
   align-items: flex-start;
   padding: 12px 14px;
   background: var(--phase-soft);
-  color: #536175;
-  font-size: 12px;
+  color: var(--muted);
+  font-size: 13px;
   line-height: 1.7;
-  border-radius: 5px;
+  border-radius: var(--radius-box);
   margin-bottom: 20px;
 }
 :where(.journey-page) .stage-note svg {
@@ -1616,7 +1578,7 @@
   margin: 10px 0;
 }
 :where(.journey-page) .timeline-step {
-  border-top: 1px solid #e2e7ee;
+  border-top: 1px solid var(--line);
 }
 :where(.journey-page) .step-toggle {
   display: flex;
@@ -1629,16 +1591,16 @@
 }
 :where(.journey-page) .step-toggle:hover,
 :where(.journey-page) .step-open > .step-heading > h4 > .step-toggle {
-  background: #f7f9fc;
+  background: var(--gray-10);
 }
 :where(.journey-page) .step-number {
-  color: #6a7585;
+  color: var(--muted);
   font-size: 10px;
   font-weight: 500;
 }
 :where(.journey-page) .step-title {
   flex: 1;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
   font-weight: 650;
 }
@@ -1646,17 +1608,17 @@
   display: inline-block;
   margin-left: 8px;
   padding: 2px 7px;
-  border-radius: 4px;
-  background: #edf1f6;
-  color: #475569;
+  border-radius: var(--radius-badge);
+  background: var(--orange-10);
+  color: var(--orange-70);
   font-size: 10px;
   font-weight: 500;
 }
 :where(.journey-page) .step-count {
-  font-family: "DM Sans", sans-serif;
+  font-family: var(--font-text);
   font-size: 10px;
   font-weight: 400;
-  color: #5f6b7b;
+  color: var(--muted);
   white-space: nowrap;
 }
 :where(.journey-page) .step-body {
@@ -1665,7 +1627,7 @@
 :where(.journey-page) .step-summary {
   font-size: 13px;
   line-height: 1.8;
-  color: #596677;
+  color: var(--muted);
   margin-bottom: 18px;
 }
 :where(.journey-page) .nested-steps {
@@ -1708,16 +1670,16 @@
   gap: 6px;
   min-width: 0;
   padding: 15px;
-  border: 1px solid #dce3ed;
-  border-radius: 7px;
-  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-box);
+  background: var(--surface);
   text-align: left;
   scroll-margin-top: 90px;
 }
 :where(.journey-page) .method-option:hover,
 :where(.journey-page) .method-option[aria-pressed="true"] {
-  border-color: var(--phase);
-  background: var(--phase-soft);
+  border-color: var(--selection-border);
+  background: var(--selection-bg);
 }
 :where(.journey-page) .method-option strong {
   font-size: 12px;
@@ -1726,14 +1688,14 @@
 :where(.journey-page) .method-option > span:not(.method-option-action) {
   font-size: 11px;
   line-height: 1.6;
-  color: #5e6b7c;
+  color: var(--muted);
 }
 :where(.journey-page) .method-option-action {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   margin-top: auto;
-  color: var(--phase);
+  color: var(--link);
   font-size: 10px;
   font-weight: 650;
 }
@@ -1741,8 +1703,8 @@
   margin-top: 18px;
   padding: 18px;
   border: 1px solid var(--phase-line);
-  border-radius: 7px;
-  background: #fff;
+  border-radius: var(--radius-box);
+  background: var(--surface);
 }
 :where(.journey-page) .method-process > h3 {
   font-size: 15px;
@@ -1750,7 +1712,7 @@
 :where(.journey-page) .method-process > p {
   margin: 5px 0 17px;
   font-size: 11px;
-  color: #5e6b7c;
+  color: var(--muted);
 }
 :where(.journey-page) .method-process .process-flow h4 {
   font-size: 12px;
@@ -1768,20 +1730,22 @@
 
 :where(.journey-page) .process-command {
   margin: 12px 0 0;
-  padding: 12px;
+  padding: var(--space-md);
   max-width: 100%;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  font-size: 0.8rem;
+  background: var(--surface-base);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-box);
+  font-size: 13px;
+  color: var(--gray-10);
+  font-family: var(--font-mono);
 }
 :where(.journey-page) .step-context > summary {
   cursor: pointer;
   font-weight: 600;
   font-size: 12px;
-  color: #536b89;
+  color: var(--link);
 }
 :where(.journey-page) .step-context .context-column {
   display: grid;
@@ -1799,10 +1763,10 @@
   gap: 12px;
   padding: 18px 24px;
   margin-left: 68px;
-  background: #edf5f0;
-  border: 1px solid #d8e6dd;
-  border-radius: 8px;
-  color: #42634d;
+  background: var(--success-green-10);
+  border: 1px solid var(--success-green-30);
+  border-radius: var(--radius-box);
+  color: var(--success-green-70);
   font-size: 13px;
 }
 @media (max-width: 900px) {
@@ -1833,7 +1797,7 @@
   display: none;
 }
 :where(.journey-page) .record-disclosure > summary:hover {
-  background: var(--phase-soft);
+  background: var(--selection-bg);
 }
 :where(.journey-page) .record-heading {
   display: flex;
@@ -1843,13 +1807,13 @@
 }
 :where(.journey-page) .record-heading > svg {
   margin-top: 4px;
-  color: var(--phase);
+  color: var(--link);
 }
 :where(.journey-page) .record-disclosure[open] .record-heading > svg {
   transform: rotate(90deg);
 }
 :where(.journey-page) .record-title {
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 700;
   line-height: 1.55;
@@ -1857,7 +1821,7 @@
 :where(.journey-page) .record-summary {
   display: block;
   margin-top: 7px;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.8;
   max-width: 650px;
 }
@@ -1879,32 +1843,23 @@
   }
 }
 @media (max-width: 600px) {
-  :where(.journey-page) .timeline-app .main-shell {
-    padding: 0 16px 30px;
-  }
-  :where(.journey-page) .timeline-hero {
-    padding: 28px 0 24px;
-  }
-  :where(.journey-page) .timeline-hero h1 {
-    font-size: 27px;
-    letter-spacing: -0.8px;
-  }
-  :where(.journey-page) .timeline-hero > p {
-    font-size: 12px;
-    line-height: 1.8;
+  :where(.journey-page) .timeline-controls .perspectives {
+    padding: var(--space-sm);
   }
   :where(.journey-page) .timeline-controls .tabs {
     width: 100%;
-    gap: 10px;
+    gap: var(--space-xs);
   }
   :where(.journey-page) .timeline-controls .tabs > button {
     flex: 1;
     width: auto;
-    padding: 12px 0;
+    padding: 8px 4px;
     gap: 5px;
     justify-content: center;
-    font-size: 10px;
-    line-height: 1.6;
+    font-size: 12px;
+    line-height: 1.4;
+    min-width: 0;
+    text-align: center;
   }
   :where(.journey-page) .timeline-controls .tabs > button > svg {
     display: none;
@@ -1917,7 +1872,7 @@
   }
   :where(.journey-page) .expansion-button {
     flex: 1;
-    font-size: 11px;
+    font-size: 12px;
   }
   :where(.journey-page) .expansion-primary {
     flex-basis: 100%;
@@ -1935,22 +1890,28 @@
   }
   :where(.journey-page) .timeline-phase::before {
     left: 13px;
+    top: 26px;
+    bottom: -26px;
   }
   :where(.journey-page) .timeline-phase-heading {
     gap: 10px;
+  }
+  :where(.journey-page) .phase-heading-panel {
     flex-wrap: wrap;
+    gap: var(--space-sm);
+    padding: 12px;
   }
   :where(.journey-page) .timeline-phase-marker {
     flex-basis: 28px;
     height: 28px;
+    margin-top: 12px;
     font-size: 11px;
   }
   :where(.journey-page) .timeline-phase-heading h2 {
     font-size: 21px;
   }
   :where(.journey-page) .phase-outcome {
-    margin-left: 38px;
-    margin-top: -4px;
+    margin-left: 0;
     max-width: none;
     flex-basis: 100%;
   }
@@ -1977,11 +1938,10 @@
     flex-basis: 100%;
   }
   :where(.journey-page) .stage-title {
-    font-size: 13px;
+    font-size: 14px;
   }
   :where(.journey-page) .stage-summary {
-    font-size: 11px;
-    min-height: 75px;
+    font-size: 13px;
   }
   :where(.journey-page) .stage-ordinal,
   :where(.journey-page) .stage-disclosure span {
@@ -2003,7 +1963,7 @@
     flex-wrap: wrap;
   }
   :where(.journey-page) .step-title {
-    font-size: 12px;
+    font-size: 14px;
     flex-basis: 65%;
   }
   :where(.journey-page) .step-condition {
@@ -2048,19 +2008,19 @@
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  padding-top: 18px;
-  margin: 0 0 20px;
+  padding-top: var(--space-lg);
+  margin: 0 0 var(--space-lg);
 }
 :where(.journey-page) .choices-callout {
   padding: 18px 20px;
   margin-bottom: 24px;
-  border: 1px solid #ddd4ec;
-  border-radius: 8px;
-  background: #f6f3fb;
+  border: 1px solid var(--blue-20);
+  border-radius: var(--radius-box);
+  background: var(--blue-10);
 }
 :where(.journey-page) .choices-callout p {
   margin: 6px 0 10px;
 }
 :where(.journey-page) .choices-callout a {
-  color: #594080;
+  color: var(--link);
 }

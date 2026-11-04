@@ -767,22 +767,24 @@ function Timeline({
             <section aria-labelledby={`phase-${phaseId}`}>
               <div className="timeline-phase-heading">
                 <span className="timeline-phase-marker">0{phaseIndex + 1}</span>
-                <div>
-                  <span className="eyebrow">
-                    {phaseIndex === 0
-                      ? "Prepare"
-                      : phaseIndex === 1
-                        ? "Create"
-                        : "Validate & hand over"}
+                <div className="phase-heading-panel">
+                  <div>
+                    <span className="eyebrow">
+                      {phaseIndex === 0
+                        ? "Prepare"
+                        : phaseIndex === 1
+                          ? "Create"
+                          : "Validate & hand over"}
+                    </span>
+                    <h2 id={`phase-${phaseId}`} tabIndex={-1}>
+                      {phaseNames[phaseIndex]}
+                    </h2>
+                  </div>
+                  <span className="phase-outcome">
+                    <Icon name="flag" size={15} />
+                    {phaseOutcomes[phaseIndex]}
                   </span>
-                  <h2 id={`phase-${phaseId}`} tabIndex={-1}>
-                    {phaseNames[phaseIndex]}
-                  </h2>
                 </div>
-                <span className="phase-outcome">
-                  <Icon name="flag" size={15} />
-                  {phaseOutcomes[phaseIndex]}
-                </span>
               </div>
               <ol className="timeline-stages">
                 {stages
@@ -1482,7 +1484,6 @@ export function JourneyPage({
               </div>
               <section className="timeline-hero">
                 <span className="eyebrow hero-eyebrow">
-                  <span />
                   The customer experience
                 </span>
                 <h1 id="page-title" tabIndex={-1}>

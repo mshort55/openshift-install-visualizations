@@ -174,9 +174,7 @@ export function App() {
         />
       ) : (
         <>
-          <div
-            className={`app-return${route.page === "prerequisites" ? " app-return-wide" : ""}`}
-          >
+          <div className="app-return">
             <a
               href={appHref(journey)}
               data-focus="return-journey"
