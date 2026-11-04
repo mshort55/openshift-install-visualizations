@@ -320,11 +320,18 @@ function About({ onClose }: { onClose: () => void }) {
           need investigation.
         </p>
         <p>
-          Recommended next investigations are editorial priorities, separate
-          from the customer goals each idea applies to. The post-installation
+          Recommended starting points are editorial priorities, separate from
+          the customer goals each idea applies to. The post-installation
           evidence is weighted toward virtualization administrators; it does not
           establish the same priorities for every OpenShift workload. Reported
           fixes still need verification on the applicable build.
+        </p>
+        <p>
+          Opportunity cards describe proposed product behavior and illustrative
+          output. Public product documentation distinguishes existing
+          capabilities from precedents elsewhere. These sources were checked on
+          November 4, 2026; they do not establish a current product gap or prove
+          the proposed benefit.
         </p>
         <p>
           Each customer example separates when it was reported from when the
@@ -666,48 +673,6 @@ function Timeline({
   };
   return (
     <div className="journey-timeline">
-      {route.lens === "opportunities" && (
-        <section
-          className="opportunity-overview"
-          aria-labelledby="opportunity-overview-title"
-        >
-          <span className="eyebrow">Where to investigate first</span>
-          <h2 id="opportunity-overview-title">
-            Recommended next investigations
-          </h2>
-          <p>
-            Start with these customer tasks. Recommendations reflect the
-            evidence and a bounded first test, not proven benefit or problem
-            frequency. Each idea also states when it applies.
-          </p>
-          <ul>
-            {opportunities
-              .filter((idea) => idea.priority === "recommended")
-              .map((idea) => (
-                <li key={idea.id}>
-                  <JourneyLink
-                    to={{
-                      topic: idea.topics[0],
-                      lens: "opportunities",
-                      item: idea.id,
-                    }}
-                    navigate={navigate}
-                    focusId={`recommended-${idea.id}`}
-                  >
-                    <span>{idea.title}</span>
-                    <Icon name="arrow" size={16} />
-                  </JourneyLink>
-                </li>
-              ))}
-          </ul>
-          <p className="opportunity-overview-note">
-            The timeline below keeps all {opportunities.length} candidate
-            opportunities in journey order. Historical boot-handoff evidence
-            remains a research question; broader update planning stays in
-            lifecycle guidance.
-          </p>
-        </section>
-      )}
       <div className="timeline-intro">
         <div className="timeline-intro-heading">
           <span className="eyebrow">
@@ -718,7 +683,7 @@ function Timeline({
           {route.lens === "problems"
             ? "Show all problems to scan their summaries. Expand a problem in place for its evidence, outcome and limits."
             : route.lens === "opportunities"
-              ? "Show all opportunities to scan their summaries and applicability. Expand an idea for its customer basis, proposed improvement, smaller alternative and decision test."
+              ? "Show all opportunities to scan the proposed features and when they apply. Expand a card for the customer situation, product behavior, example output, existing capabilities and first implementation."
               : "Show all steps to scan the complete outline, or open a stage to explore one area. Open a step for its explanation."}
         </p>
         <fieldset className="expansion-actions" aria-label="Journey expansion">
@@ -1099,7 +1064,7 @@ function RecordList({
       <p className="section-description">
         {route.lens === "problems"
           ? "Expand a problem for its evidence, outcome and limits."
-          : "Ideas to investigate, based on reported problems or required tasks. Expand an opportunity for its basis, existing capabilities and a proposed test."}
+          : "Product proposals grounded in reported problems or required tasks. Expand a card to see what the product would do, an illustrative result and the addition to existing capabilities."}
       </p>
       {records.length === 0 ? (
         <div className="empty-state">
@@ -1179,12 +1144,10 @@ function RecordDisclosure({
       >
         <span className="record-meta" id={`record-meta-${record.id}`}>
           <span className="evidence-badge">
-            {"kind" in record ? record.kind : "Idea to investigate"}
+            {"kind" in record ? record.kind : "Product proposal"}
           </span>
           {!("kind" in record) && record.priority === "recommended" && (
-            <span className="priority-badge">
-              Recommended next investigation
-            </span>
+            <span className="priority-badge">Recommended starting point</span>
           )}
           {"kind" in record && record.researchQuestion && (
             <span className="research-badge">Needs current evidence</span>
@@ -1321,7 +1284,7 @@ function ProblemDetail({
                 navigate={navigate}
               >
                 <span>
-                  <small>Idea to investigate</small>
+                  <small>Product proposal</small>
                   {opportunity.title}
                 </span>
                 <Icon name="arrow" size={16} />
@@ -1348,28 +1311,35 @@ function OpportunityDetail({
       <article className="evidence-detail">
         <div className="proposal-label">
           <Icon name="bulb" size={18} />
-          <span>
-            Candidate intervention · needs investigation and validation
-          </span>
+          <span>Product proposal · benefit not yet validated</span>
         </div>
         {[
+          { title: "Customer situation", text: opportunity.situation },
           {
-            title: "Proposed improvement",
+            title: "What the product would do",
             text: opportunity.intervention,
           },
-          { title: "Build on what already exists", text: opportunity.existing },
-          { title: "A smaller alternative", text: opportunity.alternative },
           {
-            title: "Investigate before committing",
-            text: opportunity.investigate,
+            title: "Example output · illustrative",
+            text: opportunity.example,
           },
-          { title: "What we would observe", text: opportunity.measure },
+          { title: "What already exists", text: opportunity.existing },
+          { title: "The proposed addition", text: opportunity.increment },
           {
-            title: "When to stop or narrow the idea",
-            text: opportunity.stopWhen,
+            title: "First useful implementation",
+            text: opportunity.firstDelivery,
+          },
+          { title: "Larger option", text: opportunity.extension },
+          { title: "How to test the proposal", text: opportunity.validation },
+          {
+            title: "Evidence and support limits",
+            text: opportunity.limits,
           },
         ].map((section) => (
-          <div className="detail-section" key={section.title}>
+          <div
+            className={`detail-section${section.title === "Example output · illustrative" ? " opportunity-example" : ""}`}
+            key={section.title}
+          >
             <h2>{section.title}</h2>
             <p>{section.text}</p>
           </div>
@@ -1377,8 +1347,10 @@ function OpportunityDetail({
       </article>
       <aside className="record-aside">
         <div className="context-card">
-          <span className="eyebrow">Who should investigate</span>
-          <p>{opportunity.owners}</p>
+          <span className="eyebrow">Suggested product lead</span>
+          <p>{opportunity.owner}</p>
+          <span className="eyebrow">Contributors</span>
+          <p>{opportunity.contributors}</p>
         </div>
         <div className="context-card">
           <span className="eyebrow">The customer’s task</span>
@@ -1392,6 +1364,26 @@ function OpportunityDetail({
             Understand the process
             <Icon name="arrow" size={16} />
           </JourneyLink>
+        </div>
+        <div className="context-card opportunity-sources">
+          <span className="eyebrow">Capabilities and precedents</span>
+          <p>Public documentation checked November 4, 2026.</p>
+          <ul>
+            {opportunity.sources.map((source) => (
+              <li key={source.url}>
+                <span className="eyebrow">{source.kind}</span>
+                <a
+                  href={source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${source.title} (opens in a new tab)`}
+                >
+                  {source.title}
+                </a>
+                <p>{source.note}</p>
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="related">
           <span className="eyebrow">Related evidence and tasks</span>

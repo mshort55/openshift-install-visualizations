@@ -1453,32 +1453,94 @@ export const opportunities: Opportunity[] = [
       "agent-based",
       "ipi",
       "upi",
+      "workloads",
+      "platform-operators",
+      "completion",
+      "storage",
+      "storage-drivers",
+      "workload-network",
+      "networking",
+      "addressing",
+      "configuration",
+      "access",
     ],
-    title: "Remove avoidable infrastructure prerequisites",
+    title: "Install a defined first-VM environment from self-contained media",
     summary:
-      "Compare supported deployment paths by the total work each requires, including the first workload and later operation.",
+      "Carry a selected storage integration, network and guest image from installation through a working VM in the intended project.",
     priority: "candidate",
-    applicability: "Deployment planning",
+    applicability:
+      "Virtualization setup using a supported self-contained profile",
     basis: [
-      { kind: "problem", id: "method-choice" },
-      { kind: "problem", id: "owner-wait" },
-      { kind: "problem", id: "feasibility" },
-      { kind: "problem", id: "offline-content" },
+      {
+        kind: "problem",
+        id: "method-choice",
+      },
+      {
+        kind: "problem",
+        id: "owner-wait",
+      },
+      {
+        kind: "problem",
+        id: "feasibility",
+      },
+      {
+        kind: "problem",
+        id: "offline-content",
+      },
+      {
+        kind: "problem",
+        id: "missing-dependencies",
+      },
+      {
+        kind: "problem",
+        id: "first-vm-blocked",
+      },
+      {
+        kind: "task",
+        id: "acceptance",
+      },
     ],
+    situation:
+      "A virtualization team completes base installation but still has to connect storage, prepare a guest image and configure the VM network. The intended first VM remains unfinished.",
     intervention:
-      "For one constrained site, identify which external requests, services or content-hosting arrangements each supported path removes, retains or moves to another owner. Include available hardware, storage connections and the intended workload. Distinguish unsupported, insufficient and unverified conditions, including what a small pilot cannot prove.",
+      "Offer a first-VM profile that asks for the storage provider, VM network, guest image, project and required maintenance behavior. Show the content supplied and remaining external requests before preparing media. Continue the saved plan after installation through the selected storage and network setup into existing VM creation.",
+    example:
+      "Cluster installed. Test volume provisioned. Guest image imported into payments. VM booted and its endpoint responded. Live migration and host-failure recovery have not been tested.",
     existing:
-      "Installer alternatives and feasibility guidance already exist. Self-contained installation is generally available from OCP 4.22.18 and removes the initial external-registry requirement for its supplied content. Storage Operators are excluded, and later content still needs delivery. DNS timing depends on the method and networking mode; do not assume the same deferral on every path.",
-    alternative:
-      "Use a short comparison of supported paths and their owner responsibilities before building another selection interface.",
-    investigate:
-      "Compare two applicable paths with the infrastructure owners for one actual customer goal. Check the complete preparation, first-use and operating work, including funding, approvals and planned purchases. Confirm the exact release and support boundaries.",
-    measure:
-      "External requests actually removed, new work introduced, consequential fit gaps found early and whether the intended workload remains achievable.",
-    stopWhen:
-      "Reject a path that shifts a larger burden into storage, access or ongoing operation, or violates a fixed site requirement. Keep existing guidance if it resolves the decision.",
-    owners:
-      "Installer architecture, field engineering and the customer's infrastructure owners.",
+      "Self-contained installation is generally available from OCP 4.22.18. Its media already supplies a Virtualization-oriented Operator bundle, but excludes storage Operators. VM creation and configuration tools already exist.",
+    increment:
+      "Maintain one supported path across installation, storage and first use, with the customer's choices preserved. A new profile selector alone does not remove the remaining setup work.",
+    firstDelivery:
+      "Connect the current self-contained flow to one certified storage combination, one network configuration and one supported Linux guest. Produce reviewable configuration and explicit actions for unresolved physical work.",
+    extension:
+      "Publish release-pinned first-VM content profiles with the selected storage integration, local instructions and diagnostic collectors. Keep a small lab profile distinct from a design that supports the requested availability behavior.",
+    validation:
+      "Compare the profile with today's setup on the same lab hardware. Omit one required storage artifact and verify that preparation identifies it. Then allocate a volume, import the guest and boot the VM. Record missed dependencies, specialist help and external services actually removed.",
+    limits:
+      "Content redistribution, exact release support and joint maintenance need agreement. A sample VM does not establish application readiness or recovery. Verify reported project-selector fixes on the applicable build. The pilot's reservation-error cause remains unknown; this profile does not claim to resolve it. Funding and approval queues remain separate.",
+    owner: "Virtualization onboarding product lead",
+    contributors:
+      "Installer, storage, networking, content distribution and field engineering.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "OpenShift self-contained installation",
+        url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/installing_an_on-premise_cluster_with_the_agent-based_installer/installing-ove",
+        note: "Documents the supplied content and the exclusion of storage Operators.",
+      },
+      {
+        kind: "Existing capability",
+        title: "OpenShift 4.22 release notes",
+        url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/release_notes/ocp-4-22-release-notes",
+        note: "The 4.22.18 update establishes general availability of installation without an external registry.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Harvester ISO installation",
+        url: "https://docs.harvesterhci.io/v1.7/install/index/",
+        note: "Connects appliance setup to installation and VM-data disk choices.",
+      },
+    ],
   },
   {
     id: "precise-handoffs",
@@ -1492,75 +1554,179 @@ export const opportunities: Opportunity[] = [
       "progress",
       "recovery",
     ],
-    title: "Verify prerequisites in the actual environment",
+    title: "Turn a failed host check into an actionable owner request",
     summary:
-      "Give each owner a precise request and a check from the host or component that needs the dependency.",
+      "Export the actual host, network path, expected response and observed failure, then rerun the same check after correction.",
     priority: "recommended",
-    applicability: "Infrastructure preparation",
+    applicability: "Infrastructure preparation and host validation",
     basis: [
-      { kind: "problem", id: "owner-wait" },
-      { kind: "problem", id: "late-dependency" },
-      { kind: "problem", id: "network-layers" },
+      {
+        kind: "problem",
+        id: "owner-wait",
+      },
+      {
+        kind: "problem",
+        id: "late-dependency",
+      },
+      {
+        kind: "problem",
+        id: "network-layers",
+      },
     ],
+    situation:
+      "A dependency is declared ready, but the component that needs it cannot use it. The platform engineer must translate the failure into another request to the responsible team.",
     intervention:
-      "Connect a request to its consumer, destination, responsible owner and completion condition. Return the expected and observed result with the check's location, time and configuration. Keep waiting, approval, declared completion, verified behavior and unknown conditions distinct. Preliminary checks can help work proceed while physical preparation continues, but do not prove the final host or workload path.",
+      "Add Export failed check to the selected installation flow. Include the source host and interface, destination and port, resolver and proxy context, expected and observed response, timestamp and configuration. Let the user assign the owner and copy the request into the existing ticket system. Offer a focused retest after correction.",
+    example:
+      "worker-02 resolves the mirror name, but its configured proxy rejects the HTTPS request. Export this observed failure for the proxy team. Registry access beyond the proxy is still untested.",
     existing:
-      "Assisted and Agent workflows already provide configuration and prerequisite checks. First establish their coverage for the selected method. Machine-local commissioning and environment-checking tools elsewhere demonstrate useful evidence patterns; they do not prove a missing OpenShift validator.",
-    alternative:
-      "Compare a clearer request template and a scheduled session with the infrastructure owners before adding tooling to the customer's existing ticket or inventory system.",
-    investigate:
-      "Observe one real prerequisite request and its correction loop. Compare current guidance with an owner-specific request and an applicable check. Test from the relevant environment; a successful laptop request does not establish target-host connectivity. Identify whether delay comes from ambiguity, incorrect delivery, capacity or approval.",
-    measure:
-      "Clarification cycles, active rework, false assurances and time from a detectable failure to useful owner action. Record external queue time separately.",
-    stopWhen:
-      "Ship a request or documentation correction if that solves the task. Do not expand a validator when staffing, procurement or approval accounts for the remaining wait.",
-    owners:
-      "Installer validation, infrastructure enablement and the team responsible for each dependency.",
+      "Assisted Installer already performs host-based validations and exposes results through its API. Agent workflows also provide prerequisite checks. The exact coverage and available fields depend on the chosen method.",
+    increment:
+      "Make existing validation evidence usable by another team without the installer engineer reconstructing the execution context. Keep approval, declared completion and observed behavior distinct.",
+    firstDelivery:
+      "Export one existing failed image-access validation with its real evidence and a retest action. Preserve the customer's ticket process.",
+    extension:
+      "Add a separate check-only boot mode for intended hosts before the installation window. Reuse approved validators and enforce a boundary against installation, destructive tests and disk cleanup.",
+    validation:
+      "Block one lab endpoint and give the resulting request to an infrastructure engineer who did not create the fault. Check whether they identify the correct path, correct it and return a passing retest without a clarification round. Record active work separately from queue time.",
+    limits:
+      "A timeout alone does not identify a firewall root cause. A successful host check does not prove a BMC, hypervisor or workload path that was not tested. The regional proxy account is Nutanix context, not proof of an Agent defect. Procurement and approvals may still dominate the wait.",
+    owner: "Installer validation",
+    contributors:
+      "Infrastructure enablement and the customer team responsible for the tested dependency.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "Assisted Installer validations",
+        url: "https://docs.redhat.com/en/documentation/assisted_installer_for_openshift_container_platform/2026/html/installing_openshift_container_platform_with_the_assisted_installer/assembly_preinstallation-validations",
+        note: "Documents real-host validation and available checks.",
+      },
+      {
+        kind: "Product precedent",
+        title: "MAAS hardware test scripts",
+        url: "https://canonical.com/maas/docs/latest/reference/configuration-guides/hardware-test-scripts/",
+        note: "Named tests and inspectable output support a focused correction and retest loop.",
+      },
+    ],
   },
   {
-    id: "first-workload",
-    topics: [
-      "workloads",
-      "platform-operators",
-      "completion",
-      "storage",
-      "storage-drivers",
-      "physical-storage",
-      "workload-network",
-      "networking",
-      "addressing",
-      "configuration",
-      "access",
-    ],
-    title: "Complete the intended first workload",
+    id: "storage-outcome",
+    topics: ["storage-drivers", "storage", "physical-storage", "workloads"],
+    title: "Choose VM storage by the operation it must support",
     summary:
-      "Follow one customer's workload through the remaining configuration and actual use, keeping its project and unproven requirements visible.",
+      "Explain which disk configurations can support migration, snapshots or cloning before the customer allocates the real workload's disks.",
     priority: "recommended",
-    applicability: "First workload; strongest evidence is virtualization",
+    applicability:
+      "Virtualization storage selection and maintenance requirements",
     basis: [
-      { kind: "problem", id: "missing-dependencies" },
-      { kind: "problem", id: "storage-not-usable" },
-      { kind: "problem", id: "workload-network-gap" },
-      { kind: "problem", id: "first-vm-blocked" },
-      { kind: "problem", id: "feasibility" },
-      { kind: "problem", id: "network-layers" },
-      { kind: "task", id: "acceptance" },
-      { kind: "task", id: "backups" },
+      {
+        kind: "problem",
+        id: "storage-not-usable",
+      },
+      {
+        kind: "problem",
+        id: "feasibility",
+      },
+      {
+        kind: "task",
+        id: "workloads",
+      },
     ],
+    situation:
+      "A VM boots, but its storage configuration does not support the maintenance operation the customer needs. Another customer has virtualization installed without usable default storage.",
     intervention:
-      "Start with the operation the customer needs. Connect its actual storage, network, image, capacity and user dependencies in a small, inspectable sequence. Keep project context visible and mark unobserved physical segments. Distinguish installed components, configured services, a running workload and accepted application behavior. Add maintenance or recovery checks only where the agreed outcome requires them.",
+      "Add required operations to storage selection: boot, clone, snapshot, restore or live migration. Show each class and disk configuration as documented compatible, observed working, incompatible or unverified, with the reason. Offer an applicable disposable check and retain the tested VM configuration, nodes and timestamp.",
+    example:
+      "This VM boots on the selected class. Live migration has not been demonstrated for this disk and device configuration. Run the applicable check or review another configuration.",
     existing:
-      "VM creation, Operator setup, storage profiles and storage checkups already address parts of this task. The general Virtualization cluster-checkup framework is Technology Preview; verify the exact check's support status before making it a production acceptance dependency. Newer research reports project-selector changes, but their effect on the applicable build must be tested. Existing hints and automation have already helped customers succeed.",
-    alternative:
-      "Compare targeted wording or project-context corrections and a short supported task recipe with a guided sequence. Preserve the customer's existing configuration tools.",
-    investigate:
-      "Observe one real customer's unresolved first-workload path before constructing a test. Reproduce a demonstrated boundary, such as an incomplete storage profile, in a lab. Test other boundaries separately. Verify reported fixes before redesigning the flow. Investigate the reservation error independently; clearer configuration choices do not establish its cause or remedy.",
-    measure:
-      "Successful intended tasks, wrong-project or wrong-layer actions, missed dependencies, specialist help and accurate understanding of what remains untested. A bootable sample does not prove application readiness or availability.",
-    stopWhen:
-      "Keep the smallest current-flow correction that resolves the observed task. Do not impose a universal Operator bundle or extend one successful sample into a production-readiness claim.",
-    owners:
-      "A shared onboarding lead with virtualization, storage, networking and workload owners.",
+      "Storage profiles, console hints, storage checkups and self-validation already exist. The general Virtualization cluster-checkup framework is Technology Preview; the support status of each selected test needs verification.",
+    increment:
+      "Translate an operational requirement into an early storage choice and explain what the current evidence establishes. A storage-class name or access-mode label cannot establish every VM operation.",
+    firstDelivery:
+      "Explain one consequential missing profile setting in the current picker and link to the relevant existing check. Start with one supported backend and a specific requested operation.",
+    extension:
+      "Maintain a compatibility view for selected operations and run disposable tests on the intended configuration. Mark affected results for rechecking when the configuration changes.",
+    validation:
+      "Compare the current picker with a prototype using a suitable configuration, an unsuitable configuration and an unknown provider. Check whether users understand the consequence before allocating disks, then exercise the selected operation. Observe avoidable reconfiguration and specialist help.",
+    limits:
+      "A profile cannot create a backend capability. Keep unknown providers visible as unverified. A successful migration does not prove host-failure recovery or production load behavior. Physical storage connections remain an external dependency. Preserve the reported case where a console hint already helped.",
+    owner: "Virtualization storage",
+    contributors:
+      "Storage providers, checkup maintainers and Virtualization onboarding.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "OpenShift Virtualization storage",
+        url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/virtualization/storage",
+        note: "Documents storage profiles and provider-dependent configuration.",
+      },
+      {
+        kind: "Existing capability",
+        title: "OpenShift Virtualization checkups",
+        url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/virtualization/monitoring",
+        note: "Documents storage checks and the Technology Preview cluster-checkup framework.",
+      },
+      {
+        kind: "Product precedent",
+        title: "vSAN compatible storage policies",
+        url: "https://knowledge.broadcom.com/external/article/430243/change-the-default-storage-policy-for-vs.html",
+        note: "Makes infrastructure compatibility part of selecting a storage policy.",
+      },
+    ],
+  },
+  {
+    id: "network-translation",
+    topics: ["workload-network", "networking", "addressing", "workloads"],
+    title: "Map a source VM network to a verified target connection",
+    summary:
+      "Carry a familiar port group or VLAN into the existing network flow, showing eligible nodes, project scope and the observed endpoint result.",
+    priority: "candidate",
+    applicability: "Virtualization network setup or migration mapping",
+    basis: [
+      {
+        kind: "problem",
+        id: "workload-network-gap",
+      },
+      {
+        kind: "problem",
+        id: "network-layers",
+      },
+    ],
+    situation:
+      "Virtualization administrators must translate familiar bridges, VLANs and source networks into host configuration and project-scoped VM connections.",
+    intervention:
+      "Accept a reviewed source-network table and map each entry to an existing target physical and VM network, or continue into the current creation wizard. Show eligible nodes, permitted projects and outstanding switch or IPAM work. Offer a temporary endpoint test using the intended attachment and addressing mode.",
+    example:
+      "App-East maps to VLAN 120 in payments. The connection is configured on worker-01 and worker-02; worker-03 lacks the selected uplink. The application endpoint has not passed its probe.",
+    existing:
+      "OCP 4.22 documents physical-network and VM-network configuration flows, including node and project selection. Configuration enactment and actual endpoint reachability are different results.",
+    increment:
+      "Connect the customer's source-network concept to the target's node and project scope, then show the path actually tested. Reuse the current configuration interfaces.",
+    firstDelivery:
+      "Add a source-to-target review row and eligible-node explanation to the existing wizard. Export proposed configuration for the customer's permitted console, API or Git workflow.",
+    extension:
+      "Import source inventory and run bounded test VMs on selected eligible nodes. Retain the observed endpoint result and identify checks affected by a later mapping change.",
+    validation:
+      "Use a three-node lab with one missing connection and two projects with different access. Ask an administrator to map one familiar network, identify where the VM can run and test its endpoint. Compare wrong-layer changes and specialist interventions.",
+    limits:
+      "Equal names or VLAN numbers do not prove equivalent networks across sites. A namespace alone does not isolate traffic. Keep transfer networking separate from the guest's final network and leave inaccessible physical segments unverified.",
+    owner: "Virtualization networking",
+    contributors:
+      "Console, NMState, migration tooling and the customer's network owners.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "OpenShift Virtualization networking",
+        url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/virtualization/networking",
+        note: "Documents the physical-network and VM-network configuration flows to extend.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Harvester cluster networks",
+        url: "https://docs.harvesterhci.io/v1.6/networking/index/",
+        note: "Connects VM network availability with eligible host placement.",
+      },
+    ],
   },
   {
     id: "supported-recovery",
@@ -1574,196 +1740,437 @@ export const opportunities: Opportunity[] = [
       "observability",
       "workloads",
     ],
-    title: "Diagnose a failed attempt and continue safely",
+    title: "Open the failed stage and preview its supported repair",
     summary:
-      "Connect the failed task to its responsible resource, actual inputs, diagnostic evidence and next supported action.",
-    priority: "recommended",
-    applicability: "Failed provisioning or configuration",
+      "Link the failed request to its job and evidence, then show changed inputs and the work a supported rerun will actually perform.",
+    priority: "candidate",
+    applicability: "Start with ACM-to-AAP configuration recovery",
     basis: [
-      { kind: "problem", id: "unclear-progress" },
-      { kind: "problem", id: "retry-work" },
-      { kind: "problem", id: "late-dependency" },
-      { kind: "problem", id: "image-distribution-timeout" },
-      { kind: "problem", id: "first-vm-blocked" },
-      { kind: "problem", id: "misleading-health" },
+      {
+        kind: "problem",
+        id: "unclear-progress",
+      },
+      {
+        kind: "problem",
+        id: "retry-work",
+      },
+      {
+        kind: "problem",
+        id: "late-dependency",
+      },
+      {
+        kind: "problem",
+        id: "image-distribution-timeout",
+      },
+      {
+        kind: "problem",
+        id: "first-vm-blocked",
+      },
+      {
+        kind: "problem",
+        id: "misleading-health",
+      },
     ],
+    situation:
+      "In the reported vSphere workflow, a configuration failure required following ACM references into AAP, repairing inputs and indirectly rerunning the post-install job.",
     intervention:
-      "Preserve the path from the requested task to a resource or external job, its inputs, relevant events and owner. Show what changed before the next action. Distinguish an observed condition, a suspected cause and an unresolved investigation. Keep continued monitoring, supported repair and a planned new installation separate.",
+      "Add Open failed configuration stage to the initiating workflow. Show the owning job, observed failure, previous attempt and input sources. Preview the next supported action with current template defaults, revision changes, credential references and the stages that will run. Keep secrets out of the preview.",
+    example:
+      "Base cluster creation completed. The configuration job failed. The credential reference and a template default changed. Review the displayed job and inputs before rerunning configuration; this planned action does not recreate the cluster.",
     existing:
-      "Agent diagnostics, provisioning errors and AAP job output and relaunch already exist. AAP relaunch reapplies prompts and can use current template defaults; it is not necessarily an identical replay. Recorded alert defects have fix follow-up, so verify the relevant build before adding explanations around a faulty status. There is no universal safe resume.",
-    alternative:
-      "Try a contextual link to the failing job and a maintained recovery recipe before building another diagnostic console or attempt-history view.",
-    investigate:
-      "Begin with the reported vSphere ACM-to-AAP configuration failure and a controlled invalid input in a lab. Find the job, inspect the failure, review the input change and use the supported rerun. Then test the actual bare-metal route before generalizing. Separately investigate the VM reservation blocker using the exact error, release, VM specification, events and resources. Retain an explicit unknown if that evidence is unavailable.",
-    measure:
-      "Time to the correct component, supported action selection, unnecessary repeated work and useful escalation. Keep the Nutanix image-staging account separate from bare-metal image pulling and mirroring.",
-    stopWhen:
-      "Keep a link or error-message correction if it resolves the burden. Do not infer Agent recovery behavior from an AAP experiment or turn reported finalizer removal and disk cleanup into general instructions.",
-    owners:
-      "Provisioning, ACM, AAP and support owners; Virtualization engineering for the reservation blocker and health-status follow-up.",
+      "AAP already exposes job output and relaunch. Relaunch reapplies prompts and can use current template defaults, so it is not necessarily an identical replay. Agent diagnostics and backend-specific recovery routes also exist.",
+    increment:
+      "Preserve the identity of a task across tools and make a retry's actual inputs and effects inspectable before execution.",
+    firstDelivery:
+      "Add the direct ACM-to-AAP job link and effective-input comparison for the evidenced post-hook route. Use the supported AAP execution path.",
+    extension:
+      "Extend attempt traces to supported provisioning backends with state-specific actions and explicit cleanup scope. A separate VM trace can connect admission, data volume, launcher pod and scheduling events to the first evidenced failing stage.",
+    validation:
+      "Reproduce an invalid input in the ACM-to-AAP lab route, then change a template default. Verify that the user finds the job, sees both changes and understands which task will run. Validate any bare-metal or VM extension separately.",
+    limits:
+      "There is no universal safe resume. Never infer finalizer deletion or disk cleanup from a failure alone. Nutanix image staging is a separate integration lead. The reservation-error cause remains unknown. Verify recorded health-rule fixes and alert-filter behavior on the target build before adding diagnostic work around them.",
+    owner: "ACM provisioning integration",
+    contributors:
+      "AAP and support; provisioning and Virtualization teams for separately validated extensions.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "AAP job launch and relaunch",
+        url: "https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.6/develop-proc_controller_launch_job_template",
+        note: "Documents why effective inputs can differ when a job is relaunched.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Tinkerbell workflows",
+        url: "https://tinkerbell.org/docs/v0.22/concepts/workflows/",
+        note: "Task-level states and timing provide a model for tracing an attempt.",
+      },
+    ],
   },
   {
     id: "reusable-deployment-configuration",
     topics: ["configuration"],
-    title: "Reuse a working deployment configuration",
+    title: "Preview the next site's configuration and release changes",
     summary:
-      "Prepare another site or bounded release change with reviewable differences and maintained examples that fit the team's automation.",
+      "Render the working recipe with new site values, explain each change and preserve customizations that need explicit review.",
     priority: "candidate",
-    applicability: "Repeated deployments or release adaptation",
+    applicability: "Repeated deployments or bounded release adaptation",
     basis: [
-      { kind: "problem", id: "repeatable-configuration" },
-      { kind: "problem", id: "method-choice" },
-      { kind: "problem", id: "missing-dependencies" },
+      {
+        kind: "problem",
+        id: "repeatable-configuration",
+      },
+      {
+        kind: "problem",
+        id: "method-choice",
+      },
+      {
+        kind: "problem",
+        id: "missing-dependencies",
+      },
     ],
+    situation:
+      "Teams maintain working playbooks and installation files, but adapting them to another site or release requires finding stale values and preserving local changes.",
     intervention:
-      "Start from a working recipe. Separate reusable choices from site values and secret references, show where each value comes from and produce the inputs its actual consumer needs. Maintain a tested example for a specific route and release pair, with a named maintainer and explicit unresolved compatibility questions.",
+      "Start from the customer's recipe, next-site values and target release. Produce the actual consumer files and a semantic diff of reused settings, site substitutions, secret references, release-dependent fields and unrecognized customizations. Show the source of each generated value and support local rendering for disconnected workflows.",
+    example:
+      "Site B supplies the node addresses and resolver. The custom post-install hook is preserved but unvalidated. This field needs review for the selected release. The credential remains a destination-supplied reference.",
     existing:
-      "Customers already use working playbooks, installation files, ACM templates and Git-managed configuration. Current template and automation tools can produce reviewable output. Some teams require inspection or internal approval before applying configuration, and field connectivity can make continuous GitOps unsuitable.",
-    alternative:
-      "A precise variable reference and maintained integration example may solve the task without a recipe generator.",
-    investigate:
-      "Compare the current recipe, clearer documentation and a small generator on one next-site deployment and one bounded release change. Use the customer's actual review process, source of truth and connectivity. Do not promise automatic conversion or compatibility beyond the exercised case.",
-    measure:
-      "Correct site substitutions, preserved customization, identified release-dependent changes, usable reviewed output and maintenance effort for the example itself.",
-    stopWhen:
-      "Prefer the maintained example when automation adds little value to a low-frequency workflow. Stop expanding release coverage when it cannot be maintained and verified.",
-    owners:
-      "Configuration tooling, integration documentation and a named maintainer of each supported example.",
+      "Customer playbooks, plain files and ACM templates already produce configuration. OpenShift documents ClusterInstance-based templated deployment; examples must use the current API for their release.",
+    increment:
+      "Add a reviewable next-site and release comparison with value provenance. Generating YAML alone does not explain compatibility or preserve customization.",
+    firstDelivery:
+      "Maintain one recipe for one supported route and release pair, with a precise variable reference, local rendering and a semantic diff.",
+    extension:
+      "Package the versioned recipe, schemas, release content and checks for execution through the customer's runner. Flag conversions and conflicts that require review.",
+    validation:
+      "Prepare a second lab site with a stale site value and a customization that must survive. Compare the generated files with the existing copy-and-edit workflow, then exercise the target deployment. Record incorrect substitutions, lost settings and maintenance effort.",
+    limits:
+      "Schema-valid output does not prove runtime compatibility. Preserve the actual source of truth; continuous GitOps may not fit a field site. Do not promise automatic conversion of arbitrary playbooks or untested release pairs.",
+    owner: "Deployment configuration tooling",
+    contributors:
+      "ACM, integration documentation, installer tooling and the maintainer of the selected recipe.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "ClusterInstance-based deployment",
+        url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/edge_computing/ztp-deploying-far-edge-sites",
+        note: "Documents an existing templated deployment route.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Cluster API topology plan",
+        url: "https://release-1-10.cluster-api.sigs.k8s.io/clusterctl/commands/alpha-topology-plan",
+        note: "The versioned alpha command produces original and proposed objects with diffs, including offline planning and explicit limits.",
+      },
+    ],
   },
   {
     id: "offline-outcome-kit",
     topics: ["content", "disconnected", "image-access"],
-    title: "Prepare offline content through first use",
+    title: "Request exactly what the offline workload still needs",
     summary:
-      "Check that the destination can supply the selected workload's content and the tools needed to investigate a failure.",
-    priority: "candidate",
+      "Build a task-specific content manifest, verify it at the destination and export a request for the missing artifacts.",
+    priority: "recommended",
     applicability: "Disconnected or restricted environments",
     basis: [
-      { kind: "problem", id: "offline-content" },
-      { kind: "task", id: "support" },
+      {
+        kind: "problem",
+        id: "offline-content",
+      },
+      {
+        kind: "task",
+        id: "support",
+      },
     ],
+    situation:
+      "Content crosses approved security-zone hops, but the destination still lacks an image or diagnostic tool needed for its first task. Another broad transfer repeats work without identifying the gap.",
     intervention:
-      "Define the release, applicable Operators, workload or guest images, diagnostic collector images and local instructions needed for one outcome. Check completeness before dispatch and at the destination. Keep downloaded, transferred, imported and consumable content distinct, with artifact identity visible.",
+      "Generate a manifest for a selected release and workload: declared Operators, guest images, collectors and local instructions. Explain each artifact's purpose and immutable identity. Compare the manifest with the destination registry and applicable pull checks. Export a missing-content request through the existing permitted transfer path.",
+    example:
+      "Release and Virtualization content are present. The guest image is missing. The collector image exists, but the target does not trust the registry CA. Request the guest artifact and send the trust failure to the configuration owner.",
     existing:
-      "oc-mirror v2 provides inventory and failure information, and some customers already have working distribution across permitted hops. A mirror-to-disk dry run checks the local cache; some Operator-image failures are logged while processing continues. Neither proves destination usability. Self-contained installation removes only the initial registry requirement for its supplied content.",
-    alternative:
-      "Add a completeness explanation around existing mirroring and transfer tools. Test a manifest or receipt at a real boundary before requiring another bundle or transfer system.",
-    investigate:
-      "Rehearse one selected offline workload with a required artifact missing and online documentation unavailable. Include the applicable support collector and local instructions. Compare with the customer's current workflow and identify the exact content that must be requested through an approved path.",
-    measure:
-      "Missing content at destination, repeated transfers, successful local tasks and preparation or maintenance effort. Keep content approval and management reachability separate.",
-    stopWhen:
-      "Retain the current system if it already completes the task reliably. Do not use a successful archive transfer or mirror command as a readiness guarantee.",
-    owners:
-      "Disconnected installation, content distribution and support enablement for the selected workload.",
+      "oc-mirror v2 already provides incremental mirroring, cache and error information. Customers have working transfer systems. Cache checks or completed imports alone do not establish that a target workload can consume the content.",
+    increment:
+      "Connect declared content to a named task and reconcile it with destination observations. Distinguish missing bytes from credentials, trust and network failures.",
+    firstDelivery:
+      "Add one workload manifest, an import receipt and a missing-content report around the current mirror and transfer tools. Include the applicable collector and local instructions.",
+    extension:
+      "Prepare a delta package from the returned request and record inventory identity at each approved hop. Reconcile overlapping deliveries without requesting already-present content.",
+    validation:
+      "Omit one declared image at the destination, disable online documentation and return the request. Verify that the next transfer supplies the missing artifact, while a separate CA failure produces a configuration action. Then complete the selected VM task and evidence collection.",
+    limits:
+      "Arbitrary guest downloads and images selected dynamically by Operators may remain undeclared. Mark those dependencies unknown. Digest identity is not a signature or a usability guarantee. Preserve successful oc-mirror improvements and existing security-zone processes.",
+    owner: "Disconnected-content tooling",
+    contributors:
+      "Mirroring, workload-profile maintainers, content distribution and support enablement.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "OpenShift oc-mirror v2",
+        url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/pdf/disconnected_environments/updating-a-cluster-in-a-disconnected-environment",
+        note: "Chapter 5 covers incremental mirroring, cache checks and incomplete results.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Carvel air-gapped bundles",
+        url: "https://carvel.dev/imgpkg/docs/v0.49.x/air-gapped-workflow/",
+        note: "Keeps configuration and declared image dependencies together through relocation.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Zarf differential packages",
+        url: "https://docs.zarf.dev/ref/create/",
+        note: "Reuses reference-package content when creating a differential package; destination reconciliation is the proposed addition.",
+      },
+    ],
   },
   {
     id: "rehearse-access",
     topics: ["access"],
-    title: "Verify delegated access through a real task",
+    title: "Explain why this user can or cannot perform this task",
     summary:
-      "Follow a user's identity, groups, permissions and project context through the action they need to perform.",
+      "Trace the selected task through identity, groups, bindings and project scope, separating authorization from other blockers.",
     priority: "candidate",
     applicability: "Delegated administration or team access",
     basis: [
-      { kind: "problem", id: "identity-group-integration" },
-      { kind: "problem", id: "effective-access" },
+      {
+        kind: "problem",
+        id: "identity-group-integration",
+      },
+      {
+        kind: "problem",
+        id: "effective-access",
+      },
     ],
+    situation:
+      "Administrators manually trace directory groups and bindings to explain what a user can do. Role names alone do not establish whether the user's intended VM task will work.",
     intervention:
-      "Explain the first known failing boundary from identity-provider recognition and group synchronization through bindings, namespace, authorization and the console action. Identify who owns the correction and prepare a reviewable change in the team's source of truth.",
+      "Add Check task access to a project or blocked action. Select the user, project and a bounded task. Show relevant API actions, their authorization results and visible group and binding provenance. Distinguish missing identity information from a missing grant, and separate quota or admission failures. Prepare a reviewable correction in the customer's source of truth.",
+    example:
+      "This user can create a VM in payments but cannot create the required data volume there. The observed group binding grants the displayed VM permissions. Request review of the missing permission; runtime behavior has not been tested.",
     existing:
-      "LDAP synchronization supports previews and automation. Role bindings and authorization checks already exist. A scoped authorization answer does not prove admission, quota or runtime success. Impersonation requires authority and explicit group context; a username alone does not reproduce a complete login.",
-    alternative:
-      "Use existing authorization tools with a task-specific explanation before adding another role or permissions view.",
-    investigate:
-      "Observe an ordinary user performing a defined task in the intended project. Distinguish identity synchronization, missing permissions, navigation and workload dependencies. Test with the user's actual privileges and respect Git-owned configuration where applicable.",
-    measure:
-      "Task completion at intended privilege, correct explanation of a denial and fewer unnecessary role changes.",
-    stopWhen:
-      "Keep a focused explanation or navigation correction if it resolves the problem. Do not grant broad administrator access to compensate for an unexplained failure.",
-    owners:
-      "Identity, RBAC and console teams with the customer's access administrator.",
+      "OpenShift supports LDAP sync previews and scheduled synchronization. Authorization checks and role bindings already exist. Kubernetes RBAC grants are additive, without explicit deny rules.",
+    increment:
+      "Translate a customer task into the maintained set of relevant permission checks and explain the first known failure at the point of use.",
+    firstDelivery:
+      "Check one VM creation path for the signed-in user, with project context and a scoped explanation of a denial.",
+    extension:
+      "Add authorized inspection of another user's complete identity context, synchronization status and a proposed configuration diff. Extend to other tasks only with maintained request mappings.",
+    validation:
+      "Exercise separate missing-group, missing-binding and quota cases. Verify that the user identifies the right boundary and completes the intended task after a scoped correction, without a broad administrator grant.",
+    limits:
+      "An authorization result does not prove admission or runtime success. Inspection of another user requires authority and accurate group context. Azure and AWS are interaction precedents with different authorization semantics.",
+    owner: "Console identity and access",
+    contributors:
+      "Identity integration, RBAC, Virtualization and the customer's access administrator.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "OpenShift LDAP synchronization",
+        url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/authentication_and_authorization/ldap-syncing",
+        note: "Documents preview and automated group synchronization.",
+      },
+      {
+        kind: "Existing capability",
+        title: "Kubernetes authorization",
+        url: "https://kubernetes.io/docs/reference/access-authn-authz/authorization/",
+        note: "Documents access-review APIs for scoped authorization checks.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Azure Check access",
+        url: "https://learn.microsoft.com/en-us/azure/role-based-access-control/check-access",
+        note: "Shows assignments at the selected scope, including inherited access.",
+      },
+    ],
   },
   {
     id: "diagnostic-handover",
     topics: ["support", "acceptance", "operations"],
-    title: "Enable the operating team to collect evidence and escalate",
+    title: "Collect the right evidence from the failed task",
     summary:
-      "Use a representative diagnostic task to identify missing knowledge, access, collector content or support arrangements.",
+      "Choose a diagnostic recipe from the failed operation, preview its local package and identify evidence another owner must supply.",
     priority: "candidate",
-    applicability: "Operations and support preparation",
+    applicability: "Operations, VM-import diagnosis and support escalation",
     basis: [
-      { kind: "problem", id: "support-evidence-gap" },
-      { kind: "problem", id: "operating-knowledge-gap" },
-      { kind: "problem", id: "misleading-health" },
-      { kind: "task", id: "operations" },
+      {
+        kind: "problem",
+        id: "support-evidence-gap",
+      },
+      {
+        kind: "problem",
+        id: "operating-knowledge-gap",
+      },
+      {
+        kind: "problem",
+        id: "misleading-health",
+      },
+      {
+        kind: "task",
+        id: "operations",
+      },
     ],
+    situation:
+      "An operator unfamiliar with Linux and container tooling struggles to collect useful evidence. External infrastructure logs may also be outside that operator's access.",
     intervention:
-      "Guide the receiving operator through collecting and reviewing applicable evidence, recording attempted corrections and requesting inaccessible infrastructure information from its owner. Confirm the support route and entitlement. Include a case where accurate escalation is the useful outcome.",
+      "Put Collect evidence for this failure on a VM import or configuration error. Carry the resource, project, timeframe, versions and attempted corrections into a maintained collection recipe. Show required privileges and offline collector availability, then preview the local package and configured redaction. List included, omitted and inaccessible evidence.",
+    example:
+      "VM import events and selected cluster logs were collected. Source-hypervisor logs need its administrator. Save the local case package and export that evidence request. No root cause has been confirmed.",
     existing:
-      "Agent logs, must-gather, feature-specific collector images and support processes already exist. Some infrastructure is outside the operator's access. Restricted environments need the relevant collector content and local instructions prepared in advance. Expert escalation can be appropriate.",
-    alternative:
-      "Compare existing instructions alone with the same instructions plus one observed support exercise before building a new collection interface.",
-    investigate:
-      "Have someone other than the original builder perform a realistic diagnostic task with their actual access. Separate unfamiliar tools, unavailable permissions, missing collector images and support-entitlement barriers. Verify applicable status fixes rather than teaching a workaround around a corrected defect.",
-    measure:
-      "Useful evidence collected, accurate ownership and escalation, and tasks completed without the original builders guiding each step. Separate collection work from support queue time.",
-    stopWhen:
-      "Keep a runbook or training exercise if it resolves the task. Do not treat every escalation as failed handover or assume a collector can obtain inaccessible infrastructure evidence.",
-    owners:
-      "Support enablement, the receiving operations team and external infrastructure owners.",
+      "must-gather and feature collectors already exist. OCP 4.22 also documents Support Log Gather for automated packaging and optional upload, currently Technology Preview.",
+    increment:
+      "Add task context, recipe selection and an understandable completeness report to existing collection. Keep upload optional and explain where support must ask another owner for evidence.",
+    firstDelivery:
+      "Provide one VM-import recipe through a supported collection route. Check collector content and download a small local package before the site disconnects. Confirm the support route and entitlement.",
+    extension:
+      "Maintain versioned recipes for other failed tasks and carry prior collection results and attempted corrections into escalation. Allow the receiving team to inspect scope and omissions without the original builder.",
+    validation:
+      "Give a receiving operator a seeded import failure, a missing collector image and inaccessible external logs. Have support review the resulting package. Observe useful evidence, clear omissions, manual commands and follow-up collection rounds.",
+    limits:
+      "Collection is not diagnosis, and redaction cannot guarantee removal of every sensitive value. A collector cannot obtain inaccessible infrastructure evidence. Production use needs a supported route. Verify health-display fixes rather than teaching around a corrected defect; expert escalation can remain appropriate.",
+    owner: "Support tooling",
+    contributors:
+      "Virtualization, collector maintainers, the receiving operations team and external infrastructure owners.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "OpenShift cluster data collection",
+        url: "https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/support/gathering-cluster-data",
+        note: "Documents must-gather and the Technology Preview Support Log Gather Operator.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Replicated Troubleshoot support bundles",
+        url: "https://troubleshoot.sh/docs/support-bundle/collecting/",
+        note: "Declarative collectors and local specifications provide a diagnostic-recipe pattern.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Troubleshoot redaction",
+        url: "https://troubleshoot.sh/docs/redact/",
+        note: "Documents configurable redaction for collected evidence.",
+      },
+    ],
   },
   {
     id: "migration-preparation",
     topics: ["workloads"],
-    title: "Prepare an existing workload for migration",
+    title: "Rehearse the application migration before cutover",
     summary:
-      "Check the source, guest, mappings and application preparation before treating a healthy target cluster as sufficient.",
+      "Test a supported copy on an isolated target, record guest and application results, then clean up before the production move.",
     priority: "candidate",
     applicability: "Migration is the intended first workload",
     basis: [
-      { kind: "problem", id: "migration-workload-readiness" },
-      { kind: "problem", id: "workload-network-gap" },
+      {
+        kind: "problem",
+        id: "migration-workload-readiness",
+      },
+      {
+        kind: "problem",
+        id: "workload-network-gap",
+      },
     ],
+    situation:
+      "A healthy target cluster does not resolve legacy guest devices, disk conversion, network mappings or application startup actions before a migration window.",
     intervention:
-      "Make migration a distinct goal at intake. Connect source and target compatibility, guest devices, disk conversion, storage and network mappings, and application pre/post actions. Separate unsupported, unverified and ready-to-test conditions.",
+      "Attach an application acceptance recipe to the migration plan. Through a verified source-copy mechanism, create an isolated test target, apply reviewed mappings and run the customer's post-boot checks. Retain per-VM and application results, differences from the intended cutover and cleanup status.",
+    example:
+      "Guest boot passed. The application service failed after conversion. The target stayed on the reviewed test network. Review the service error before cutover; production endpoint connectivity remains untested.",
     existing:
-      "MTV already provides mappings and inspection. Deep Inspection in MTV 2.12 is Technology Preview; neither inspection nor a healthy target proves that the application will start and function after a move.",
-    alternative:
-      "Use the existing migration assessment with a supported preparation example before creating another assessment tool.",
-    investigate:
-      "Select one real migration task on a supported path and rehearse it in a lab. Verify application startup and connectivity after the move. Keep the source and guest-specific findings separate from installing OpenShift on a hypervisor.",
-    measure:
-      "Consequential blockers found before migration effort, correct mappings and successful intended application behavior.",
-    stopWhen:
-      "Stop at the supported evidence boundary when a source or guest is incompatible. Do not expand first-workload preparation into a general fleet-migration program.",
-    owners: "Migration tooling, Virtualization and the application owner.",
+      "MTV already provides mappings, inspection, custom validation and pre/post hooks. The reviewed documentation did not verify an equivalent complete source-preserving test-copy lifecycle; engineering must establish the supported route.",
+    increment:
+      "Add an isolated rehearsal and application decision around the existing migration plan, with evidence tied to the tested configuration.",
+    firstDelivery:
+      "Prove source preservation, isolation and cleanup with a disposable source VM on one supported provider. Attach application checks and results to that reviewed lab-copy workflow.",
+    extension:
+      "Offer a supported Test migration action that retains the rehearsal's evidence and flags relevant mapping or configuration changes before a separately reviewed cutover.",
+    validation:
+      "Use a guest with a deliberately missing application dependency. Demonstrate source continuity, test isolation, meaningful application checks and complete cleanup. Confirm that users distinguish conversion, guest boot and application success.",
+    limits:
+      "A separate namespace does not establish network isolation or prevent external side effects. Do not run a normal migration and assume the source stays untouched. MTV 2.12 Deep Inspection is Technology Preview. Unsupported guests and untested dependencies remain explicit; the existing historical accounts do not establish universal compatibility.",
+    owner: "Migration Toolkit for Virtualization",
+    contributors:
+      "Virtualization, source-provider engineering, networking and the application owner.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "MTV advanced migration options",
+        url: "https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.12/html/migrating_your_virtual_machines_to_red_hat_openshift_virtualization/assembly_advanced-migration-options_mtv",
+        note: "Documents existing hooks and custom validation to build on.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Azure Migrate test migration",
+        url: "https://learn.microsoft.com/en-us/azure/migrate/tutorial-migrate-hyper-v?view=migrate",
+        note: "Documents testing a replicated target while the source continues operating.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Azure migration test environments",
+        url: "https://learn.microsoft.com/en-us/azure/migrate/how-to-test-replicating-virtual-machines?view=migrate",
+        note: "Describes isolation and cleanup considerations for a test copy.",
+      },
+    ],
   },
   {
     id: "security-agreement",
     topics: ["acceptance", "security", "access"],
-    title: "Agree and validate the initial security baseline",
+    title: "Preview policy impact and track application decisions",
     summary:
-      "Help security and application teams test policy effects and agree enforcement when it is part of initial acceptance.",
+      "Tie observed violations, owners, exceptions and scoped enforcement decisions to the exact policy revision reviewed.",
     priority: "candidate",
     applicability: "Security-policy rollout is required for acceptance",
     basis: [
-      { kind: "problem", id: "security-policy-rollout" },
-      { kind: "task", id: "acceptance" },
+      {
+        kind: "problem",
+        id: "security-policy-rollout",
+      },
+      {
+        kind: "task",
+        id: "acceptance",
+      },
     ],
+    situation:
+      "Installing ACS leaves security and application teams with unresolved enforcement choices, developer agreement and policy-as-code integration work.",
     intervention:
-      "Agree policy intent, affected applications, exception ownership and the enforcement decision. Use a scoped trial with representative workloads to prepare a reviewable change and the product's supported reversal procedure.",
+      "For a selected policy revision and application scope, show observed violations, affected owners, proposed fixes and exceptions. Record each application's enforcement decision. Keep a trial scoped to the approved applications and mark reviews stale when the relevant policy changes. Give each exception an owner and a review or expiry decision.",
+    example:
+      "This policy revision matched the listed deployments. Some application owners have reviewed the proposed fixes; one decision remains open. Enforcement stays within the approved scope.",
     existing:
-      "RHACS already provides policy dry runs and enforcement choices. Kubernetes admission controls have separate behavior and are not interchangeable. Deploying a security component does not settle policy agreement or prove workload compatibility.",
-    alternative:
-      "Use current policy tools with a joint application-team working session before adding a guided rollout interface.",
-    investigate:
-      "Compare current tooling and a facilitated policy trial on one required baseline. Identify whether the remaining work is technical configuration, missing guidance or agreement among the responsible teams.",
-    measure:
-      "Unresolved policy disagreements, avoidable configuration rework and completion of the agreed rollout task.",
-    stopWhen:
-      "Keep the working session or documentation correction if it is sufficient. Do not make policy rollout a prerequisite for customers whose initial acceptance does not require it, or imply that software can decide risk acceptance.",
-    owners:
-      "Security adoption and application-team representatives with the platform administrator.",
+      "RHACS already provides policy dry runs, scope selection, enforcement choices and policy-as-code integration. These mechanisms evaluate policy; they do not settle application-owner agreement.",
+    increment:
+      "Connect evaluation results to a revision-specific rollout record that security and application owners can review together.",
+    firstDelivery:
+      "Export current policy results into a reviewable application table with owners, proposed corrections and outstanding decisions.",
+    extension:
+      "Integrate owner decisions, scoped enforcement and exception review into the policy workflow. Show what happens when an exception expires and which review must be repeated after a change.",
+    validation:
+      "Use one required baseline, representative applications and an unresolved exception. Check whether owners identify the affected change and make an informed enforcement decision. Record unresolved decisions and avoidable rework rather than treating policy deployment as acceptance.",
+    limits:
+      "Software cannot decide risk acceptance. Restoring a policy revision does not restore an application already stopped by enforcement. RHACS and Kubernetes admission controls have different behavior. Apply this opportunity only when the initial security baseline requires policy rollout.",
+    owner: "RHACS policy management",
+    contributors:
+      "Application owners, security adoption, ACM and the platform administrator.",
+    sources: [
+      {
+        kind: "Existing capability",
+        title: "RHACS policy management",
+        url: "https://docs.redhat.com/en/documentation/red_hat_advanced_cluster_security_for_kubernetes/4.11/html/operating/using-policies-to-provide-security",
+        note: "Documents policy dry runs, scope and policy-as-code capabilities.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Kyverno policy reports",
+        url: "https://kyverno.io/docs/guides/reports/",
+        note: "Shows resource-level policy results and audit-mode feedback.",
+      },
+      {
+        kind: "Product precedent",
+        title: "Kyverno exception expiration",
+        url: "https://kyverno.io/policies/other/expiration-for-policyexceptions/expiration-for-policyexceptions/",
+        note: "Provides an example lifecycle for temporary exceptions, with different enforcement semantics.",
+      },
+    ],
   },
 ];

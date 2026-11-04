@@ -20,7 +20,7 @@ import {
 describe("journey content integrity", () => {
   test("the approved problems cover preparation, installation and post-installation without filling evidence gaps", () => {
     expect(problems).toHaveLength(22);
-    expect(opportunities).toHaveLength(10);
+    expect(opportunities).toHaveLength(11);
     expect(
       stages.map(
         (stage) =>
@@ -131,7 +131,7 @@ describe("journey content integrity", () => {
           opportunity.id,
         ).toBe(true);
       expect(opportunity.existing.length).toBeGreaterThan(30);
-      expect(opportunity.investigate.length).toBeGreaterThan(30);
+      expect(opportunity.validation.length).toBeGreaterThan(30);
     }
   });
 
@@ -149,7 +149,7 @@ describe("journey content integrity", () => {
     ).toHaveLength(1);
     expect(
       opportunitiesFor("storage").filter(
-        (idea) => idea.id === "first-workload",
+        (idea) => idea.id === "storage-outcome",
       ),
     ).toHaveLength(1);
     expect(ancestorsOf("dns").map((topic) => topic.id)).toEqual([
@@ -268,7 +268,7 @@ describe("shareable navigation and discovery", () => {
     });
     expect(
       parseRoute("#/storage?view=opportunities&item=storage-outcome").item,
-    ).toBe("first-workload");
+    ).toBe("storage-outcome");
   });
 
   test("related and phase links open the problem at its main step", () => {
@@ -310,10 +310,12 @@ describe("shareable navigation and discovery", () => {
         });
       }
     }
-    expect(parseRoute("#/dns?view=opportunities&item=first-workload")).toEqual({
-      topic: "dns",
-      lens: "opportunities",
-    });
+    expect(parseRoute("#/dns?view=opportunities&item=storage-outcome")).toEqual(
+      {
+        topic: "dns",
+        lens: "opportunities",
+      },
+    );
   });
 
   test("published links follow merged accounts and relocated guidance", () => {
@@ -356,7 +358,7 @@ describe("shareable navigation and discovery", () => {
         id: "network-translation",
         topics: ["networking", "addressing", "workload-network"],
         destination:
-          "#/journey/workloads?view=opportunities&item=first-workload",
+          "#/journey/workload-network?view=opportunities&item=network-translation",
       },
       {
         id: "precise-handoffs",
@@ -421,13 +423,13 @@ describe("shareable navigation and discovery", () => {
           "configuration",
         ],
         destination:
-          "#/journey/workloads?view=opportunities&item=first-workload",
+          "#/journey/approach?view=opportunities&item=fewer-prerequisites",
       },
       {
         id: "storage-outcome",
         topics: ["storage", "storage-drivers", "physical-storage"],
         destination:
-          "#/journey/workloads?view=opportunities&item=first-workload",
+          "#/journey/storage-drivers?view=opportunities&item=storage-outcome",
       },
       {
         id: "rehearse-access",
@@ -438,7 +440,25 @@ describe("shareable navigation and discovery", () => {
         id: "first-vm-guidance",
         topics: ["workloads"],
         destination:
-          "#/journey/workloads?view=opportunities&item=first-workload",
+          "#/journey/approach?view=opportunities&item=fewer-prerequisites",
+      },
+      {
+        id: "first-workload",
+        topics: [
+          "workloads",
+          "platform-operators",
+          "completion",
+          "storage",
+          "storage-drivers",
+          "physical-storage",
+          "workload-network",
+          "networking",
+          "addressing",
+          "configuration",
+          "access",
+        ],
+        destination:
+          "#/journey/approach?view=opportunities&item=fewer-prerequisites",
       },
       {
         id: "confidence-rehearsal",
@@ -473,12 +493,18 @@ describe("shareable navigation and discovery", () => {
     }
   });
 
-  test("search includes applicability, alternatives, owners and decision rules", () => {
+  test("search includes product examples, implementations, leads and documented precedents", () => {
     for (const [query, id] of [
       ["recommended infrastructure preparation", "precise-handoffs"],
       ["migration intended first workload", "migration-preparation"],
       ["variable reference", "reusable-deployment-configuration"],
       ["collector entitlement", "diagnostic-handover"],
+      ["worker-02 proxy rejects", "precise-handoffs"],
+      ["MAAS hardware", "precise-handoffs"],
+      ["recommended migration snapshots", "storage-outcome"],
+      ["source VM network eligible", "network-translation"],
+      ["delta package", "offline-outcome-kit"],
+      ["revision exception RHACS", "security-agreement"],
       ["false degraded", "misleading-health"],
       ["project selector September 2026", "first-vm-blocked"],
     ] satisfies [string, string][]) {

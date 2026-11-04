@@ -235,7 +235,7 @@ try {
       ],
       [
         "opportunities",
-        10,
+        11,
         "Show all opportunities",
         "Expand all opportunities",
         "fewer-prerequisites",
@@ -345,71 +345,51 @@ try {
 
     await go("#/storage?view=opportunities&item=storage-outcome");
     await check(
-      'document.getElementById("record-first-workload").parentElement.open && document.getElementById("step-workloads").getAttribute("aria-expanded") === "true"',
+      'document.getElementById("record-storage-outcome").parentElement.open && document.getElementById("step-storage-drivers").getAttribute("aria-expanded") === "true"',
       "Legacy opportunity links open the disclosure at its assigned step",
     );
     await run("window.__verificationDocument = true");
     await cdp.send("Page.reload");
     await wait(
-      '!window.__verificationDocument && document.getElementById("record-first-workload")?.parentElement.open',
+      '!window.__verificationDocument && document.getElementById("record-storage-outcome")?.parentElement.open',
     );
     await settle();
-    await click("#record-first-workload");
+    await click("#record-storage-outcome");
     await run("history.back()");
     await wait(
-      'document.getElementById("record-first-workload")?.parentElement.open',
+      'document.getElementById("record-storage-outcome")?.parentElement.open',
     );
     await check(
-      'location.hash.includes("item=first-workload")',
+      'location.hash.includes("item=storage-outcome")',
       "Back restores the shared opportunity disclosure",
     );
 
-    // Recommendations must open the full card with keyboard and browser-history support.
-    for (const id of [
-      "precise-handoffs",
-      "first-workload",
-      "supported-recovery",
-    ]) {
-      await go("#/journey?view=opportunities");
-      await check(
-        'document.querySelectorAll(".opportunity-overview a").length === 3 && document.querySelectorAll("details.record-card").length === 0',
-        "The overview links to three investigations without duplicating full cards",
-      );
-      await run(
-        `document.querySelector('[data-focus="recommended-${id}"]').focus()`,
-      );
-      for (const type of ["keyDown", "keyUp"]) {
-        await cdp.send("Input.dispatchKeyEvent", {
-          type,
-          key: "Enter",
-          code: "Enter",
-          windowsVirtualKeyCode: 13,
-          ...(type === "keyDown" ? { text: "\r" } : {}),
-        });
-      }
-      await wait(`document.getElementById("record-${id}")?.parentElement.open`);
-      await settle();
-      await check(
-        `document.activeElement.id === "record-${id}" && !!document.getElementById("record-${id}").querySelector(".priority-badge") && !!document.getElementById("record-${id}").querySelector(".record-applicability")`,
-        "Recommendation opens and focuses the card with independent priority and applicability",
-      );
-      await check(
-        `document.getElementById("record-${id}").parentElement.textContent.includes("A smaller alternative") && document.getElementById("record-${id}").parentElement.textContent.includes("When to stop or narrow the idea") && document.getElementById("record-${id}").parentElement.textContent.includes("Who should investigate")`,
-        "Expanded recommendations include alternatives, decision rules and owners",
-      );
-      await run("history.back()");
-      await wait('location.hash === "#/journey?view=opportunities"');
-      await settle();
-      await check(
-        `document.activeElement.dataset.focus === "recommended-${id}"`,
-        "Back restores focus to the recommendation link",
-      );
-    }
     await go("#/journey?view=opportunities");
+    await check(
+      '!document.querySelector(".opportunity-overview") && !document.getElementById("opportunity-overview-title")',
+      "Opportunities open directly on the journey without a recommendation overview",
+    );
     await click('[data-focus="show-all-steps"]');
     await check(
-      'document.querySelectorAll("details.record-card .record-applicability").length === 10 && document.querySelectorAll("details.record-card .priority-badge").length === 3',
-      "Every opportunity has applicability and only the recommended investigations have priority badges",
+      'document.querySelectorAll("details.record-card .record-applicability").length === 11 && document.querySelectorAll("details.record-card .priority-badge").length === 3',
+      "Every opportunity has applicability and only the recommended starting points have priority badges",
+    );
+    await click('[data-focus="expand-all-details"]');
+    await check(
+      'document.querySelectorAll(".opportunity-example").length === 11 && [...document.querySelectorAll("details.record-card")].every(card => { const headings = [...card.querySelectorAll(".evidence-detail h2")].map(el => el.textContent); return headings.slice(0, 3).join("|") === "Customer situation|What the product would do|Example output · illustrative" && headings.includes("The proposed addition") && headings.includes("First useful implementation") && headings.includes("Evidence and support limits") && card.querySelectorAll(".opportunity-sources a").length >= 2; })',
+      "Every proposal leads with the situation, behavior and illustrative output and includes implementation, limits and product sources",
+    );
+    await check(
+      '[...document.querySelectorAll(".opportunity-sources a")].every(link => link.href.startsWith("https://") && link.target === "_blank" && link.getAttribute("aria-label").includes("opens in a new tab"))',
+      "Public documentation links are accessible and preserve the app in its tab",
+    );
+    await go(
+      "#/journey/workloads?view=opportunities&item=first-workload",
+      true,
+    );
+    await check(
+      'location.hash === "#/journey/approach?view=opportunities&item=fewer-prerequisites" && document.getElementById("record-fewer-prerequisites").parentElement.open',
+      "The former first-workload link opens the first-VM setup proposal",
     );
     await go("#/media?view=opportunities&item=clear-boot-handoff", true);
     await check(
@@ -458,7 +438,6 @@ try {
       });
       for (const [page, hash] of [
         ["journey", "#/journey"],
-        ["opportunity-overview", "#/journey?view=opportunities"],
         [
           "new-evidence",
           "#/journey/observability?view=problems&item=misleading-health",
@@ -474,14 +453,12 @@ try {
         await go(hash);
         await run(
           page === "opportunities"
-            ? 'document.getElementById("record-first-workload").scrollIntoView()'
+            ? 'document.getElementById("record-network-translation").scrollIntoView()'
             : page === "new-evidence"
               ? 'document.getElementById("record-misleading-health").scrollIntoView()'
-              : page === "opportunity-overview"
-                ? 'document.querySelector(".opportunity-overview").scrollIntoView()'
-                : page === "prerequisites-handoff"
-                  ? 'document.getElementById("prerequisites-tickets-network").scrollIntoView()'
-                  : "window.scrollTo(0, 0)",
+              : page === "prerequisites-handoff"
+                ? 'document.getElementById("prerequisites-tickets-network").scrollIntoView()'
+                : "window.scrollTo(0, 0)",
         );
         await settle();
         await check(

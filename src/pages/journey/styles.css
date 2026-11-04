@@ -708,6 +708,40 @@
   font-size: 14px;
   line-height: 1.9;
 }
+:where(.journey-page) .opportunity-example {
+  padding: 18px;
+  border-left: 3px solid var(--blue-50);
+  border-radius: var(--radius-badge);
+  background: var(--blue-10);
+}
+:where(.journey-page) .opportunity-example p {
+  color: var(--ink);
+}
+:where(.journey-page) .opportunity-sources ul {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+:where(.journey-page) .opportunity-sources li + li {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+:where(.journey-page) .opportunity-sources a {
+  display: block;
+  margin: 6px 0;
+  color: var(--blue-70);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+:where(.journey-page) .opportunity-sources a:focus-visible {
+  outline: 2px solid var(--blue-50);
+  outline-offset: 3px;
+}
 :where(.journey-page) .evidence-limit {
   display: flex;
   align-items: flex-start;
@@ -1266,65 +1300,6 @@
 }
 :where(.journey-page) .timeline-intro {
   padding: 0 0 32px 68px;
-}
-:where(.journey-page) .opportunity-overview {
-  scroll-margin-top: 90px;
-  margin: 0 0 28px 68px;
-  padding: 22px;
-  border: 1px solid var(--blue-20);
-  border-radius: var(--radius-card);
-  background: var(--blue-10);
-}
-:where(.journey-page) .opportunity-overview h2 {
-  margin: 8px 0;
-  font-size: 19px;
-  line-height: 1.4;
-}
-:where(.journey-page) .opportunity-overview p {
-  max-width: 740px;
-  font-size: 12px;
-  line-height: 1.8;
-  color: var(--muted);
-}
-:where(.journey-page) .opportunity-overview ul {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin: 16px 0;
-  padding: 0;
-  list-style: none;
-}
-:where(.journey-page) .opportunity-overview a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  height: 100%;
-  min-height: 44px;
-  padding: 12px;
-  border: 1px solid var(--blue-20);
-  border-radius: var(--radius-badge);
-  background: var(--surface);
-  color: var(--blue-70);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.6;
-}
-:where(.journey-page) .opportunity-overview a:hover {
-  border-color: var(--blue-50);
-  background: var(--gray-10);
-}
-:where(.journey-page) .opportunity-overview .opportunity-overview-note {
-  font-size: 11px;
-}
-@media (max-width: 600px) {
-  :where(.journey-page) .opportunity-overview {
-    margin-left: 0;
-    padding: 16px;
-  }
-  :where(.journey-page) .opportunity-overview ul {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 :where(.journey-page) .expansion-actions {
   display: flex;

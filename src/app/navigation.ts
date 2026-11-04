@@ -17,6 +17,7 @@ const positionSchema = z.object({
   focus: z.string().nullable(),
 });
 type Position = z.infer<typeof positionSchema>;
+export type NavigationReturn = { route: AppRoute; position: Position };
 type ScrollAction =
   | "initial"
   | "new"
@@ -27,6 +28,8 @@ export type NavigationBehavior = "new" | "preserve" | "retain";
 
 function pageTitle(route: AppRoute): string {
   switch (route.page) {
+    case "solution-prototype":
+      return "Solution example · Illustrative prototype";
     case "journey":
       return topicById.get(route.view.topic)?.title ?? "Journey";
     case "choices":
@@ -38,6 +41,10 @@ function pageTitle(route: AppRoute): string {
 
 function pageTarget(route: AppRoute): string {
   switch (route.page) {
+    case "solution-prototype":
+      return route.chapter === "preparation"
+        ? "pg-moment-title"
+        : `solution-chapter-${route.chapter}`;
     case "journey":
       return route.view.item
         ? `record-${route.view.item}`
@@ -64,6 +71,14 @@ export function useAppNavigation() {
   const current = useRef(route);
   const action = useRef<ScrollAction>("initial");
   const visits = useRef({
+    "solution-prototype":
+      route.page === "solution-prototype"
+        ? route
+        : ({
+            page: "solution-prototype",
+            chapter: "introduction",
+            moment: 0,
+          } satisfies AppRoute),
     journey: route.page === "journey" ? route : journeyHome,
     choices: route.page === "choices" ? route : emptyChoices,
     prerequisites:
@@ -80,6 +95,8 @@ export function useAppNavigation() {
   const select = (next: AppRoute) => {
     current.current = next;
     if (next.page === "journey") visits.current.journey = next;
+    else if (next.page === "solution-prototype")
+      visits.current["solution-prototype"] = next;
     else if (next.page === "choices") visits.current.choices = next;
     else visits.current.prerequisites = next;
     setRoute(next);
@@ -99,6 +116,8 @@ export function useAppNavigation() {
       action.current = saved.success ? saved.data : "new";
       current.current = next;
       if (next.page === "journey") visits.current.journey = next;
+      else if (next.page === "solution-prototype")
+        visits.current["solution-prototype"] = next;
       else if (next.page === "choices") visits.current.choices = next;
       else visits.current.prerequisites = next;
       setRoute(next);
@@ -159,7 +178,8 @@ export function useAppNavigation() {
         if (
           id === "page-title" ||
           id === "choices-title" ||
-          id === "prerequisites-title"
+          id === "prerequisites-title" ||
+          id === "solution-chapter-introduction"
         )
           window.scrollTo({ top: 0, behavior: "instant" });
         else target?.scrollIntoView({ block: "start", behavior: "instant" });
@@ -198,10 +218,24 @@ export function useAppNavigation() {
     select(next);
   };
 
+  const captureReturn = (): NavigationReturn => ({
+    route: current.current,
+    position: position(),
+  });
+  const restoreReturn = (saved: NavigationReturn) => {
+    remember();
+    action.current = saved.position;
+    window.history.pushState(null, "", appHref(saved.route));
+    select(saved.route);
+  };
+
   return {
+    captureReturn,
+    restoreReturn,
     route,
     navigate,
     openPage,
+    solution: visits.current["solution-prototype"],
     journey: visits.current.journey,
     choices: visits.current.choices,
     prerequisites: visits.current.prerequisites,

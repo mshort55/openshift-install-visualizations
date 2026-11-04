@@ -35,7 +35,7 @@ export const lenses: { id: Lens; label: string; description: string }[] = [
     id: "opportunities",
     label: "Improvement opportunities",
     description:
-      "Explore possible interventions and how we could evaluate them.",
+      "Explore specific product proposals, examples and documented precedents.",
   },
 ];
 
@@ -115,20 +115,16 @@ const retiredOpportunityRoutes = new Map<string, Route>([
     { topic: "approach", lens: "opportunities", item: "fewer-prerequisites" },
   ],
   [
-    "network-translation",
-    { topic: "workloads", lens: "opportunities", item: "first-workload" },
-  ],
-  [
     "outcome-plan",
-    { topic: "workloads", lens: "opportunities", item: "first-workload" },
+    { topic: "approach", lens: "opportunities", item: "fewer-prerequisites" },
   ],
   [
-    "storage-outcome",
-    { topic: "workloads", lens: "opportunities", item: "first-workload" },
+    "first-workload",
+    { topic: "approach", lens: "opportunities", item: "fewer-prerequisites" },
   ],
   [
     "first-vm-guidance",
-    { topic: "workloads", lens: "opportunities", item: "first-workload" },
+    { topic: "approach", lens: "opportunities", item: "fewer-prerequisites" },
   ],
   [
     "earlier-dependency-feedback",
@@ -276,16 +272,23 @@ export function searchJourney(query: string): SearchResult[] {
       context: "Improvement opportunity",
       searchText: [
         opportunity.priority === "recommended"
-          ? "Recommended next investigation"
+          ? "Recommended starting point"
           : "",
         opportunity.applicability,
+        opportunity.situation,
         opportunity.intervention,
+        opportunity.example,
         opportunity.existing,
-        opportunity.alternative,
-        opportunity.investigate,
-        opportunity.measure,
-        opportunity.stopWhen,
-        opportunity.owners,
+        opportunity.increment,
+        opportunity.firstDelivery,
+        opportunity.extension,
+        opportunity.validation,
+        opportunity.limits,
+        opportunity.owner,
+        opportunity.contributors,
+        ...opportunity.sources.map(
+          (source) => `${source.kind} ${source.title} ${source.note}`,
+        ),
       ].join(" "),
       route: {
         topic: opportunity.topics[0],

@@ -22,7 +22,7 @@ export const stages: JourneyStage[] = [
       problems:
         "Hardware fit and installation-path constraints can add work before deployment.",
       opportunities:
-        "Compare supported paths to remove avoidable prerequisites while preserving workload fit and operating requirements.",
+        "Extend self-contained installation through a selected storage integration, network and first VM.",
     },
   },
   {
@@ -36,7 +36,7 @@ export const stages: JourneyStage[] = [
       problems:
         "Owner handoffs, connectivity corrections, content delivery and reusable configuration can delay deployment preparation.",
       opportunities:
-        "Verify prerequisites where they are consumed, reuse working configuration and prepare offline content through first use.",
+        "Export actionable host-check failures, preview the next site's configuration and request missing offline content.",
     },
     note: "Teams can prepare services in parallel. Distinguish agreed settings, prepared services and checks verified from the booted hosts.",
   },
@@ -66,7 +66,7 @@ export const stages: JourneyStage[] = [
       problems:
         "Image provisioning, cross-tool diagnosis and recovery can interrupt installation; each account retains its original platform context.",
       opportunities:
-        "Connect a failed attempt to its resource, actual inputs, evidence and supported next action.",
+        "Open the failed configuration job and preview the changed inputs and work its supported rerun will perform.",
     },
     note: "A failed attempt can return to preparation. Correct the dependency before retrying.",
   },
@@ -81,7 +81,7 @@ export const stages: JourneyStage[] = [
       problems:
         "No separate problem account is assigned to base-cluster verification.",
       opportunities:
-        "The first-workload opportunity connects this milestone to remaining configuration and demonstrated use.",
+        "The first-VM profile proposed in deployment planning carries this milestone into the selected storage, network and guest setup.",
     },
   },
   {
@@ -102,7 +102,7 @@ export const stages: JourneyStage[] = [
       problems:
         "Platform, storage, network and identity configuration can remain after installation. Effective access and misleading health displays can complicate use and diagnosis.",
       opportunities:
-        "Verify delegated access through a real task; connect storage and network configuration to the first-workload investigation.",
+        "Choose storage by required VM behavior, map source networks to verified connections and explain access for a specific user task.",
     },
     note: "Tasks can run in parallel where their dependencies allow. Select additional components according to workload and site requirements.",
   },
@@ -117,7 +117,7 @@ export const stages: JourneyStage[] = [
       problems:
         "VM creation and workload migration can remain blocked after the target cluster is installed.",
       opportunities:
-        "Complete the customer's actual first workload, with separate preparation when that workload must be migrated.",
+        "Rehearse an application migration on an isolated test target before reviewing production cutover.",
     },
   },
   {
@@ -131,7 +131,7 @@ export const stages: JourneyStage[] = [
       problems:
         "Diagnostic access, operating skills and agreed security policies can still need work before teams can support the intended environment.",
       opportunities:
-        "Enable evidence collection and escalation, and agree the initial security baseline when policy rollout is required.",
+        "Collect evidence from the failed task and tie policy-impact reviews to application owners and the tested policy revision.",
     },
     note: "Complete operational preparation before handover. The platform team retains cluster operations after application teams receive access.",
   },

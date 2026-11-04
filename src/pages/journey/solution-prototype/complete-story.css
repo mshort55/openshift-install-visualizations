@@ -1,0 +1,245 @@
+/* Illustrative guided story, using the existing app's theme. */
+.complete-story [hidden] {
+  display: none;
+}
+.cs-section {
+  display: grid;
+  gap: 18px;
+}
+.cs-sticky-state {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--page-bg);
+}
+.cs-phase-tabs {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.cs-phase-tabs button {
+  flex: 1;
+  border-radius: 0;
+  border: 0;
+  font-size: 12px;
+}
+.cs-phase-tabs button[aria-current] {
+  background: var(--blue-10);
+  color: var(--blue-70);
+  box-shadow: inset 0 -3px var(--blue-60);
+}
+.complete-story .sp-rail {
+  top: 210px;
+}
+.cs-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.cs-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.cs-prerequisites .pg-record {
+  margin-top: 20px;
+}
+.cs-pre-chapter > h2 {
+  margin: 12px 0;
+}
+.cs-next {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+.cs-milestones {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.cs-milestones > div {
+  border: 1px solid var(--line);
+  padding: 16px;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+}
+.cs-milestones span,
+.cs-milestones p {
+  color: var(--muted);
+}
+.cs-steps {
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 9px;
+}
+.cs-steps li {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 13px;
+}
+.cs-steps li > span {
+  min-width: 24px;
+  border-radius: 50%;
+  background: var(--gray-10);
+  text-align: center;
+  padding: 3px;
+}
+.cs-steps li[data-done="true"] > span {
+  background: var(--success-green-10);
+  color: var(--success-green-70);
+}
+.cs-steps .cs-failed-attempt {
+  color: var(--rh-red-60);
+}
+.cs-table {
+  overflow-x: auto;
+}
+.cs-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.cs-table td,
+.cs-table th {
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+.cs-table small {
+  display: block;
+  color: var(--muted);
+}
+.cs-related {
+  margin-top: 26px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  display: grid;
+  gap: 10px;
+  font-size: 12px;
+}
+.cs-session {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px;
+  margin: 24px 0;
+  background: var(--blue-10);
+  border-radius: 8px;
+}
+.cs-session p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.cs-session button {
+  flex-shrink: 0;
+}
+.cs-history li {
+  margin-top: 18px;
+}
+.cs-history small {
+  display: block;
+  color: var(--muted);
+}
+.cs-west {
+  display: grid;
+  gap: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+.cs-west textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  font: inherit;
+  resize: vertical;
+}
+.complete-story [role="tab"][aria-selected="true"] {
+  border-color: var(--blue-60);
+  background: var(--blue-10);
+}
+@media (max-width: 760px) {
+  .cs-sticky-state .sp-cluster-strip {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 10px;
+  }
+  .cs-sticky-state .sp-cluster-strip strong {
+    font-size: 15px;
+  }
+  .cs-sticky-state .sp-cluster-domain {
+    display: none;
+  }
+  .cs-sticky-state .sp-overall {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .cs-sticky-state .sp-overall p {
+    display: none;
+  }
+  .cs-sticky-state .sp-label {
+    font-size: 9px;
+    letter-spacing: 0.4px;
+  }
+  .cs-phase-tabs button {
+    font-size: 10px;
+    padding: 9px 4px;
+  }
+  .complete-story .sp-rail {
+    position: static;
+  }
+  .complete-story .sp-rail nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .complete-story .sp-rail nav button {
+    display: block;
+    padding: 8px;
+  }
+  .complete-story .sp-rail nav button > span:last-child {
+    display: block;
+  }
+  .cs-milestones {
+    grid-template-columns: 1fr;
+  }
+  .cs-session {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.cs-latest {
+  margin-top: 22px;
+  padding: 16px;
+  background: var(--gray-10);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+}
+.cs-latest small {
+  color: var(--muted);
+}
+.complete-story [id^="solution-chapter-"],
+.complete-story #pg-moment-title {
+  scroll-margin-top: 190px;
+}
+.cs-steps .cs-failed-attempt[data-done="true"] > span {
+  color: var(--rh-red-60);
+  background: var(--orange-10);
+}
+.complete-story [id^="solution-chapter-"]:focus {
+  outline: none;
+}

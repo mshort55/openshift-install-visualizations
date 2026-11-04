@@ -97,24 +97,38 @@ export type OpportunityBasis =
   | { kind: "problem"; id: string }
   | { kind: "task"; id: string };
 
+/** Public product documentation supports a capability or a design precedent, not customer evidence. */
+export interface OpportunitySource {
+  kind: "Existing capability" | "Product precedent";
+  title: string;
+  url: string;
+  note: string;
+}
+
 export interface Opportunity {
   id: string;
   /** The first topic owns the card; the rest resolve related and published links. */
   topics: [string, ...string[]];
   title: string;
   summary: string;
-  /** Editorial investigation priority, independent of the customer's applicability. */
+  /** Editorial starting priority, independent of the customer's applicability. */
   priority: "recommended" | "candidate";
   applicability: string;
   /** Distinguishes reported problems from tasks and acceptance requirements. */
   basis: [OpportunityBasis, ...OpportunityBasis[]];
+  situation: string;
   intervention: string;
+  /** Illustrative proposed output, never a customer quotation or an observed result. */
+  example: string;
   existing: string;
-  alternative: string;
-  investigate: string;
-  measure: string;
-  stopWhen: string;
-  owners: string;
+  increment: string;
+  firstDelivery: string;
+  extension: string;
+  validation: string;
+  limits: string;
+  owner: string;
+  contributors: string;
+  sources: [OpportunitySource, ...OpportunitySource[]];
 }
 
 export interface Route {
