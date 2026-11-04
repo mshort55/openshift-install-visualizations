@@ -36,7 +36,7 @@ export const stages: JourneyStage[] = [
       problems:
         "Owner handoffs, connectivity corrections, content delivery and reusable configuration can delay deployment preparation.",
       opportunities:
-        "Translate site requirements into clear requests and guide content and boot preparation.",
+        "Translate site requirements into clear requests and prepare reusable configuration, content and boot media.",
     },
     note: "Teams can prepare services in parallel. Distinguish agreed settings, prepared services and checks verified from the booted hosts.",
   },
@@ -117,7 +117,7 @@ export const stages: JourneyStage[] = [
       problems:
         "VM creation and workload migration can remain blocked after the target cluster is installed.",
       opportunities:
-        "Show and verify the remaining work between an installed cluster and a useful outcome.",
+        "Guide first-workload configuration choices and verify the remaining work between an installed cluster and a useful outcome.",
     },
   },
   {

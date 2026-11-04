@@ -228,7 +228,7 @@ try {
       ],
       [
         "opportunities",
-        15,
+        17,
         "Show all opportunities",
         "Expand all opportunities",
         "network-translation",

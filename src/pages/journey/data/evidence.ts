@@ -947,7 +947,7 @@ export const problems: Problem[] = [
         },
         basis: "Copied meeting notes",
         finding:
-          "Logical versus bootable volumes, instance types, ISO handling and retaining project context impeded first-VM work.",
+          "Logical versus bootable volumes, instance types, ISO handling and retaining project context impeded first-VM work. The same call also mentioned memory-reservation alerts; their cause and impact were not independently established.",
         limitation:
           "The original transcript was unavailable. Confusion alone does not establish a product defect or an actual wrong-project deployment.",
       },
@@ -971,9 +971,9 @@ export const problems: Problem[] = [
     ],
     impact: "The intended VMs and their availability tests could not proceed.",
     outcome:
-      "Training helped, but the retained account does not record a verified remedy for the reservation error.",
+      "Training helped. In a later 2026 report, volume-selection improvements were reported in progress and newer namespace navigation was shown. The retained notes do not establish that these changes resolved the pilot’s difficulties or the reservation error.",
     limit:
-      "These are two reports from one pilot. Hardware capacity and unconnected storage are not established as the error’s cause; blocked HA testing is not proof that HA failed.",
+      "These are two reports from one pilot. Similar alerts were reported in 2025 and 2026; continuous failure throughout that interval is unproven. Hardware capacity and unconnected storage are not established as the error’s cause; blocked HA testing is not proof that HA failed.",
     kind: "Reported experience",
   },
   {
@@ -1124,9 +1124,9 @@ export const problems: Problem[] = [
         },
         basis: "Direct research notes",
         finding:
-          "Deployment playbooks needed release-dependent changes, and preserving configuration or understanding upgrade deltas was difficult.",
+          "The team was building CLI Ansible playbooks for site-specific OpenShift deployments and described release-dependent changes, difficulty preserving configuration and unclear upgrade deltas.",
         limitation:
-          "The operational mobility requirement in the same account is not an installation-duration target.",
+          "GitOps was planned for the lab but did not suit field connectivity. The mobility requirement is not an installation-duration target; individual release-change episodes were not dated.",
       },
       {
         title: "Finding integration inputs and examples",
@@ -1380,7 +1380,7 @@ export const opportunities: Opportunity[] = [
     summary:
       "Connect the familiar site network to the cluster and workload configuration it requires.",
     intervention:
-      "Start with one existing-VLAN workload scenario. Show the physical-to-workload path, the responsible owner at each layer and the applicable configuration.",
+      "Start with one existing-VLAN workload scenario. Show the physical-to-workload path, intended project and network attachment, responsible owner at each layer and applicable configuration. Mark external segments that have not been observed.",
     existing:
       "Existing capabilities include network configuration tools and VM networking flows. The proposed increment is explanation and verification across the whole path.",
     investigate:
@@ -1405,11 +1405,11 @@ export const opportunities: Opportunity[] = [
     summary:
       "Give infrastructure owners the exact request and the evidence needed to close it.",
     intervention:
-      "For one supported site design, generate addresses, records and source-to-destination flow requests with owners, conditions and verification steps.",
+      "For one supported site design, prepare addresses, records and source-to-destination flow requests. Record the owner, requested action, completion condition and dated evidence, with a state of waiting, declared complete, verified or unknown.",
     existing:
       "Installer validations and documented network prerequisites already exist. Required DNS records and their timing depend on the installation configuration; confirm them before treating a pending DNS request as safe to defer.",
     investigate:
-      "Test whether complete requests reduce clarification. Keep technical verification separate from change approval and pending owner action.",
+      "Test whether complete requests and evidence of completion reduce clarification. Keep technical verification separate from change approval and pending owner action; a record cannot remove staffing or scheduling constraints.",
     measure:
       "Request rework, unresolved assumptions, correct identification of the responsible team and time to establish technical readiness.",
     basis: [
@@ -1430,11 +1430,11 @@ export const opportunities: Opportunity[] = [
     summary:
       "Surface missing capacity, connections and commitments before setup effort accumulates.",
     intervention:
-      "Start with one workload and storage path. Separate confirmed inventory from planned purchases, physical prerequisites and platform overhead.",
+      "Start with one workload and storage path. Separate confirmed inventory from planned purchases, physical prerequisites and platform overhead. Distinguish unsupported, insufficient and unverified conditions, and show which production questions a small pilot cannot answer.",
     existing:
       "Published platform and workload requirements are building blocks. The research does not provide a universal sizing formula or a reliable resource-overhead benchmark.",
     investigate:
-      "Compare a complete intended deployment with the customer’s actual inventory. Separate product compatibility from procurement and funding constraints.",
+      "Compare a complete intended deployment with the customer’s actual inventory. Separate product compatibility from procurement and funding constraints. Use existing requirements guidance if it resolves the uncertainty without another interface.",
     measure:
       "Earlier discovery of consequential gaps, avoided configuration rework and accuracy of feasibility expectations.",
     basis: [
@@ -1466,17 +1466,38 @@ export const opportunities: Opportunity[] = [
     ],
   },
   {
+    id: "reusable-deployment-configuration",
+    topics: ["configuration"],
+    title: "Reuse deployment configuration across sites and releases",
+    summary:
+      "Separate reusable settings from site-specific inputs and prepare reviewable changes through the team’s existing automation.",
+    intervention:
+      "Use one working deployment recipe to prepare another site or a bounded release change. Identify site values, known applicable changes and unresolved questions; produce configuration and a short runbook for review.",
+    existing:
+      "Participants already maintain playbooks, configuration files and working automation. Respect the actual source of truth and connectivity; do not require GitOps in every environment.",
+    investigate:
+      "Compare the proposal with the customer’s existing recipe and guidance. Narrow it to a maintained example or clearer variable documentation if that solves the task. Do not promise automatic conversion or compatibility.",
+    measure:
+      "Correct site values, identified release-dependent changes, preserved working settings, usable reviewed output and repeated information gathering.",
+    basis: [
+      {
+        kind: "problem",
+        id: "repeatable-configuration",
+      },
+    ],
+  },
+  {
     id: "offline-outcome-kit",
     topics: ["content", "disconnected"],
     title: "Prepare an offline kit around the intended outcome",
     summary:
       "Connect installation content to workload dependencies and usable local guidance.",
     intervention:
-      "Start with one disconnected workload scenario. Identify the required content, dependencies and approved transfer paths, including environments that need multiple permitted hops. Test preparation and delivery separately.",
+      "Start with one disconnected workload scenario. Prepare a version-scoped content manifest, local instructions and a receipt at each permitted transfer hop. Test content preparation and delivery separately.",
     existing:
       "Mirroring and documented disconnected workflows already exist, and one organization uses a working custom artifact-distribution system. The proposed kit remains an untested intervention; it is not a remedy for every management-connectivity restriction.",
     investigate:
-      "Determine which missing artifacts or approval boundaries actually block the selected workload. Test the workflow without online documentation access.",
+      "Determine which missing artifacts or approval boundaries actually block the selected workload. Rehearse with one required artifact missing and online documentation unavailable. Test whether receipts help before adding them to a working distribution flow.",
     measure:
       "Content completeness, successful local task completion and repeated transfers caused by missed dependencies.",
     basis: [
@@ -1560,7 +1581,7 @@ export const opportunities: Opportunity[] = [
     summary:
       "Help operators identify what failed, what needs repair and which work can safely continue.",
     intervention:
-      "Follow one failed attempt through correction. Distinguish continued monitoring, repair and a planned new installation, and retain safe reusable inputs.",
+      "Record one failed attempt and follow it through correction. Compare corrected inputs with the failed attempt and identify checks to repeat. Distinguish continued monitoring, repair and a planned new installation, and retain safe reusable inputs.",
     existing:
       "Wait commands can be rerun for monitoring; generated media and consumed configuration have specific lifecycles. There is no universal safe resume for every failed attempt.",
     investigate:
@@ -1587,7 +1608,7 @@ export const opportunities: Opportunity[] = [
     summary:
       "Show the configuration and verification still needed between base installation and the intended platform or workload.",
     intervention:
-      "Start with one supported workload scenario and its reusable deployment configuration. Connect identity, certificates, required services, owners and workload verification across creation and post-install workflows. Include migration preparation only when it is the intended first use.",
+      "Start with one supported workload scenario. Connect identity, certificates, required services, owners and workload verification across creation and post-install workflows. Distinguish installed, configured and demonstrated working, including useful partial readiness. Include migration preparation only when it is the intended first use.",
     existing:
       "Installer validation and workload post-installation guidance already exist. Test continuity and remaining-work visibility against current capabilities.",
     investigate:
@@ -1620,7 +1641,7 @@ export const opportunities: Opportunity[] = [
     summary:
       "Connect the physical system, driver, configuration and representative workload behavior.",
     intervention:
-      "Prototype one supported external-storage path through integration, default class/profile and first workload, with a required maintenance operation where applicable.",
+      "Prototype one supported external-storage path through integration, default class/profile and first workload. Explain the profile’s consequences for the required operation, identify an owner for missing physical work, and use examples applicable to the provider and release.",
     existing:
       "Storage postconfiguration and workload self-validation already exist. The proposed increment is guidance through the complete selected path and its unresolved physical dependencies.",
     investigate:
@@ -1645,9 +1666,9 @@ export const opportunities: Opportunity[] = [
     summary:
       "Make effective access visible in the context of the workload and project.",
     intervention:
-      "Follow one intended user from directory/group mapping through effective permissions to a representative task. Test with the user’s actual privileges and identify which role, scope or identity connection needs attention.",
+      "Follow one intended user from directory/group mapping through effective permissions to a representative task. Confirm the intended project and explain the binding, group and scope behind the action. Test with the user’s actual privileges; prepare a reviewable correction where Git owns configuration.",
     existing:
-      "Role bindings, identity integration and authorization checks are existing building blocks. The proposal connects them to an actual user task.",
+      "Role bindings, identity integration and authorization checks are existing building blocks. Some participants manage declarative permissions in Git and use the UI for investigation. Respect that source of truth when proposing a correction.",
     investigate:
       "Determine whether the obstacle is a missing permission, misunderstood scope, navigation or external identity synchronization.",
     measure:
@@ -1664,17 +1685,38 @@ export const opportunities: Opportunity[] = [
     ],
   },
   {
+    id: "first-vm-guidance",
+    topics: ["workloads"],
+    title: "Guide the first VM’s configuration choices",
+    summary:
+      "Keep the intended project visible and explain image, boot-volume, instance-type and network choices.",
+    intervention:
+      "Start with one supported first-VM task. Carry project context through creation, explain consequential choices and highlight context changes. Include template-based creation where it matches the team’s workflow.",
+    existing:
+      "Start with the current creation flow and available guidance. Earlier research records volume-selection work underway and newer namespace navigation; their effectiveness for this account is unconfirmed.",
+    investigate:
+      "Compare current and proposed guidance on one real task. Treat reservation-error diagnosis separately. Narrow the intervention if clearer wording or project context is sufficient.",
+    measure:
+      "Correct project and configuration choices, successful creation, misunderstood terms, context changes and help required.",
+    basis: [
+      {
+        kind: "problem",
+        id: "first-vm-blocked",
+      },
+    ],
+  },
+  {
     id: "confidence-rehearsal",
     topics: ["acceptance", "backups", "storage-drivers"],
     title: "Demonstrate customer-specific readiness",
     summary:
       "Replace assumed readiness with evidence from the customer’s required behavior.",
     intervention:
-      "Agree a small acceptance plan for a representative workload and the selected maintenance, recovery or security-policy requirements. Record results, limits and ownership with the responsible teams.",
+      "Agree a small acceptance plan for a representative workload and selected maintenance, recovery or security-policy requirements. Record passed, failed, untested and out-of-scope results against the workload, release and configuration. Identify checks to reconsider after a relevant change, with limits and ownership explicit.",
     existing:
       "Monitoring, backup tools, workload checks and recovery procedures already exist. No single green badge proves every production requirement.",
     investigate:
-      "Co-design a bounded rehearsal with the operating team. Include data, secrets and external dependencies where the scenario needs them.",
+      "Co-design a bounded rehearsal with the operating team. Include data, secrets and external dependencies where the scenario needs them. Test whether teams understand partial readiness and which results need rechecking; automatic invalidation rules are not established.",
     measure:
       "Correct understanding of what is proven, successful selected recovery tasks and fewer unresolved handover dependencies.",
     basis: [
@@ -1699,7 +1741,7 @@ export const opportunities: Opportunity[] = [
     summary:
       "Test whether the receiving operator can find evidence and identify the next support action.",
     intervention:
-      "Use one representative workload failure to rehearse diagnosis, evidence collection and support handoff with the receiving operator.",
+      "Begin with one failed workload task. Guide evidence collection, preview what will be shared and record attempted fixes and results. Request inaccessible infrastructure evidence from its owner, then rehearse the support handoff with the receiving operator.",
     existing:
       "Logs, must-gather and support workflows already exist. The increment is making the applicable path usable to the team’s actual skills and access.",
     investigate:
