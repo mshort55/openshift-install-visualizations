@@ -711,7 +711,7 @@ function Process({ topic, navigate }: { topic: Topic; navigate: Navigate }) {
     <div className="process-content">
       {["approach", "agent-based"].includes(topic.id) && (
         <aside className="choices-callout">
-          <strong>Explore the Agent-based installation choices</strong>
+          <strong>Explore Install options</strong>
           <p>
             Work through configuration decisions and examples, then return to
             this step.
@@ -1271,9 +1271,7 @@ export function JourneyPage({
                   The customer experience
                 </span>
                 <h1 id="page-title" tabIndex={-1}>
-                  OpenShift on bare metal.
-                  <br />
-                  <span>The installation journey.</span>
+                  Journey map
                 </h1>
                 <p>
                   Follow a customer from planning to useful workloads and

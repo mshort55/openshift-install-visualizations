@@ -80,6 +80,39 @@ try {
     );
     await shot("journey-desktop");
 
+    // Every page exposes the same destination names and explanatory text.
+    for (const [page, target] of [
+      ["prerequisites", "prerequisites-title"],
+      ["choices", "choices-title"],
+      ["solution-prototype", "solution-chapter-introduction"],
+      ["journey", "page-title"],
+    ]) {
+      await click(`[data-focus="nav-${page}"]`);
+      await wait(`!!document.getElementById(${JSON.stringify(target)})`);
+      await check(
+        `document.querySelector('[data-focus="nav-${page}"]').getAttribute('aria-current') === 'page' && document.querySelectorAll('.app-navigation [aria-current="page"]').length === 1`,
+        `${page} is identified as the current page`,
+      );
+      assert.deepEqual(
+        await run(
+          `[...document.querySelectorAll('.app-navigation a')].map(link => document.getElementById(link.getAttribute('aria-labelledby')).textContent)`,
+        ),
+        ["Journey map", "Network prep", "Install options", "Solution demo"],
+        "Page names retain the requested reading and keyboard order",
+      );
+      await check(
+        `(() => {
+          const links = [...document.querySelectorAll('.app-navigation a')];
+          return links.length === 4 && links.every(link =>
+            link.getAttribute('href')?.startsWith('#/') &&
+            document.getElementById(link.getAttribute('aria-labelledby'))?.textContent.trim() &&
+            document.getElementById(link.getAttribute('aria-describedby'))?.checkVisibility()
+          );
+        })()`,
+        "All four destination cards retain their visible descriptions and real links",
+      );
+    }
+
     // A purely local expansion must survive a visit to the other page.
     await click('[data-focus="show-all-steps"]');
     await run("window.scrollTo(0, 900)");

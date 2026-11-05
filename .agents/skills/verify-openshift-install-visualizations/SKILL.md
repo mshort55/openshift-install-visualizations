@@ -29,7 +29,7 @@ Launch prints `VERIFY_RUN_DIR=/tmp/verify-openshift-install-visualizations-<id>`
 VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs doctor
 ```
 
-Doctor requires running Vite/Chrome processes and the heading `Agent-based installation choices`. It checks the served HTML title `OpenShift Bare-metal Installation Journey`; the browser document title changes with the active page. Run doctor before a Choices recipe or after a failed command. Navigate back to Choices before running doctor if you visited Journey.
+Doctor requires running Vite/Chrome processes and the heading `Install options`. It checks the served HTML title `OpenShift Bare-metal Installation Journey`; the browser document title changes with the active page. Run doctor before a Choices recipe or after a failed command. Navigate back to Choices before running doctor if you visited Journey.
 
 Read [the feature map](features/README.md), then follow the matching recipe. Option buttons expose accessible names, `aria-pressed`, `data-decision`, and `data-option`. Decisions expose `data-active`.
 

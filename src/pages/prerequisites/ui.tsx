@@ -138,10 +138,10 @@ export function PrerequisitesPage(props: PrerequisitesProps) {
         <header className="hero">
           <div>
             <div className="eyebrow">
-              Agent-based installation · OCP 4.22 · IPv4 example
+              Agent-based installation · OCP 4.22 · Five-node IPv4 example
             </div>
             <h1 id="prerequisites-title" tabIndex={-1}>
-              Network prerequisites: a five-node example
+              Network prep
             </h1>
             <p>
               Prepare addresses, shared services and access before booting the

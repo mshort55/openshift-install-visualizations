@@ -29,13 +29,15 @@ export type NavigationBehavior = "new" | "preserve" | "retain";
 function pageTitle(route: AppRoute): string {
   switch (route.page) {
     case "solution-prototype":
-      return "Solution example · Illustrative prototype";
+      return "Solution demo · Illustrative prototype";
     case "journey":
-      return topicById.get(route.view.topic)?.title ?? "Journey";
+      return route.view.topic === "journey"
+        ? "Journey map"
+        : (topicById.get(route.view.topic)?.title ?? "Journey map");
     case "choices":
-      return "Agent-based choices";
+      return "Install options";
     case "prerequisites":
-      return "Network prerequisites";
+      return "Network prep";
   }
 }
 

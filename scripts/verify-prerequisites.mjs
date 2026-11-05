@@ -53,7 +53,7 @@ export async function verifyPrerequisites({
 
   await go("#/prerequisites", true);
   await check(
-    'document.title.startsWith("Network prerequisites") && document.querySelectorAll(".node").length === 5 && document.querySelectorAll(".bmc").length === 5',
+    'document.title.startsWith("Network prep") && document.querySelectorAll(".node").length === 5 && document.querySelectorAll(".bmc").length === 5',
     "Five nodes and independent BMC addresses render",
   );
   await check(

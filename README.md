@@ -1,15 +1,15 @@
 # OpenShift installation journey
 
-One web app for understanding OpenShift installation on bare metal. **Journey** opens by default; **Choices** explores Agent-based Installer configuration decisions; **Prerequisites** illustrates the network and IT handoffs for a five-node Agent installation. The shared header provides page navigation. Each page owns its layout and controls.
+One web app for understanding OpenShift installation on bare metal. **Journey map** opens by default; **Install options** explores Agent-based Installer configuration decisions; **Network prep** illustrates the network and IT handoffs for a five-node Agent installation. The shared header places prominent page cards beneath the app name in this order: Journey map, Network prep, Install options, Solution demo. Each card has a short description; Solution demo retains its existing development-only availability. The current page has a filled card and check mark. Cards use one row on desktop and two columns on narrow screens. Each page owns its layout and controls.
 
 ```bash
 npm ci
 npm run app
 ```
 
-Open <http://localhost:5174>. Choose **Choices** in the header, or follow **Explore Agent-based choices** from Journey's deployment-planning explanation. **Return to journey** restores the previous step and reading position. Page switches preserve Journey's expanded sections and Choices answers for the current session.
+Open <http://localhost:5174>. Choose **Install options** in the header, or follow **Explore Install options** from Journey's deployment-planning explanation. **Return to Journey map** restores the previous step and reading position. Page switches preserve Journey's expanded sections and Choices answers for the current session.
 
-Choose **Prerequisites** in the header, or follow its contextual links from networking, addressing, DNS, firewall review and host management. The page presents a network map, five site handoffs and expandable technical references. Node addressing and site DNS publication are equally prominent controls above the map. DNS can be published before installation or deferred until afterward in this managed bare-metal example; the visible note explains the installation-time resolution needs. Section links preserve both selections, and reference links open their panel. Page switches retain selections, expanded references and reading position.
+Choose **Network prep** in the header, or follow its contextual links from networking, addressing, DNS, firewall review and host management. The page presents a network map, five site handoffs and expandable technical references. Node addressing and site DNS publication are equally prominent controls above the map. DNS can be published before installation or deferred until afterward in this managed bare-metal example; the visible note explains the installation-time resolution needs. Section links preserve both selections, and reference links open their panel. Page switches retain selections, expanded references and reading position.
 
 ```bash
 npm run check
@@ -50,4 +50,4 @@ scripts/verify-app.mjs  Combined-app browser verification
 
 Page CSS is scoped beneath `.journey-page`, `.choices-page` or `.prerequisites-page`. The Prerequisites palette, typography, spacing, corner sizes and page frame are shared through `src/app/theme.css`; use its tokens for colors and selection states on every page. The shared header and footer live in `src/app/styles.css`. Pages own their content grids within the common frame. To add a page with another layout, add its folder under `src/pages`, a route variant/parser/serializer, navigation entry and page rendering in `src/app`. Keep its controls and layout styles in that folder, and add its navigation behavior to browser verification.
 
-Detailed content guidance: [Journey](src/pages/journey/README.md), [Choices](src/pages/choices/README.md), [Prerequisites](src/pages/prerequisites/README.md). The original decision-tree design history is retained in `.audit/`.
+Detailed content guidance: [Journey map](src/pages/journey/README.md), [Install options](src/pages/choices/README.md), [Network prep](src/pages/prerequisites/README.md). The original decision-tree design history is retained in `.audit/`.

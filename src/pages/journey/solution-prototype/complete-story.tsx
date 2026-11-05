@@ -346,9 +346,9 @@ export default function CompleteStory({
       </div>
       <header className="sp-page-intro">
         <div>
-          <span className="sp-label">Solution example</span>
+          <span className="sp-label">Proposed installation experience</span>
           <h1 id="solution-prototype-title" tabIndex={-1}>
-            One plan, from missing inputs to a usable foundation.
+            Solution demo
           </h1>
           <p>
             Follow edge-east through preparation, installation and a verified

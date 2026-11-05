@@ -7,7 +7,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 - Launch with `node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs launch` and export the printed `VERIFY_RUN_DIR`.
 - The base URL is the `URL=` line from that launch; Choices opens at `#/choices`. It is `http://127.0.0.1:<port>/` on a port chosen for this run, starting from `4173`.
 - There is no account and no seeded database. `#/choices` selects nothing; an empty app URL opens Journey.
-- Run `doctor` and require `ok`, the title `OpenShift Bare-metal Installation Journey`, and the heading `Agent-based installation choices`.
+- Run `doctor` and require `ok`, the title `OpenShift Bare-metal Installation Journey`, and the heading `Install options`.
 - Never drive a Vite or Chrome process that this launch did not start.
 
 ## Driving conventions

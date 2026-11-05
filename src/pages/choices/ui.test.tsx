@@ -39,7 +39,7 @@ function page(view?: "path" | "map") {
 
 test("step through starts with no selection and only the first decision", () => {
   const html = page();
-  expect(html).toContain("Agent-based installation choices");
+  expect(html).toContain("Install options");
   expect(html).toContain('data-view="path"');
   expect(html).toContain('class="mode" aria-pressed="true"');
   expect(html).not.toContain('class="option" aria-pressed="true"');

@@ -205,10 +205,11 @@ export function ChoicesPage({
       <main id="main-content" className="page" tabIndex={-1}>
         <header>
           <p className="release">
-            OpenShift Container Platform {catalog.release}
+            Agent-based Installer · OpenShift Container Platform{" "}
+            {catalog.release}
           </p>
           <h1 id="choices-title" tabIndex={-1}>
-            Agent-based installation choices
+            Install options
           </h1>
           <p className="lede">
             Nothing starts selected. Step through reveals the next decision

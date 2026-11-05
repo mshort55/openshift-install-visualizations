@@ -17,7 +17,7 @@ In See every option, choosing Static NMState records that choice, presses the bu
 
 Preconditions:
 
-- `doctor` prints `ok` and `heading Agent-based installation choices`.
+- `doctor` prints `ok` and `heading Install options`.
 - Start from `#/choices` in Step through with no answers.
 
 - **Show every option.** Choose `See every option`. Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser click --role button --name "See every option"`. Then run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser hash`. It prints `/choices?mode=map`.

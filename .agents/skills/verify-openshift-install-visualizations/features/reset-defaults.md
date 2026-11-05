@@ -15,7 +15,7 @@ Clear choices removes every answer from the URL hash. No option is pressed after
 
 Preconditions:
 
-- `doctor` prints `ok` and `heading Agent-based installation choices`.
+- `doctor` prints `ok` and `heading Install options`.
 - The hash contains `host-addressing=static`. Follow [Static addressing](./static-addressing.md) first when there are no answer parameters.
 
 - **Clear.** Choose `Clear choices`. Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser click --role button --name "Clear choices"`. The command prints `/choices?mode=map` in See every option, or `/choices` in Step through.

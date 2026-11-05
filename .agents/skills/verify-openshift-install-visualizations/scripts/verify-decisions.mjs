@@ -8,7 +8,7 @@ import { pipeline } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
 
 const CHROME_VERSION = "154.0.8037.92";
-const HEADING = "Agent-based installation choices";
+const HEADING = "Install options";
 const TITLE = "OpenShift Bare-metal Installation Journey";
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),

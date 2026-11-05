@@ -1,4 +1,4 @@
-# OpenShift Bare-metal Installation Journey
+# Journey map
 
 The default page of the learning app for Red Hat engineers exploring the installation customer experience on bare metal, using the Agent-based Installer as the main path. A vertical timeline maps eight stages across preparation, installation and post-installation. Stages expand into steps, customer problems and candidate improvements. It includes 50 topics, 22 representative problem records and 11 product proposals.
 

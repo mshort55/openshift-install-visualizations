@@ -60,12 +60,12 @@ export function App() {
               returnTo,
               label:
                 route.page === "solution-prototype"
-                  ? "solution example"
+                  ? "Solution demo"
                   : route.page === "journey"
-                    ? (topicById.get(route.view.topic)?.title ?? "journey")
+                    ? (topicById.get(route.view.topic)?.title ?? "Journey map")
                     : route.page === "prerequisites"
-                      ? "prerequisite detail"
-                      : "Agent-based choices",
+                      ? "Network prep"
+                      : "Install options",
             },
           }));
           navigate(next);
@@ -144,15 +144,75 @@ export function App() {
         <nav className="app-navigation" aria-label="Main navigation">
           <a
             href={appHref(journey)}
+            aria-labelledby="nav-journey-title"
+            aria-describedby="nav-journey-description"
             aria-current={route.page === "journey" ? "page" : undefined}
             data-focus="nav-journey"
             onClick={(event) => follow(event, () => openPage("journey"))}
           >
-            Journey
+            <span className="app-navigation-heading">
+              <strong id="nav-journey-title">Journey map</strong>
+              <Icon
+                name={route.page === "journey" ? "check" : "arrow"}
+                size={18}
+              />
+            </span>
+            <span
+              className="app-navigation-description"
+              id="nav-journey-description"
+            >
+              Explore installation steps, problems and opportunities.
+            </span>
+          </a>
+          <a
+            href={appHref(prerequisites)}
+            aria-labelledby="nav-prerequisites-title"
+            aria-describedby="nav-prerequisites-description"
+            aria-current={route.page === "prerequisites" ? "page" : undefined}
+            data-focus="nav-prerequisites"
+            onClick={(event) => follow(event, () => openPage("prerequisites"))}
+          >
+            <span className="app-navigation-heading">
+              <strong id="nav-prerequisites-title">Network prep</strong>
+              <Icon
+                name={route.page === "prerequisites" ? "check" : "arrow"}
+                size={18}
+              />
+            </span>
+            <span
+              className="app-navigation-description"
+              id="nav-prerequisites-description"
+            >
+              Review addresses, services and access requirements.
+            </span>
+          </a>
+          <a
+            href={appHref(choices)}
+            aria-labelledby="nav-choices-title"
+            aria-describedby="nav-choices-description"
+            aria-current={route.page === "choices" ? "page" : undefined}
+            data-focus="nav-choices"
+            onClick={(event) => follow(event, () => openPage("choices"))}
+          >
+            <span className="app-navigation-heading">
+              <strong id="nav-choices-title">Install options</strong>
+              <Icon
+                name={route.page === "choices" ? "check" : "arrow"}
+                size={18}
+              />
+            </span>
+            <span
+              className="app-navigation-description"
+              id="nav-choices-description"
+            >
+              Compare Agent-based configuration options.
+            </span>
           </a>
           {SolutionPrototype && (
             <a
               href={appHref(solution)}
+              aria-labelledby="nav-solution-title"
+              aria-describedby="nav-solution-description"
               aria-current={
                 route.page === "solution-prototype" ? "page" : undefined
               }
@@ -161,25 +221,21 @@ export function App() {
                 follow(event, () => openPage("solution-prototype"))
               }
             >
-              Solution example
+              <span className="app-navigation-heading">
+                <strong id="nav-solution-title">Solution demo</strong>
+                <Icon
+                  name={route.page === "solution-prototype" ? "check" : "arrow"}
+                  size={18}
+                />
+              </span>
+              <span
+                className="app-navigation-description"
+                id="nav-solution-description"
+              >
+                Explore a proposed installation experience.
+              </span>
             </a>
           )}
-          <a
-            href={appHref(choices)}
-            aria-current={route.page === "choices" ? "page" : undefined}
-            data-focus="nav-choices"
-            onClick={(event) => follow(event, () => openPage("choices"))}
-          >
-            Choices
-          </a>
-          <a
-            href={appHref(prerequisites)}
-            aria-current={route.page === "prerequisites" ? "page" : undefined}
-            data-focus="nav-prerequisites"
-            onClick={(event) => follow(event, () => openPage("prerequisites"))}
-          >
-            Prerequisites
-          </a>
         </nav>
       </header>
 
@@ -200,7 +256,7 @@ export function App() {
               href={appHref(journeyHome)}
               onClick={(event) => follow(event, () => navigate(journeyHome))}
             >
-              Explore how installation works
+              Explore the Journey map
             </a>
           )}
         </div>
@@ -232,7 +288,7 @@ export function App() {
               chapter: contextChapter,
               moment: contextChapter === "preparation" ? 0 : solution.moment,
             },
-            "See this in the solution example",
+            "See this in the Solution demo",
             `from-${route.page === "journey" ? (route.view.item ?? route.view.topic) : "page"}`,
           )}
         </div>
@@ -260,7 +316,7 @@ export function App() {
                     data-focus={`explore-prerequisites-${topic}`}
                     onClick={(event) => follow(event, () => navigate(next))}
                   >
-                    Explore the five-node prerequisite example{" "}
+                    Explore Network prep: a five-node example{" "}
                     <Icon name="arrow" size={16} />
                   </a>,
                 ];
@@ -274,7 +330,7 @@ export function App() {
               data-focus="explore-choices"
               onClick={(event) => follow(event, () => openPage("choices"))}
             >
-              Explore Agent-based choices <Icon name="arrow" size={16} />
+              Explore Install options <Icon name="arrow" size={16} />
             </a>
           }
         />
@@ -287,7 +343,7 @@ export function App() {
                 data-focus="return-journey"
                 onClick={(event) => follow(event, () => openPage("journey"))}
               >
-                <Icon name="back" size={16} /> Return to journey
+                <Icon name="back" size={16} /> Return to Journey map
               </a>
             </div>
           )}

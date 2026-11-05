@@ -17,7 +17,7 @@ Opening the app URL with `#host-addressing=static` selects Static NMState. Step 
 
 Preconditions:
 
-- `doctor` prints `ok` and `heading Agent-based installation choices`.
+- `doctor` prints `ok` and `heading Install options`.
 - Start from `#/choices` with no answers so navigation changes the choice.
 
 - **Open the shared hash.** Run `VERIFY_RUN_DIR="$VERIFY_RUN_DIR" node .agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs browser navigate --hash "host-addressing=static"`. The command prints `host-addressing=static`.

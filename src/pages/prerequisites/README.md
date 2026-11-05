@@ -1,4 +1,4 @@
-# Network prerequisites
+# Network prep
 
 An illustrative five-node Agent-based installation with OCP 4.22, IPv4, `platform: baremetal`, managed VIPs, OVN-Kubernetes, a full agent ISO and BMC virtual media. This page connects the installation journey to the infrastructure and IT handoffs that one concrete design needs.
 
