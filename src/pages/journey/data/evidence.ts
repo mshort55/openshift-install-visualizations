@@ -28,13 +28,13 @@ export const problems: Problem[] = [
         occurred: {
           kind: "dated",
           period:
-            "Servers arrived in 2025; bare-metal installation work began several months later that year, inferred from the interview’s relative dates.",
+            "Servers arrived in 2025; bare-metal installation work began several months later that year, inferred from the interview’s relative dates. Individual recurring firewall requests were not dated.",
         },
         basis: "Interview transcript",
         finding:
-          "Power, cabling, remote access, firewall rules, IP addresses and DNS required work across teams before repeatable builds became straightforward.",
+          "Power, cabling, remote access, firewall rules, IP addresses and DNS required work across teams before repeatable builds became straightforward. Each new server still required time-consuming ServiceNow requests to allow its out-of-band IP and required ports through the firewall so Ironic could reach iDRAC. Once the rules were correct, the team could run its existing playbook.",
         limitation:
-          "This describes physical preparation and organizational waiting, without diagnosing a BMC or firmware defect.",
+          "The firewall path is specific to the reported Ironic/iDRAC workflow. No request duration or tracking-tool benefit was measured, and no BMC or firmware defect was established.",
       },
       {
         title: "Hosting and network requests",
@@ -1166,8 +1166,26 @@ export const problems: Problem[] = [
           "The participant acknowledged they might be looking in the wrong place; this does not prove documentation was absent.",
       },
       {
+        title: "Exploring programmatic builds and reruns",
+        platform: "OpenShift on vSphere through ACM",
+        reported: {
+          kind: "reported",
+          date: "2026",
+        },
+        occurred: {
+          kind: "unknown",
+          detail:
+            "individual failed builds were not dated; the replacement workflow was still being explored at the interview.",
+        },
+        basis: "Interview transcript",
+        finding:
+          "After failures, the participant described returning to the ACM wizard and re-entering its fields. They were exploring fully Ansible-driven builds for easier reruns, idempotency and scheduled build testing.",
+        limitation:
+          "The participant stopped short of calling field re-entry a frequent pain point because they built infrequently. The replacement workflow was not completed, and current wizard behavior was not independently tested.",
+      },
+      {
         title: "Changing the deployment workflow",
-        platform: "VMware-to-Nutanix platform transition",
+        platform: "OpenShift workflows across VMware, Nutanix and Azure/ARO",
         reported: {
           kind: "reported",
           date: "2026",
@@ -1175,21 +1193,21 @@ export const problems: Problem[] = [
         occurred: {
           kind: "dated",
           period:
-            "Migration began in 2025; manual work spanned roughly 9–10 months. Last new builds were reported in early 2026; individual difficulty dates are unknown.",
+            "Migration began in 2025; manual work spanned roughly 9–10 months. Last new builds were reported in early 2026; individual difficulty dates are unknown. The cross-platform preference was expressed at the interview.",
         },
         basis: "Interview transcript",
         finding:
-          "The team moved from an ACM-based creation flow to bastion-host configuration files and a separate ACM import. Automation was deferred because of time and build frequency.",
+          "The team moved from an ACM-based creation flow to bastion-host configuration files and a separate ACM import. Automation was deferred because of time and build frequency. Having deployed on VMware and Nutanix, the participant described learning another Azure/ARO deployment process as frustrating rather than confusing and wanted consistency across platforms.",
         limitation:
-          "The same organization supplies the image-timeout account. This is additional workflow work, not evidence every custom integration is defective.",
+          "The participant acknowledged differences between provider APIs and infrastructure. This preference does not validate a single starting API or its learning benefit. The same organization supplies the image-timeout account.",
       },
     ],
     impact:
-      "Repeating or adapting a deployment requires maintained customer configuration and coordination between tools.",
+      "Repeating or adapting a deployment can require re-entering inputs, maintaining customer configuration and coordinating between tools.",
     outcome:
       "Several workflows already worked. Participants still wanted clearer integration guidance or more repeatable automation.",
     limit:
-      "This concerns deploying the next intended environment, separately from choosing a method or recovering a failed attempt. Platform-specific examples do not establish a universal installer limitation.",
+      "Programmatic repeatability and repairing a failed configuration job are distinct concerns, although the vSphere examples come from the same interview. Platform-specific examples do not establish a universal installer limitation.",
     kind: "Reported experience",
   },
   {
