@@ -137,16 +137,6 @@ export async function verifyPrerequisites({
     "Forward restores prerequisite reading position",
   );
 
-  await run(
-    'Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: () => Promise.reject(new Error("unavailable")) } })',
-  );
-  await click('button[aria-label="Share this view"]');
-  await wait('!!document.querySelector("dialog[open]")');
-  await check(
-    'document.querySelector("input[readonly]").value === location.href && document.querySelector("dialog").textContent.includes("prerequisite section and example scenarios")',
-    "Share fallback retains section and scenarios",
-  );
-  await click('button[aria-label="Close dialog"]');
   await go("#/prerequisites/dns-access?addressing=static&dns=pending", true);
   await check(
     'document.getElementById("prerequisites-dns-access").parentElement.open && document.querySelector("input[value=static]").checked && document.querySelector("input[value=pending]").checked',

@@ -1,8 +1,6 @@
 type IconName =
   | "arrow"
   | "chevron"
-  | "search"
-  | "close"
   | "map"
   | "layers"
   | "server"
@@ -10,7 +8,6 @@ type IconName =
   | "book"
   | "bulb"
   | "warning"
-  | "link"
   | "network"
   | "storage"
   | "people"
@@ -23,13 +20,6 @@ const paths: Record<IconName, React.ReactNode> = {
   arrow: <path d="M4 12h15m-6-6 6 6-6 6" />,
   back: <path d="M20 12H5m6-6-6 6 6 6" />,
   chevron: <path d="m9 5 7 7-7 7" />,
-  search: (
-    <>
-      <circle cx="10.5" cy="10.5" r="6.5" />
-      <path d="m16 16 5 5" />
-    </>
-  ),
-  close: <path d="m6 6 12 12M6 18 18 6" />,
   map: (
     <>
       <path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16" />
@@ -65,14 +55,6 @@ const paths: Record<IconName, React.ReactNode> = {
   warning: (
     <>
       <path d="m12 3 10 18H2L12 3Zm0 6v5m0 3h.01" />
-    </>
-  ),
-  link: (
-    <>
-      <path
-        d="m10 14 4-4m-5 6-2 2a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m2 0 2-2a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0"
-        transform="translate(1 0)"
-      />
     </>
   ),
   network: (

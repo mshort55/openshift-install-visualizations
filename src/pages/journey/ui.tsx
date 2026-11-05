@@ -4,11 +4,9 @@ import {
   type ReactNode,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { Icon } from "../../app/Icon";
-import { Modal } from "../../app/Modal";
 import {
   childrenOf,
   lenses,
@@ -16,7 +14,6 @@ import {
   phaseIds,
   problems,
   routeHref,
-  searchJourney,
   stageForTopic,
   stages,
   topicById,
@@ -188,178 +185,6 @@ function JourneyLink({
     >
       {children}
     </a>
-  );
-}
-
-function Search({
-  navigate,
-  onClose,
-}: {
-  navigate: Navigate;
-  onClose: () => void;
-}) {
-  const [query, setQuery] = useState("");
-  const input = useRef<HTMLInputElement>(null);
-  const results = searchJourney(query);
-  const searchNavigate: Navigate = (route) => {
-    onClose();
-    navigate(route);
-  };
-  useEffect(() => {
-    input.current?.focus();
-  }, []);
-  return (
-    <Modal
-      title="Find your way through the journey"
-      onClose={onClose}
-      className="search-modal"
-    >
-      <div className="search-input-wrap">
-        <Icon name="search" />
-        <input
-          ref={input}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Try DNS, storage, retries or disconnected sites…"
-          aria-label="Search topics, customer problems and opportunities"
-        />
-      </div>
-      <p className="search-count" role="status">
-        {query.trim()
-          ? `${results.length} ${results.length === 1 ? "result" : "results"}${results.length > 20 ? " · showing the first 20" : ""}`
-          : "Search across explanations, customer evidence and improvement ideas."}
-      </p>
-      <div className="search-results">
-        {!query.trim() && (
-          <div className="suggestions">
-            <span>Start with a topic</span>
-            {["Networking", "Storage", "Progress", "Disconnected"].map(
-              (label) => (
-                <button
-                  type="button"
-                  key={label}
-                  onClick={() => {
-                    setQuery(label);
-                    input.current?.focus();
-                  }}
-                >
-                  {label}
-                  <Icon name="arrow" size={16} />
-                </button>
-              ),
-            )}
-          </div>
-        )}
-        {query.trim() && !results.length && (
-          <div className="empty-state">
-            <Icon name="search" size={28} />
-            <h3>No matching topics yet</h3>
-            <p>Try a broader term such as network, access or recovery.</p>
-          </div>
-        )}
-        {results.slice(0, 20).map((result) => (
-          <JourneyLink
-            key={result.id}
-            to={result.route}
-            navigate={searchNavigate}
-            className="search-result"
-          >
-            <span className="eyebrow">{result.context}</span>
-            <strong>{result.title}</strong>
-            <span>{result.summary}</span>
-            <Icon name="arrow" size={18} />
-          </JourneyLink>
-        ))}
-      </div>
-    </Modal>
-  );
-}
-
-function About({ onClose }: { onClose: () => void }) {
-  return (
-    <Modal title="About this journey" onClose={onClose} className="about-modal">
-      <div className="about-body">
-        <span className="eyebrow">An explorer for Red Hat engineers</span>
-        <h3>See the work through the customer’s eyes.</h3>
-        <p>
-          Explore the shared decisions and tasks involved in installing OCP 4.22
-          on bare metal. Detailed installation examples follow the local
-          Agent-based Installer CLI workflow, with method-specific behavior
-          identified where it matters. Open variations for other boot options
-          and installation without an external registry. Follow the timeline,
-          then open a stage and step to reveal more detail. Switch perspectives
-          to explore the same step’s problems and possible improvements.
-        </p>
-        <div className="about-lenses">
-          {lenses.map((lens, i) => (
-            <div key={lens.id}>
-              <Icon name={i === 0 ? "book" : i === 1 ? "warning" : "bulb"} />
-              <span>
-                <strong>{lens.label}</strong>
-                <p>{lens.description}</p>
-              </span>
-            </div>
-          ))}
-        </div>
-        <h4>How to read the evidence</h4>
-        <p>
-          The evidence was reviewed in November 2026 and includes accounts from
-          earlier years. Process examples use the OCP 4.22 technical baseline.
-          This is a learning and investigation map, not a live cluster monitor.
-        </p>
-        <p>
-          Customer problems and improvement opportunities include reports from
-          other installation methods. Their original scopes and historical
-          labels remain visible; they do not all describe Agent-based installs.
-          Each problem appears once at its assigned step. Neither the order nor
-          the record count establishes frequency or severity.
-        </p>
-        <p>
-          Readiness and recovery requirements live in How it works. Ideas can
-          build on reported problems or on those tasks; their benefits still
-          need investigation.
-        </p>
-        <p>
-          Recommended starting points are editorial priorities, separate from
-          the customer goals each idea applies to. The post-installation
-          evidence is weighted toward virtualization administrators; it does not
-          establish the same priorities for every OpenShift workload. Reported
-          fixes still need verification on the applicable build.
-        </p>
-        <p>
-          Opportunity cards describe proposed product behavior and illustrative
-          output. Public product documentation distinguishes existing
-          capabilities from precedents elsewhere. These sources were checked on
-          November 4, 2026; they do not establish a current product gap or prove
-          the proposed benefit.
-        </p>
-        <p>
-          Each customer example separates when it was reported from when the
-          experience occurred. A study report date is not an incident date.
-          Unknown timing and disputed call dates remain visible. Evidence labels
-          distinguish interview transcripts, research reports, direct notes and
-          copied meeting summaries; a summary-only account has not been checked
-          against its original transcript.
-        </p>
-        <h4>Research still needed</h4>
-        <p>
-          Reported bare-metal preparation and cleanup accounts are available.
-          Direct observation is still needed for firmware, host boot, bootstrap
-          transitions and recovery decisions on current workflows.
-        </p>
-        <p>
-          Reported accounts describe wider teams still learning OpenShift and
-          difficulty collecting diagnostic evidence. Observe receiving teams
-          diagnosing a representative problem with their own access and
-          instructions. An ongoing learning transition does not establish a
-          failed formal handover; research gaps remain outside problem counts.
-        </p>
-        <p className="about-note">
-          Internal use · This app opens independently from the installation
-          decision tree.
-        </p>
-      </div>
-    </Modal>
   );
 }
 
@@ -1435,45 +1260,12 @@ export function JourneyPage({
   prerequisitesLinks: ReadonlyMap<string, ReactNode>;
 }) {
   const expansion = useTimelineExpansion(route, session);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [aboutOpen, setAboutOpen] = useState(false);
-  useEffect(() => {
-    const searchShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        if (!aboutOpen && !document.querySelector("dialog[open]"))
-          setSearchOpen(true);
-      }
-    };
-    window.addEventListener("keydown", searchShortcut);
-    return () => window.removeEventListener("keydown", searchShortcut);
-  }, [aboutOpen]);
   return (
     <choicesLinkContext.Provider value={choicesLink}>
       <prerequisitesLinksContext.Provider value={prerequisitesLinks}>
         <div className="journey-page">
           <div className="app timeline-app">
             <main id="main-content" className="main-shell" tabIndex={-1}>
-              <div className="journey-tools">
-                <button
-                  type="button"
-                  className="search-trigger"
-                  aria-label="Search the journey"
-                  onClick={() => setSearchOpen(true)}
-                >
-                  <Icon name="search" size={17} />
-                  <span>Search the journey</span>
-                  <kbd>⌘ / Ctrl K</kbd>
-                </button>
-                <button
-                  type="button"
-                  className="icon-button about-trigger"
-                  onClick={() => setAboutOpen(true)}
-                  aria-label="About this journey"
-                >
-                  <Icon name="info" size={20} />
-                </button>
-              </div>
               <section className="timeline-hero">
                 <span className="eyebrow hero-eyebrow">
                   The customer experience
@@ -1506,13 +1298,6 @@ export function JourneyPage({
                 />
               </div>
             </main>
-            {searchOpen && (
-              <Search
-                navigate={navigate}
-                onClose={() => setSearchOpen(false)}
-              />
-            )}
-            {aboutOpen && <About onClose={() => setAboutOpen(false)} />}
           </div>
         </div>
       </prerequisitesLinksContext.Provider>

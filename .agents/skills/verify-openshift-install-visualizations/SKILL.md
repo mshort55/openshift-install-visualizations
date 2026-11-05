@@ -13,7 +13,7 @@ Run commands from the repository root. Install dependencies with `npm ci` when `
 npm run verify:browser
 ```
 
-This launches disposable Vite and Chrome processes, drives the real UI and cleans up in `finally`. Completion requires the `PASS` line and exit code 0. It verifies Journey as the default page, Choices navigation, retained Journey expansion/scroll and Choices answers, Back/Forward, contextual return, old URL formats, refresh, Share fallback, Journey search, keyboard access, and both layouts at 320, 390, 768 and 1440 pixels. Screenshots remain under `artifacts/verify/combined-app/`.
+This launches disposable Vite and Chrome processes, drives the real UI and cleans up in `finally`. Completion requires the `PASS` line and exit code 0. It verifies Journey as the default page, Choices navigation, retained Journey expansion/scroll and Choices answers, Back/Forward, contextual return, old URL formats, refresh, absence of the removed search/share/About controls, keyboard access, and page layouts at 320, 390, 768 and 1440 pixels. Screenshots remain under `artifacts/verify/combined-app/`.
 
 The first run downloads Chrome for Testing to this skill's ignored `cache/` directory. The app has no login, database or external runtime service.
 

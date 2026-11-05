@@ -1,11 +1,4 @@
-import {
-  lazy,
-  type MouseEvent,
-  Suspense,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { lazy, type MouseEvent, Suspense, useState } from "react";
 import { choicesCatalog } from "../pages/choices/data";
 import { ChoicesPage } from "../pages/choices/ui";
 import { topicById } from "../pages/journey/catalog";
@@ -15,7 +8,6 @@ import { usePrerequisitesSession } from "../pages/prerequisites/interactions";
 import { journeyPrerequisites } from "../pages/prerequisites/model";
 import { PrerequisitesPage } from "../pages/prerequisites/ui";
 import { Icon } from "./Icon";
-import { Modal } from "./Modal";
 import { type NavigationReturn, useAppNavigation } from "./navigation";
 import { type AppRoute, appHref, journeyHome } from "./routes";
 
@@ -111,36 +103,6 @@ export function App() {
   const contextChapter = chapterForContext();
   const session = useJourneySession();
   const prerequisitesSession = usePrerequisitesSession();
-  const [shareStatus, setShareStatus] = useState("");
-  const [shareFallback, setShareFallback] = useState(false);
-  const shareInput = useRef<HTMLInputElement>(null);
-  const shareUrl = new URL(appHref(route), window.location.href).href;
-
-  useEffect(() => {
-    if (!shareStatus) return;
-    const timer = window.setTimeout(() => setShareStatus(""), 3000);
-    return () => clearTimeout(timer);
-  }, [shareStatus]);
-  useEffect(() => {
-    if (shareFallback) {
-      shareInput.current?.focus();
-      shareInput.current?.select();
-    }
-  }, [shareFallback]);
-
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setShareStatus(
-        route.page === "solution-prototype"
-          ? "Chapter link copied · illustrative progress is not shared"
-          : "Link copied",
-      );
-    } catch {
-      setShareFallback(true);
-    }
-  };
-
   return (
     <div className="application">
       <button
@@ -219,15 +181,6 @@ export function App() {
             Prerequisites
           </a>
         </nav>
-        <button
-          type="button"
-          className="app-share"
-          onClick={copyLink}
-          aria-label="Share this view"
-        >
-          <Icon name="link" size={17} />
-          <span>Share view</span>
-        </button>
       </header>
 
       {(origin || route.page === "solution-prototype") && (
@@ -364,32 +317,6 @@ export function App() {
         <span>Evidence reviewed · Nov 2026</span>
         <span>Internal use</span>
       </footer>
-      <div className="app-toast" role="status" aria-live="polite">
-        {shareStatus}
-      </div>
-      {shareFallback && (
-        <Modal title="Share this view" onClose={() => setShareFallback(false)}>
-          <div className="app-share-fallback">
-            <p>
-              Copy this link to open the same{" "}
-              {route.page === "solution-prototype"
-                ? "story chapter only; illustrative progress is not shared and starts fresh on reload"
-                : route.page === "journey"
-                  ? "topic and perspective"
-                  : route.page === "choices"
-                    ? "choices and display mode"
-                    : "prerequisite section and example scenarios"}
-              .
-            </p>
-            <input
-              ref={shareInput}
-              aria-label="Link to this view"
-              value={shareUrl}
-              readOnly
-            />
-          </div>
-        </Modal>
-      )}
     </div>
   );
 }

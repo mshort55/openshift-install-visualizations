@@ -122,20 +122,6 @@ h1:focus {
   color: var(--selection-text);
   border-color: var(--selection-border);
 }
-.app-share {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-badge);
-  padding: 9px 12px;
-  background: var(--surface);
-  color: var(--ink);
-  white-space: nowrap;
-}
-.app-share:hover {
-  background: var(--page-bg);
-}
 .app-return {
   padding: var(--space-lg) var(--page-gutter) 0;
   margin: 0 auto;
@@ -180,73 +166,6 @@ h1:focus {
 .app-skip-link:focus {
   top: 12px;
 }
-.app-toast:empty {
-  display: none;
-}
-.app-toast {
-  position: fixed;
-  bottom: 26px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  background: var(--surface-base);
-  color: var(--surface);
-  border-radius: var(--radius-box);
-  padding: 12px 21px;
-  box-shadow: var(--shadow-toast);
-}
-.modal {
-  padding: 0;
-  border: 1px solid var(--line);
-  background: var(--surface);
-  color: var(--ink);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-dialog);
-  max-width: calc(100vw - 30px);
-  width: 660px;
-  max-height: 85dvh;
-  overflow: auto;
-}
-.modal::backdrop {
-  background: var(--backdrop);
-  backdrop-filter: blur(4px);
-}
-.modal-heading {
-  padding: 19px 24px;
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  position: sticky;
-  top: 0;
-  background: var(--surface);
-  z-index: 2;
-}
-.modal-heading h2 {
-  font-family: var(--font-display);
-  font-size: 17px;
-  margin: 0;
-}
-.modal-heading .icon-button {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: var(--radius-badge);
-  background: var(--gray-10);
-  color: inherit;
-}
-.app-share-fallback {
-  padding: 8px 24px 28px;
-}
-.app-share-fallback input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--gray-30);
-  border-radius: var(--radius-badge);
-}
 @media (min-width: 761px) and (max-width: 1100px) {
   .app-header:has([data-focus="nav-solution-prototype"]) {
     flex-wrap: wrap;
@@ -256,9 +175,6 @@ h1:focus {
     order: 3;
     width: 100%;
     margin: 0;
-  }
-  .app-header:has([data-focus="nav-solution-prototype"]) .app-share {
-    margin-left: auto;
   }
 }
 @media (max-width: 760px) {
@@ -286,9 +202,6 @@ h1:focus {
     text-align: center;
     padding-inline: 10px;
   }
-  .app-share {
-    margin-left: auto;
-  }
 }
 @media (max-width: 500px) {
   .app-header:has([data-focus="nav-solution-prototype"]) .app-navigation {
@@ -300,12 +213,6 @@ h1:focus {
   .app-header {
     padding-left: 16px;
     padding-right: 16px;
-  }
-  .app-share span {
-    display: none;
-  }
-  .app-share {
-    padding: 10px;
   }
   .app-footer span:last-child {
     margin-left: 0;

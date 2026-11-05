@@ -424,7 +424,9 @@ export default function CompleteStory({
         <span>
           <strong>Reading ≠ execution</strong> Chapters preserve progress.
         </span>
-        <span>Share view copies this chapter only. Reload starts fresh.</span>
+        <span>
+          The address links to this chapter only. Reload starts fresh.
+        </span>
         <span>
           No cluster, BMC, external ticket or automation controller is
           contacted.

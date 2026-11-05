@@ -18,7 +18,7 @@ The content was ported from `2026-10-27-agent-baremetal-network-prerequisites.ht
 - `interactions.tsx` owns local section links and disclosure state. Navigation callbacks go through the app; this page does not write browser history.
 - `ui.tsx` composes the map, controls and detailed sections. Styles stay beneath `.prerequisites-page` and use the app's bundled fonts.
 
-The app retains disclosure state across page switches. Shared reference links open their panel after refresh; other disclosures are session-only. Existing addressing, DNS and handoff links focus their consolidated content. Returning to Journey restores the topic, expansion, reading position and entry-link focus. Section links and scenario changes participate in browser Back/Forward and Share view. Unspecified DNS means published; `dns=pending` selects deferred publication.
+The app retains disclosure state across page switches. Shared reference links open their panel after refresh; other disclosures are session-only. Existing addressing, DNS and handoff links focus their consolidated content. Returning to Journey restores the topic, expansion, reading position and entry-link focus. Section links and scenario changes update the browser address and participate in Back/Forward. Unspecified DNS means published; `dns=pending` selects deferred publication.
 
 ## Evidence boundaries
 

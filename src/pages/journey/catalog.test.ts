@@ -10,7 +10,6 @@ import {
   problems,
   problemsFor,
   routeHref,
-  searchJourney,
   stageForTopic,
   stages,
   topics,
@@ -338,18 +337,6 @@ describe("shareable navigation and discovery", () => {
         lens: "process",
       });
     }
-    expect(
-      searchJourney("secret restoration").some(
-        (result) =>
-          result.route.lens === "process" &&
-          result.route.topic === "acceptance",
-      ),
-    ).toBe(true);
-    expect(
-      searchJourney("current media workflow").some(
-        (result) => result.route.item === "boot-handoff",
-      ),
-    ).toBe(true);
   });
 
   test("every previously published opportunity link reaches its replacement or retained guidance", () => {
@@ -491,73 +478,5 @@ describe("shareable navigation and discovery", () => {
         }
       }
     }
-  });
-
-  test("search includes product examples, implementations, leads and documented precedents", () => {
-    for (const [query, id] of [
-      ["recommended infrastructure preparation", "precise-handoffs"],
-      ["migration intended first workload", "migration-preparation"],
-      ["variable reference", "reusable-deployment-configuration"],
-      ["collector entitlement", "diagnostic-handover"],
-      ["worker-02 proxy rejects", "precise-handoffs"],
-      ["MAAS hardware", "precise-handoffs"],
-      ["recommended migration snapshots", "storage-outcome"],
-      ["source VM network eligible", "network-translation"],
-      ["delta package", "offline-outcome-kit"],
-      ["revision exception RHACS", "security-agreement"],
-      ["false degraded", "misleading-health"],
-      ["project selector September 2026", "first-vm-blocked"],
-    ] satisfies [string, string][]) {
-      expect(
-        searchJourney(query).some((result) => result.route.item === id),
-        query,
-      ).toBe(true);
-    }
-  });
-
-  test("search finds problem details and multiword concepts with working destinations", () => {
-    for (const [query, id] of [
-      ["reservation error", "first-vm-blocked"],
-      ["June 17, 2026", "method-choice"],
-      ["study report March 12, 2025", "migration-workload-readiness"],
-      ["direct research notes June 9, 2026", "operating-knowledge-gap"],
-    ] satisfies [string, string][]) {
-      expect(
-        searchJourney(query).some((result) => result.route.item === id),
-        query,
-      ).toBe(true);
-    }
-    expect(
-      searchJourney(" default storage class ").some(
-        (result) => result.route.item === "storage-not-usable",
-      ),
-    ).toBe(true);
-    expect(
-      searchJourney("deferred dns").some(
-        (result) => result.route.topic === "dns",
-      ),
-    ).toBe(true);
-    expect(searchJourney("     ")).toEqual([]);
-    expect(searchJourney("not-a-topic-in-this-corpus")).toEqual([]);
-    expect(
-      searchJourney("registry redirects").some(
-        (result) => result.route.topic === "service-access",
-      ),
-    ).toBe(true);
-    expect(
-      searchJourney("tang remote storage").some(
-        (result) => result.route.topic === "service-access",
-      ),
-    ).toBe(true);
-    for (const query of ["MetalLB", "compliance checks", "backup credentials"])
-      expect(
-        searchJourney(query).some(
-          (result) =>
-            result.route.topic === "platform-operators" &&
-            result.route.lens === "process",
-        ),
-      ).toBe(true);
-    for (const result of searchJourney("storage"))
-      expect(parseRoute(routeHref(result.route))).toEqual(result.route);
   });
 });

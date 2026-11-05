@@ -1,6 +1,6 @@
 # OpenShift installation journey
 
-One web app for understanding OpenShift installation on bare metal. **Journey** opens by default; **Choices** explores Agent-based Installer configuration decisions; **Prerequisites** illustrates the network and IT handoffs for a five-node Agent installation. The shared header provides page navigation and sharing. Each page owns its layout and controls.
+One web app for understanding OpenShift installation on bare metal. **Journey** opens by default; **Choices** explores Agent-based Installer configuration decisions; **Prerequisites** illustrates the network and IT handoffs for a five-node Agent installation. The shared header provides page navigation. Each page owns its layout and controls.
 
 ```bash
 npm ci
@@ -30,13 +30,13 @@ The single production output is `dist/`. Serve it at a root or subdirectory URL.
 - Earlier Journey `#/<topic>?view=...` and Choices `?view=map#decision=option&...` links are accepted at the new app address. Existing content redirects remain supported.
 - An empty address opens Journey. Old standalone deployment addresses must be redirected by their host to the new app, preserving query strings and fragments; the app cannot redirect a different host or port. An old empty Choices address must explicitly target `#/choices`.
 
-**Share view** copies the active page's selection and display mode, with a manual-copy dialog when clipboard access is unavailable. It does not serialize every expanded Journey section. Refresh restores the linked selection; session-only expansion resets. **Search the journey** searches Journey content and remains on that page.
+The browser address identifies the active page and selection. Copy it to reopen that view. Refresh restores the linked selection; session-only expansion resets.
 
 ## Source organization
 
 ```text
 src/
-  app/                 Shared header, navigation, routes, dialogs, base styles
+  app/                 Shared header, navigation, routes, base styles
   pages/
     journey/           Timeline, perspectives, explanatory content and evidence
     choices/           Decision tree, dependency rules and configuration catalog
@@ -48,6 +48,6 @@ scripts/verify-app.mjs  Combined-app browser verification
 
 `src/app/navigation.ts` is the sole owner of browser URL/history writes and cross-page scroll restoration. Pages receive their state and navigation callbacks. Journey and Prerequisites expansion state lives above the page switch; the three pages' content remains independent.
 
-Page CSS is scoped beneath `.journey-page`, `.choices-page` or `.prerequisites-page`. The Prerequisites palette, typography, spacing, corner sizes and page frame are shared through `src/app/theme.css`; use its tokens for colors and selection states on every page. The shared header, dialogs and footer live in `src/app/styles.css`. Pages own their content grids within the common frame. To add a page with another layout, add its folder under `src/pages`, a route variant/parser/serializer, navigation entry and page rendering in `src/app`. Keep its controls and layout styles in that folder, and add its navigation behavior to browser verification.
+Page CSS is scoped beneath `.journey-page`, `.choices-page` or `.prerequisites-page`. The Prerequisites palette, typography, spacing, corner sizes and page frame are shared through `src/app/theme.css`; use its tokens for colors and selection states on every page. The shared header and footer live in `src/app/styles.css`. Pages own their content grids within the common frame. To add a page with another layout, add its folder under `src/pages`, a route variant/parser/serializer, navigation entry and page rendering in `src/app`. Keep its controls and layout styles in that folder, and add its navigation behavior to browser verification.
 
 Detailed content guidance: [Journey](src/pages/journey/README.md), [Choices](src/pages/choices/README.md), [Prerequisites](src/pages/prerequisites/README.md). The original decision-tree design history is retained in `.audit/`.

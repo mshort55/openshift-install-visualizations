@@ -175,33 +175,12 @@ try {
       "Refresh retains Choices mode",
     );
     assert.equal(await run("location.href"), savedChoices);
-    // The same Share control must describe the active page when clipboard access fails.
-    await run(
-      'Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: () => Promise.reject(new Error("unavailable")) } })',
-    );
-    await click('button[aria-label="Share this view"]');
-    await wait('!!document.querySelector("dialog[open]")');
-    assert.equal(
-      await run('document.querySelector("input[readonly]").value'),
-      savedChoices,
-    );
-    await click('button[aria-label="Close dialog"]');
-
     await go("#/dns?view=problems&item=owner-wait");
     await wait('!!document.getElementById("page-title")');
     await check(
       'document.getElementById("tab-problems").getAttribute("aria-selected") === "true" && !!document.getElementById("record-owner-wait")',
       "Legacy Journey record link remains usable",
     );
-    await click('button[aria-label="Search the journey"]');
-    await check(
-      '!!document.querySelector("dialog[open]")',
-      "Journey search opens",
-    );
-    await click('button[aria-label="Close dialog"]');
-
-    await click('button[aria-label="Share this view"]');
-    await wait('!!document.querySelector("dialog[open]")');
     await cdp.send("Input.dispatchKeyEvent", {
       type: "keyDown",
       key: "k",
@@ -218,11 +197,9 @@ try {
     });
     await settle();
     await check(
-      'document.querySelectorAll("dialog[open]").length === 1',
-      "Search shortcut respects the shared dialog",
+      `!document.querySelector('dialog[open], [aria-label="Search the journey"], [aria-label="Share this view"], [aria-label="About this journey"]')`,
+      "Search, share and About controls are absent; the removed shortcut opens no dialog",
     );
-    await click('button[aria-label="Close dialog"]');
-
     // Problems and opportunities share the same independent inline disclosures.
     for (const [lens, count, showLabel, expandLabel, first, second] of [
       [
@@ -514,7 +491,7 @@ try {
       "Skip link focuses active page content",
     );
     console.log(
-      "PASS: prerequisite scenarios and handoffs, page navigation, retained state, history, contextual return, legacy links, refresh, sharing, search, problem/opportunity disclosures and bulk controls, keyboard access, and 320/390/768/1440px layouts.",
+      "PASS: prerequisite scenarios and handoffs, page navigation, retained state, history, contextual return, legacy links, refresh, removed search/share/About controls, problem/opportunity disclosures and bulk controls, keyboard access, and 320/390/768/1440px layouts.",
     );
   });
 } finally {
