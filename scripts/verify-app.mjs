@@ -84,7 +84,7 @@ try {
     for (const [page, target] of [
       ["prerequisites", "prerequisites-title"],
       ["choices", "choices-title"],
-      ["solution-example", "solution-chapter-introduction"],
+      ["solution-example", "solution-title"],
       ["journey", "page-title"],
     ]) {
       await click(`[data-focus="nav-${page}"]`);
@@ -526,7 +526,7 @@ try {
       "Skip link focuses active page content",
     );
     console.log(
-      "PASS: Connected Solution journey, incomplete browser autosave, customized prerequisites, scoped DNS request/fulfillment/verification, automated and manual boot, conditional operator dependencies, customer hooks, failures and targeted recovery with retained evidence, template persistence and storage failure, nested returns, legacy locations and sharing/fallback; prerequisite scenarios and handoffs, page navigation, retained state, history, contextual return, legacy links, refresh, removed search/share/About controls, problem/opportunity disclosures and bulk controls, keyboard access, and 320/390/768/1440px layouts.",
+      "PASS: Guided Solution example, stable current/complete/blocked phase navigation, incomplete journey saved for this session, DNS generation/copy/fulfillment/verification and retained retries, both boot routes, post-installation failure and recovery, page/context returns, legacy link redirects and reset; prerequisite scenarios and handoffs, page navigation, retained state, history, legacy links, refresh, problem/opportunity disclosures, keyboard access, and 320/390/768/1440px layouts.",
     );
   });
 } finally {

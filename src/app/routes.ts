@@ -6,7 +6,6 @@ import {
 } from "../pages/choices/catalog";
 import { choicesCatalog } from "../pages/choices/data";
 import type { TreeMode } from "../pages/choices/tree";
-import type { Phase } from "../pages/guided-story-prototype/model";
 import { parseRoute, routeHref } from "../pages/journey/catalog";
 import type { Route } from "../pages/journey/model";
 import {
@@ -15,11 +14,10 @@ import {
   prerequisitesHome,
   prerequisitesHref,
 } from "../pages/prerequisites/model";
-import { type Chapter, parseChapter } from "../pages/solution-example/model";
+import type { Phase } from "../pages/solution-example/model";
 
 export type AppRoute =
-  | { page: "guided-story-prototype"; phase: Phase }
-  | { page: "solution-example"; chapter: Chapter }
+  | { page: "solution-example"; phase: Phase }
   | { page: "journey"; view: Route }
   | { page: "choices"; answers: Answers; mode: TreeMode }
   | { page: "prerequisites"; view: PrerequisitesView };
@@ -40,22 +38,33 @@ export const emptyChoices: AppRoute & { page: "choices" } = {
   mode: "path",
 };
 
+function solutionPhase(query: string): Phase {
+  const params = new URLSearchParams(query);
+  switch (params.get("phase") ?? params.get("chapter")) {
+    case "install":
+    case "installation":
+      return "install";
+    case "post":
+    case "operators":
+    case "post-hooks":
+    case "readiness":
+    case "handoff":
+    case "reuse":
+      return "post";
+    default:
+      return "pre";
+  }
+}
+
 /** Accepts both former apps' links and the unified page routes. */
 export function parseLocation(hash: string, search = ""): AppRoute {
   const fragment = hash.replace(/^#/, "");
   const [path, query = ""] = fragment.split("?");
   const legacyMode = new URLSearchParams(search).get("view");
-  if (import.meta.env.DEV && path === "/guided-story-prototype") {
-    const phase = new URLSearchParams(query).get("phase");
-    return {
-      page: "guided-story-prototype",
-      phase: phase === "install" || phase === "post" ? phase : "pre",
-    };
-  }
-  if (path === "/solution-example") {
+  if (path === "/solution-example" || path === "/guided-story-prototype") {
     return {
       page: "solution-example",
-      chapter: parseChapter(new URLSearchParams(query).get("chapter")),
+      phase: solutionPhase(query),
     };
   }
   if (path === "/prerequisites" || path?.startsWith("/prerequisites/")) {
@@ -96,10 +105,8 @@ export function parseLocation(hash: string, search = ""): AppRoute {
 
 /** Serializes page state without mixing Journey perspectives and Choices modes. */
 export function appHref(route: AppRoute): string {
-  if (route.page === "guided-story-prototype")
-    return `#/guided-story-prototype?phase=${route.phase}`;
   if (route.page === "solution-example")
-    return `#/solution-example?chapter=${route.chapter}`;
+    return `#/solution-example?phase=${route.phase}`;
   if (route.page === "journey") return routeHref(route.view);
   if (route.page === "prerequisites") return prerequisitesHref(route.view);
   const selection = encodeSelection(choicesCatalog, route.answers);

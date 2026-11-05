@@ -5,7 +5,7 @@ import {
   type PrerequisitesTarget,
   prerequisitesHome,
 } from "../pages/prerequisites/model";
-import { contextRoute, storyContexts } from "../pages/solution-example/links";
+import { storyContexts } from "../pages/solution-example/links";
 import { appHref, journeyHome, parseLocation } from "./routes";
 
 describe("combined app links", () => {
@@ -15,24 +15,12 @@ describe("combined app links", () => {
     expect(appHref(journeyHome)).toBe("#/journey");
   });
 
-  test("opens current actions and legacy Solution locations without execution state", () => {
-    for (const chapter of [
-      "introduction",
-      "preparation",
-      "dns",
-      "pre-hooks",
-      "preflight",
-      "operators",
-      "post-hooks",
-      "installation",
-      "readiness",
-      "handoff",
-      "reuse",
-    ]) {
-      const hash = `#/solution-example?chapter=${chapter}`;
+  test("shares each solution phase without execution state", () => {
+    for (const phase of ["pre", "install", "post"]) {
+      const hash = `#/solution-example?phase=${phase}`;
       expect(parseLocation(hash)).toEqual({
         page: "solution-example",
-        chapter,
+        phase,
       });
       expect(
         appHref(
@@ -44,15 +32,38 @@ describe("combined app links", () => {
     }
   });
 
-  test("missing, invalid and obsolete solution state opens the introduction", () => {
+  test("former solution and prototype links open the replacement", () => {
+    for (const [chapter, phase] of [
+      ["introduction", "pre"],
+      ["preparation", "pre"],
+      ["dns", "pre"],
+      ["pre-hooks", "pre"],
+      ["preflight", "pre"],
+      ["installation", "install"],
+      ["operators", "post"],
+      ["post-hooks", "post"],
+      ["readiness", "post"],
+      ["handoff", "post"],
+      ["reuse", "post"],
+    ]) {
+      expect(
+        appHref(parseLocation(`#/solution-example?chapter=${chapter}`)),
+      ).toBe(`#/solution-example?phase=${phase}`);
+    }
+    for (const phase of ["pre", "install", "post"])
+      expect(
+        appHref(parseLocation(`#/guided-story-prototype?phase=${phase}`)),
+      ).toBe(`#/solution-example?phase=${phase}`);
+  });
+
+  test("missing, invalid and obsolete solution state opens preparation", () => {
     for (const hash of [
       "#/solution-example",
       "#/solution-example?chapter=unknown",
+      "#/solution-example?phase=unknown",
       "#/solution-example?moment=5&layout=B",
     ]) {
-      expect(appHref(parseLocation(hash))).toBe(
-        "#/solution-example?chapter=introduction",
-      );
+      expect(appHref(parseLocation(hash))).toBe("#/solution-example?phase=pre");
     }
     expect(parseLocation("#/journey?prototype=solution&moment=5")).toEqual(
       journeyHome,
@@ -61,7 +72,7 @@ describe("combined app links", () => {
 
   test("story links preserve real canonical catalog records and topics", () => {
     for (const context of storyContexts) {
-      const route = parseLocation(appHref(contextRoute(context)));
+      const route = parseLocation(appHref({ page: "journey", view: context }));
       expect(route.page).toBe("journey");
       if (route.page !== "journey") throw new Error("Expected catalog route");
       if (context.item) expect(route.view.item).toBe(context.item);

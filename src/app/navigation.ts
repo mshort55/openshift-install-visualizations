@@ -42,8 +42,6 @@ export type NavigationBehavior = "new" | "preserve" | "retain";
 
 function pageTitle(route: AppRoute): string {
   switch (route.page) {
-    case "guided-story-prototype":
-      return "Guided story A · Prototype";
     case "solution-example":
       return "Solution example";
     case "journey":
@@ -59,10 +57,10 @@ function pageTitle(route: AppRoute): string {
 
 function pageTarget(route: AppRoute): string {
   switch (route.page) {
-    case "guided-story-prototype":
-      return "guided-story-title";
     case "solution-example":
-      return `solution-chapter-${route.chapter}`;
+      return route.phase === "pre"
+        ? "solution-title"
+        : `solution-phase-${route.phase}`;
     case "journey":
       return route.view.item
         ? `record-${route.view.item}`
@@ -106,16 +104,12 @@ export function useAppNavigation(
   const current = useRef(route);
   const action = useRef<ScrollAction>("initial");
   const visits = useRef({
-    "guided-story-prototype":
-      route.page === "guided-story-prototype"
-        ? route
-        : ({ page: "guided-story-prototype", phase: "pre" } satisfies AppRoute),
     "solution-example":
       route.page === "solution-example"
         ? route
         : ({
             page: "solution-example",
-            chapter: "introduction",
+            phase: "pre",
           } satisfies AppRoute),
     journey: route.page === "journey" ? route : journeyHome,
     choices: route.page === "choices" ? route : emptyChoices,
@@ -141,8 +135,6 @@ export function useAppNavigation(
   const select = (next: AppRoute) => {
     current.current = next;
     if (next.page === "journey") visits.current.journey = next;
-    else if (next.page === "guided-story-prototype")
-      visits.current["guided-story-prototype"] = next;
     else if (next.page === "solution-example")
       visits.current["solution-example"] = next;
     else if (next.page === "choices") visits.current.choices = next;
@@ -176,8 +168,6 @@ export function useAppNavigation(
       remembered?.restoreReading();
       current.current = next;
       if (next.page === "journey") visits.current.journey = next;
-      else if (next.page === "guided-story-prototype")
-        visits.current["guided-story-prototype"] = next;
       else if (next.page === "solution-example")
         visits.current["solution-example"] = next;
       else if (next.page === "choices") visits.current.choices = next;
@@ -235,10 +225,9 @@ export function useAppNavigation(
           target?.focus({ preventScroll: true });
         if (
           id === "page-title" ||
-          id === "guided-story-title" ||
           id === "choices-title" ||
           id === "prerequisites-title" ||
-          id === "solution-chapter-introduction"
+          id === "solution-title"
         )
           window.scrollTo({ top: 0, behavior: "instant" });
         else target?.scrollIntoView({ block: "start", behavior: "instant" });

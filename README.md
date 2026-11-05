@@ -11,11 +11,11 @@ Open <http://localhost:5174>. Choose **Install options** in the header, or follo
 
 Choose **Network prep** in the header, or follow its contextual links from networking, addressing, DNS, firewall review and host management. The page presents a network map, five site handoffs and expandable technical references. Node addressing and site DNS publication are equally prominent controls above the map. DNS can be published before installation or deferred until afterward in this managed bare-metal example; the visible note explains the installation-time resolution needs. Section links preserve both selections, and reference links open their panel. Page switches retain selections, expanded references and reading position.
 
-Choose **Solution example**, then **New deployment**, or follow **See this in the solution example** from a matching Journey task or Network prep. Edit partial cluster inputs, add an owned prerequisite, generate a DNS request and verify it separately from fulfillment. Browser autosave preserves incomplete inputs, progress and evidence across refreshes. All external results are simulated.
+Choose **Solution example** to follow one guided journey for `ocp5.dc.example.com`, or enter from a matching Journey task or Network prep link. Generate a DNS request, save the incomplete journey, simulate fulfillment and verify the answers separately. An optional mismatched record demonstrates correction and retry with retained evidence.
 
-The same journey supports automated BMC/Redfish boot or guided local boot by Site operations, followed by selected infrastructure operators, customer Ansible post-installation configuration and scoped readiness checks. Cluster installation and journey status are separate. Failed actions retain successful work and attempt history; a correction needs a passing affected rerun. A completed journey can optionally be saved as a named reusable template. Start from template is visible but not demonstrated.
+Persistent navigation shows the current phase, checks for completed phases and locks with prerequisite explanations for future phases. Every chapter can be previewed; its execution actions remain blocked until the preceding phase finishes. An outline identifies the chapter being read without changing its status label. Automated Agent-based installation and guided manual boot lead to the same post-installation work. A failed required customer hook affects the overall journey even after the base cluster is installed.
 
-Contextual links preserve a nested return path, selected topic/record, disclosures, scroll and invoking focus. General page entry restores the last reading position in this document. **Share view** copies only the reading location and provides a manual-copy dialog if clipboard access fails. Recipients use their own saved example; execution data is never included in the URL.
+Progress stays in memory while you explore other pages in the app. Refresh or Reset example starts a new simulation. All external results are illustrative. Contextual links retain a return path; general page entry restores the last reading position. URLs share the chapter being read and never include execution state.
 
 ```bash
 npm run check
@@ -24,14 +24,14 @@ npm run preview
 npm run verify:browser
 ```
 
-`check` runs TypeScript, Biome, the page and route tests, and the npm dependency audit. `verify:browser` starts disposable Vite and Chrome processes, exercises the combined app, saves screenshots under `artifacts/verify/combined-app/`, and cleans up its processes. It downloads Chrome for Testing on first use. After building, `VERIFY_PRODUCTION=1 npm run verify:browser` runs the same checks against the production preview.
+`check` runs TypeScript, Biome, and the page and route tests. `verify:browser` starts disposable Vite and Chrome processes, exercises the combined app, saves screenshots under `artifacts/verify/combined-app/`, and cleans up its processes. It downloads Chrome for Testing on first use. After building, `VERIFY_PRODUCTION=1 npm run verify:browser` runs the same checks against the production preview.
 
 The single production output is `dist/`. Serve it at a root or subdirectory URL. Hash routing supports direct links without server rewrite rules. Fonts and content are bundled; no external service is required to explore the app.
 
 ## Pages and links
 
 - `#/journey` opens the timeline. For example, `#/journey/dns?view=problems` opens a topic and perspective.
-- `#/solution-example?chapter=readiness` inspects readiness in the current saved journey without advancing it. Direct actions include `introduction`, `preparation`, `dns`, `pre-hooks`, `preflight`, `installation`, `operators`, `post-hooks`, `readiness` and `reuse`. Legacy `handoff` opens readiness evidence; missing/invalid values use introduction. Execution parameters are ignored.
+- `#/solution-example?phase=pre|install|post` reads a phase without executing it. Missing or invalid phases open pre-installation. Former `chapter=` links and `#/guided-story-prototype` links redirect to this replacement; execution parameters are ignored.
 - `#/choices` opens the decision tree with nothing selected. `#/choices?mode=map&host-addressing=static` opens every option with Static NMState selected.
 - `#/prerequisites` opens the five-node network map with DHCP and published client DNS. `#/prerequisites/dns?addressing=static` focuses the DNS handoff with static addressing. `#/prerequisites/dns-access?dns=pending` opens the temporary-access reference. Existing `#/prerequisites/tickets/network` links reach the consolidated addresses/network handoff.
 - Earlier Journey `#/<topic>?view=...` and Choices `?view=map#decision=option&...` links are accepted at the new app address. Existing content redirects remain supported.
@@ -45,7 +45,7 @@ The browser address identifies the active page and selection. Copy it to reopen 
 src/
   app/                 Shared header, navigation, routes, base styles
   pages/
-    solution-example/  Connected journey, browser persistence, simulated execution and evidence
+    solution-example/  Guided story, phase progress, DNS handoff and simulated execution
     journey/           Timeline, perspectives, explanatory content and evidence
     choices/           Decision tree, dependency rules and configuration catalog
     prerequisites/     Five-node topology, scenarios, IT handoffs and public sources
@@ -54,7 +54,7 @@ public/                Bundled fonts and favicon
 scripts/verify-app.mjs  Combined-app browser verification
 ```
 
-`src/app/navigation.ts` is the sole owner of browser URL/history writes and cross-page scroll restoration. Pages receive their state and navigation callbacks. Journey, Prerequisites and Solution disclosure state lives above the page switch. Context returns restore only the source page’s reading snapshot. Solution execution state lives above page switching and persists in its own browser-storage key, separately from reading snapshots: Back/Forward cannot rewind work, and reload restores the saved journey. Reset example clears only that example and its saved template. Each page’s content remains independent.
+`src/app/navigation.ts` is the sole owner of browser URL/history writes and cross-page scroll restoration. Pages receive state and navigation callbacks. Journey and Prerequisites disclosure state lives above the page switch. Solution execution state also lives above page switching, in memory: Back/Forward changes reading location without rewinding work. Refresh resets the simulated journey. The former solution's browser-storage model and template workflow are removed. Each page’s content remains independent.
 
 Page CSS is scoped beneath `.journey-page`, `.choices-page` or `.prerequisites-page` or `.solution-page`. The Prerequisites palette, typography, spacing, corner sizes and page frame are shared through `src/app/theme.css`; use its tokens for colors and selection states on every page. The shared header and footer live in `src/app/styles.css`. Pages own their content grids within the common frame. To add a page with another layout, add its folder under `src/pages`, a route variant/parser/serializer, navigation entry and page rendering in `src/app`. Keep its controls and layout styles in that folder, and add its navigation behavior to browser verification.
 

@@ -13,9 +13,9 @@ Run commands from the repository root. Install dependencies with `npm ci` when `
 npm run verify:browser
 ```
 
-This launches disposable Vite and Chrome processes, drives the real UI and cleans up in `finally`. Completion requires the `PASS` line and exit code 0. Solution coverage follows one connected, browser-saved installation journey: partial inputs, customized prerequisites, DNS request/fulfillment/verification, both boot routes, conditional operator dependencies, customer Ansible hooks, failures with retained attempts, recovery, optional template saving and storage-write failure. Existing Journey, Choices and Network prep navigation, history, contextual returns and responsive coverage remain part of the same run.
+This launches disposable Vite and Chrome processes, drives the real UI and cleans up in `finally`. Completion requires the `PASS` line and exit code 0. Solution coverage follows the guided story through phase gates, DNS request/fulfillment/verification with retained retries, both boot routes and required post-installation failure/recovery. Page and contextual navigation retain session progress; reload starts a new simulation. Existing Journey, Choices and Network prep coverage remains part of the same run.
 
-Screenshots remain under `artifacts/verify/combined-app/`. Inspect Solution images at 320, 390, 768 and 1440 pixels and doubled root text size, including operator/storage details, both customer hooks, manual instructions and failure evidence. Overflow assertions alone do not establish readability. Read [Solution example: connected installation journey](features/solution-example.md) for the focused recipe and scope limits.
+Screenshots remain under `artifacts/verify/combined-app/`. Inspect the Solution phase navigation, DNS evidence, manual boot and failure states at 320, 390, 768 and 1440 pixels, plus enlarged text. Overflow assertions alone do not establish readability. Read [Solution example: guided installation journey](features/solution-example.md) for the focused recipe and exact screenshot targets.
 
 After `npm run build`, run `VERIFY_PRODUCTION=1 npm run verify:browser` to exercise the same entry and direct routes against Vite production preview. This mode uses the same disposable-process cleanup.
 
