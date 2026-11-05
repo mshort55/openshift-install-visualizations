@@ -42,4 +42,4 @@ Each feature file starts with an H1 title and one paragraph describing the user-
 - [Clear choices](./reset-defaults.md) covers the header control that clears answers while retaining the page and mode.
 - [Shared link](./shared-link.md) covers opening a hash URL without clicking the option.
 
-- [Solution example](./solution-example.md) covers the three demonstrations, independent scenes, nested returns, shared chapters and static handoff/reuse samples.
+- [Solution example](./solution-example.md) covers the connected, browser-saved journey, both boot routes, selected infrastructure capabilities, customer hooks, failure recovery, reusable templates, nested returns and shared reading locations.

@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { choicesCatalog } from "../pages/choices/data";
 import { ChoicesPage } from "../pages/choices/ui";
 import { topicById } from "../pages/journey/catalog";
@@ -11,6 +12,10 @@ import { Icon } from "./Icon";
 import { follow } from "./links";
 import { useAppNavigation } from "./navigation";
 import { type AppRoute, appHref, journeyHome } from "./routes";
+
+const GuidedStoryPrototype = import.meta.env.DEV
+  ? lazy(() => import("../pages/guided-story-prototype/ui"))
+  : null;
 
 /** Shared identity and navigation; each page owns its content layout. */
 export function App() {
@@ -197,7 +202,40 @@ export function App() {
             </span>
           </a>
         </nav>
+        {GuidedStoryPrototype && (
+          <nav
+            className="app-prototype-navigation"
+            aria-label="Prototype review"
+          >
+            <span>Prototype review</span>
+            <a
+              href={appHref({ page: "guided-story-prototype", phase: "pre" })}
+              aria-current={
+                route.page === "guided-story-prototype" ? "page" : undefined
+              }
+              data-focus="nav-guided-story-prototype"
+              onClick={(event) =>
+                follow(event, () => openPage("guided-story-prototype"))
+              }
+            >
+              Guided story A <Icon name="arrow" size={16} />
+            </a>
+          </nav>
+        )}
       </header>
+
+      {route.page === "guided-story-prototype" && GuidedStoryPrototype && (
+        <Suspense
+          fallback={<main id="main-content">Loading guided story…</main>}
+        >
+          <GuidedStoryPrototype
+            phase={route.phase}
+            onPhase={(phase) =>
+              navigate({ page: "guided-story-prototype", phase }, "retain")
+            }
+          />
+        </Suspense>
+      )}
 
       {(origin || route.page === "solution-example") && (
         <div className="app-return">
@@ -289,17 +327,19 @@ export function App() {
         />
       ) : (
         <>
-          {!origin && route.page !== "solution-example" && (
-            <div className="app-return">
-              <a
-                href={appHref(journey)}
-                data-focus="return-journey"
-                onClick={(event) => follow(event, () => openPage("journey"))}
-              >
-                <Icon name="back" size={16} /> Return to Journey map
-              </a>
-            </div>
-          )}
+          {!origin &&
+            route.page !== "solution-example" &&
+            route.page !== "guided-story-prototype" && (
+              <div className="app-return">
+                <a
+                  href={appHref(journey)}
+                  data-focus="return-journey"
+                  onClick={(event) => follow(event, () => openPage("journey"))}
+                >
+                  <Icon name="back" size={16} /> Return to Journey map
+                </a>
+              </div>
+            )}
           {route.page === "choices" ? (
             <ChoicesPage
               catalog={choicesCatalog}

@@ -1,269 +1,781 @@
 .solution-page {
-  width: 100%;
-  max-width: var(--page-width);
-  margin: 0 auto;
-  padding: var(--space-xl) var(--page-gutter);
-  font-size: 1.075rem;
   overflow-wrap: anywhere;
+  width: min(1320px, 100%);
+  margin: 0 auto;
+  padding: 32px var(--page-gutter) 64px;
+  font-size: 1rem;
 }
 .solution-page h1,
 .solution-page h2,
 .solution-page h3 {
   font-family: var(--font-display);
-  line-height: 1.35;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
 }
 .solution-page h1 {
-  font-size: var(--text-page-title);
-  margin: 4px 0 12px;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  margin: 8px 0 18px;
+  max-width: 850px;
 }
 .solution-page h2 {
-  font-size: 1.8rem;
-  margin-top: 8px;
-  scroll-margin-top: 24px;
+  font-size: 1.65rem;
+  margin: 8px 0 20px;
 }
 .solution-page h3 {
-  font-size: 1.15rem;
-  margin: 24px 0 10px;
+  font-size: 1.18rem;
+  margin: 24px 0 12px;
+}
+.solution-page p {
+  margin: 12px 0;
 }
 .solution-page a {
   color: var(--link);
+  text-underline-offset: 3px;
 }
-.solution-page p {
-  max-width: 80ch;
+.solution-page button,
+.solution-page a,
+.solution-page input,
+.solution-page summary {
+  scroll-margin-block: 24px;
 }
-.solution-page li {
-  margin: 8px 0;
+.solution-page :focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
 }
-.solution-page code {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-}
-.solution-page .solution-heading {
+.solution-heading {
   display: flex;
   align-items: start;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
-.solution-page .solution-eyebrow {
+.solution-heading > div {
+  max-width: 850px;
+}
+.solution-heading > div > p:last-child {
+  color: var(--muted);
+  font-size: 1.14rem;
+  max-width: 780px;
+}
+.solution-eyebrow {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.solution-intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 40px;
+  padding: 32px;
+  background: #eef3f8;
+  border: 1px solid #d6e0eb;
+  border-radius: 16px;
+  margin-bottom: 28px;
+}
+.solution-intro > details {
+  grid-column: 1 / -1;
+}
+.solution-diagram {
+  align-self: center;
+  text-align: center;
+}
+.solution-hub {
+  background: #132e47;
+  border-radius: 10px;
+  color: white;
+  padding: 18px;
+}
+.solution-diagram span {
+  display: block;
+  font-size: 0.88rem;
+}
+.solution-diagram-arrow {
+  padding: 10px;
+  color: var(--muted);
+}
+.solution-diagram-targets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.solution-diagram-targets > div {
+  padding: 16px 10px;
+  background: white;
+  border: 1px solid #b7c9d9;
+  border-radius: 10px;
+}
+.solution-demo-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
   color: var(--muted);
   font-size: 0.9rem;
-  font-weight: 700;
-  margin-bottom: 4px;
 }
-.solution-page .solution-layout {
+.solution-workspace {
   display: grid;
-  grid-template-columns: 230px minmax(0, 1fr);
-  gap: 32px;
+  grid-template-columns: 292px minmax(0, 1fr);
+  gap: 24px;
   align-items: start;
 }
-.solution-page .solution-chapters {
+.solution-overview {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 14px;
   position: sticky;
   top: 16px;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
 }
-.solution-page .solution-chapters p {
-  font-weight: 700;
-  margin-bottom: 4px;
+.solution-identity {
+  padding: 20px;
+  background: #f0f4f8;
+  border-bottom: 1px solid var(--line);
 }
-.solution-page .solution-chapters span {
+.solution-identity h2 {
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+.solution-identity > p {
+  margin: 4px 0;
+}
+.solution-identity > small {
   display: block;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.solution-statuses {
+  margin: 16px 0 10px;
+}
+.solution-statuses dt {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 10px;
+}
+.solution-statuses dd {
+  margin: 3px 0 0;
+  font-weight: 600;
+}
+.solution-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: #e0eaf5;
+  color: #23445f;
+}
+.solution-badge[data-tone="success"] {
+  background: #e4f3e7;
+  color: #21552d;
+}
+.solution-badge[data-tone="danger"] {
+  background: #ffe6e6;
+  color: #a60000;
+}
+.solution-save {
+  font-size: 0.8rem;
+  color: #32613a;
+}
+.solution-save[data-save-state="error"] {
+  color: #a60000;
+}
+.solution-reset {
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
   color: var(--link);
+  text-decoration: underline;
+  font-size: 0.85rem;
+}
+.solution-phase {
+  padding: 14px 12px 8px;
+}
+.solution-phase + .solution-phase {
+  border-top: 1px solid var(--line);
+}
+.solution-phase-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+}
+.solution-phase-title strong {
+  font-size: 0.95rem;
+}
+.solution-phase-title :where(div) > span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.solution-phase-number {
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: #537189;
+  font-family: var(--font-mono);
   font-size: 0.8rem;
 }
-.solution-page .solution-chapters ol {
+.solution-phase ul {
   list-style: none;
   padding: 0;
-  margin-top: 4px;
+  margin: 8px 0 0;
 }
-.solution-page .solution-chapters a {
-  display: block;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-box);
+.solution-phase a {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--ink);
   text-decoration: none;
-  background: var(--surface);
+  font-size: 0.85rem;
+  padding: 9px 8px;
+  min-height: 42px;
+  border-radius: 6px;
 }
-.solution-page .solution-chapters a[aria-current] {
-  background: var(--selection-bg);
-  border-color: var(--selection-border);
-  font-weight: 700;
+.solution-phase :where(a) > span {
+  flex: 1 1 9em;
 }
-.solution-page .solution-scene {
+.solution-phase :where(a) small {
+  flex-shrink: 0;
+  max-width: 6em;
+  overflow-wrap: normal;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: right;
+}
+.solution-phase a[aria-current="step"] {
+  background: var(--blue-10);
+  color: var(--blue-70);
+  box-shadow: inset 3px 0 var(--blue-50);
+}
+.solution-phase a:hover {
+  background: #eef3f8;
+}
+.solution-action-column {
   min-width: 0;
-  padding: 24px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-card);
-  background: var(--surface);
 }
-.solution-page .solution-outcomes {
-  background: var(--selection-bg);
-  border-left: 4px solid var(--selection-border);
-  padding: 16px;
+.solution-next {
+  padding: 18px 24px;
+  border: 1px solid #c6d8e8;
+  border-left: 4px solid #4c82b0;
+  background: #f0f6fb;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.solution-next p {
+  margin: 6px 0;
+}
+.solution-next a {
+  font-size: 0.88rem;
+}
+.solution-scene {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px;
+}
+.solution-scene > h2 {
+  scroll-margin-top: 24px;
+}
+.solution-panel {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.solution-controls {
+  display: flex;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: 10px;
   margin: 20px 0;
 }
-.solution-page .solution-outcomes h3 {
-  margin: 0 0 12px;
+.solution-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
+  border: 1px solid var(--blue-60);
+  border-radius: 7px;
+  background: var(--blue-60);
+  color: white;
+  padding: 10px 16px;
+  text-align: center;
+  font-weight: 600;
+  line-height: 1.4;
+  max-width: 100%;
 }
-.solution-page .solution-outcomes dl,
-.solution-page .solution-facts {
+.solution-button.secondary {
+  background: white;
+  color: var(--blue-60);
+  border-color: #b4c7da;
+}
+.solution-button:disabled,
+.solution-route-options button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.solution-page fieldset:disabled .solution-button {
+  opacity: 0.55;
+}
+.solution-button:not(:disabled):hover {
+  background: var(--blue-70);
+  color: white;
+}
+.solution-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
-  margin: 0;
+  margin: 20px 0;
 }
-.solution-page dt {
+.solution-form label,
+.solution-job-label {
+  display: block;
+  font-weight: 600;
+}
+.solution-page input:not([type="checkbox"]) {
+  display: block;
+  margin-top: 7px;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #8a9caa;
+  border-radius: 6px;
+  background: white;
+  padding: 10px 12px;
+  color: var(--ink);
+}
+.solution-page input[readonly] {
+  background: #f4f6f8;
+  color: var(--muted);
+}
+.solution-page fieldset:not(.solution-panel) {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin: 24px 0;
+  padding: 16px;
+  min-width: 0;
+}
+.solution-page legend {
+  font-weight: 700;
+  padding: 0 6px;
+}
+.solution-job-label {
+  max-width: 480px;
+  margin: 18px 0;
+}
+.solution-job-value {
+  display: block;
+  margin-top: 7px;
+  border: 1px solid #8a9caa;
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: #f4f6f8;
+  color: var(--muted);
+}
+.solution-input-gaps {
+  color: #7d4a0b;
+  background: #fff7e7;
+  padding: 16px 16px 16px 32px;
+  border-radius: 8px;
+}
+.solution-facts,
+.solution-connectivity {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 24px 0;
+}
+.solution-facts p,
+.solution-connectivity p {
+  margin: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.88rem;
+}
+.solution-checklist {
+  padding: 0;
+  list-style: none;
+}
+.solution-checklist > li {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 10px 0;
+}
+.solution-checklist > :where(li) > span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.solution-checklist p {
+  font-size: 0.92rem;
+  margin-bottom: 0;
+}
+.solution-request {
+  border: 1px solid #cedae3;
+  background: #f7fafc;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+}
+.solution-request h3 {
+  margin-top: 8px;
+}
+.solution-request dl {
+  margin-bottom: 0;
+}
+.solution-request dt {
+  margin-top: 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.solution-request dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+.solution-notice {
+  border-left: 3px solid #789cb7;
+  background: #f0f5f9;
+  padding: 14px 16px;
+  font-size: 0.92rem;
+}
+.solution-wait {
+  color: #80510f;
+  background: #fff8e8;
+  padding: 12px;
+  border-radius: 6px;
+}
+.solution-muted {
   color: var(--muted);
   font-size: 0.9rem;
 }
-.solution-page dd {
-  margin: 4px 0 0;
-  font-weight: 600;
-}
-.solution-page .solution-note {
-  border-left: 3px solid var(--line);
-  padding-left: 16px;
-}
-.solution-page .solution-preparation-actions,
-.solution-page .solution-recovery-actions,
-.solution-page .solution-boot-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 20px;
-}
-.solution-page .solution-preparation-actions button,
-.solution-page .solution-recovery-actions button,
-.solution-page .solution-boot-options button {
-  min-height: 44px;
-  padding: 10px 16px;
-  border: 1px solid var(--selection-border);
-  border-radius: var(--radius-box);
-  background: var(--selection-bg);
-  color: var(--link);
-  text-align: start;
-  overflow-wrap: anywhere;
-}
-.solution-page .solution-boot-options button[aria-pressed="false"] {
-  background: var(--surface);
-  border-color: var(--line);
-}
-.solution-page .solution-boot-options {
-  min-width: 0;
-  padding: 0;
-  border: 0;
-}
-.solution-page .solution-boot-options button[aria-pressed="true"] {
-  font-weight: 700;
-  box-shadow: inset 0 -3px var(--selection-border);
-}
-.solution-page .solution-facts input {
-  width: 100%;
-  min-width: 0;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-box);
-  background: var(--page-bg);
-  color: var(--ink);
-}
-.solution-page .solution-api-help {
-  font-size: 0.9rem;
-  font-weight: 400;
-  margin: 8px 0 0;
-}
-.solution-page #solution-preparation-status:not(:empty),
-.solution-page #solution-recovery-status:not(:empty) {
-  padding: 16px;
-  border-left: 3px solid var(--selection-border);
-  background: var(--selection-bg);
-}
-.solution-page [data-focus="solution-recovery-result"]:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 3px;
-}
-.solution-page .solution-checklist {
-  padding-left: 22px;
-}
-.solution-page .solution-checklist li {
-  margin: 16px 0;
-}
 .solution-page details {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-box);
-  margin: 16px 0;
+  margin: 18px 0;
+  border: 1px solid #ccd7df;
+  border-radius: 8px;
+  background: white;
 }
 .solution-page summary {
   padding: 14px 16px;
   cursor: pointer;
-  color: var(--link);
   font-weight: 600;
+  color: #244b6b;
+  line-height: 1.5;
 }
-.solution-page .solution-detail {
-  padding: 0 16px 16px;
+.solution-detail {
+  padding: 0 18px 18px;
+  min-width: 0;
+}
+.solution-detail > :last-child {
+  margin-bottom: 0;
 }
 .solution-page pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  background: #122a40;
+  color: #edf5fc;
+  border-radius: 8px;
   padding: 16px;
-  background: var(--page-bg);
   font-size: 0.85rem;
 }
-.solution-page .solution-comparison {
+.solution-page code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+.solution-step-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7.5em), 1fr));
+  font-size: 0.8rem;
+  gap: 5px;
+  margin: 20px 0;
 }
-.solution-page .solution-comparison section {
-  border-top: 3px solid var(--line);
+.solution-step-strip span {
+  text-align: center;
+  padding: 8px 5px;
+  background: #edf0f3;
+  color: #4b5965;
+  font-size: 0.8rem;
+  overflow-wrap: normal;
+  border-bottom: 3px solid #bac5ce;
 }
-.solution-page .solution-comparison ul {
-  padding-left: 20px;
+.solution-step-strip span[data-done="true"] {
+  background: #eaf4e9;
+  color: #285a2c;
+  border-color: #57945b;
 }
-.solution-page .solution-related {
-  margin-top: 32px;
-  border-top: 1px solid var(--line);
+.solution-route-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 24px 0;
 }
-.solution-page .solution-related a {
-  display: inline-block;
-  padding: 6px 0;
+.solution-route-options button {
+  border: 1px solid #a6bacb;
+  border-radius: 10px;
+  padding: 18px;
+  text-align: left;
+  background: white;
+  color: var(--ink);
 }
-.solution-page .solution-related p {
-  font-size: 0.9rem;
+.solution-route-options :where(button) span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin-top: 8px;
+}
+.solution-route-options button[aria-pressed="true"] {
+  border: 2px solid var(--blue-50);
+  padding: 17px;
+  background: #eef6ff;
+}
+.solution-timeline {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+}
+.solution-timeline li {
+  position: relative;
+  padding: 4px 0 20px 38px;
+}
+.solution-timeline li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #e1edf7;
+  color: #244b6b;
+  text-align: center;
+}
+.solution-timeline span {
+  display: block;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.solution-hosts {
+  list-style: none;
+  padding: 0;
+}
+.solution-hosts li {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  padding: 8px 0;
+}
+.solution-operator {
+  border-bottom: 1px solid var(--line);
+  padding: 24px 0;
+}
+.solution-operator:last-child {
+  border: 0;
+  padding-bottom: 0;
+}
+.solution-capability {
+  display: flex;
+  gap: 12px;
+  align-items: start;
+  cursor: pointer;
+}
+.solution-capability input {
+  width: 20px;
+  height: 20px;
+  margin: 4px 0 0;
+  accent-color: var(--blue-50);
+  flex-shrink: 0;
+}
+.solution-capability strong,
+.solution-capability small {
+  display: block;
+}
+.solution-capability small {
   color: var(--muted);
 }
+.solution-evidence {
+  list-style: none;
+  padding: 0;
+}
+.solution-evidence li {
+  padding: 16px;
+  margin-top: 12px;
+  background: #f5f8f5;
+  border-left: 3px solid #619666;
+  border-radius: 4px;
+}
+.solution-evidence li[data-result="failed"] {
+  border-color: #c53939;
+  background: #fff3f1;
+}
+.solution-evidence small {
+  color: var(--muted);
+}
+.solution-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.solution-failure {
+  border: 1px solid #e2a8a2;
+  border-radius: 8px;
+  background: #fff4f2;
+  padding: 20px;
+  margin: 24px 0;
+}
+.solution-complete {
+  border: 1px solid #a4c99d;
+  border-radius: 8px;
+  background: #eff8eb;
+  padding: 20px;
+  margin: 24px 0;
+}
+.solution-bottom-next {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.solution-related {
+  padding: 12px 0;
+}
+.solution-related span {
+  display: block;
+  margin: 8px 0;
+}
+.solution-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
 @media (max-width: 1000px) {
-  .solution-page .solution-layout {
-    grid-template-columns: 190px minmax(0, 1fr);
-    gap: 20px;
+  .solution-workspace {
+    grid-template-columns: 245px minmax(0, 1fr);
+    gap: 16px;
   }
-  .solution-page .solution-comparison {
+  .solution-scene {
+    padding: 22px;
+  }
+  .solution-overview {
+    position: static;
+    max-height: none;
+  }
+  .solution-intro {
+    padding: 24px;
+    gap: 24px;
+  }
+  .solution-connectivity {
     grid-template-columns: 1fr;
   }
 }
-@media (max-width: 760px) {
-  .solution-page .solution-heading {
-    flex-direction: column;
-    gap: 8px;
+@media (max-width: 1000px) {
+  .solution-heading {
+    display: block;
   }
-  .solution-page .solution-layout {
+  .solution-heading > .share-view {
+    margin-top: 16px;
+  }
+  .solution-intro {
     grid-template-columns: 1fr;
   }
-  .solution-page .solution-chapters {
-    position: static;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 16px;
+  .solution-workspace {
+    grid-template-columns: 1fr;
   }
-  .solution-page .solution-chapters > div {
-    flex: 1 1 150px;
+  .solution-overview nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .solution-page .solution-chapters span {
-    display: inline;
+  .solution-phase {
+    padding: 12px 6px;
   }
-  .solution-page .solution-scene {
+  .solution-phase + .solution-phase {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+  .solution-phase-title {
+    padding: 0 4px;
+    gap: 6px;
+    align-items: start;
+  }
+  .solution-phase-number {
+    display: none;
+  }
+  .solution-phase a {
+    flex-direction: column;
+    align-items: start;
+    gap: 2px;
+    padding: 9px 6px;
+  }
+  .solution-phase :where(a) > span {
+    flex-basis: auto;
+  }
+  .solution-phase :where(a) small {
+    text-align: left;
+  }
+  .solution-demo-label {
+    display: block;
+  }
+  .solution-facts {
+    grid-template-columns: 1fr;
+  }
+  .solution-scene {
+    padding: 20px;
+  }
+}
+@media (max-width: 420px) {
+  .solution-page {
+    padding-top: 24px;
+  }
+  .solution-scene {
     padding: 16px;
   }
-  .solution-page .solution-outcomes dl,
-  .solution-page .solution-facts {
+  .solution-form,
+  .solution-route-options,
+  .solution-diagram-targets {
     grid-template-columns: 1fr;
+  }
+  .solution-overview nav {
+    display: block;
+  }
+  .solution-phase + .solution-phase {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .solution-phase a {
+    flex-direction: row;
+    align-items: center;
+  }
+  .solution-phase-number {
+    display: block;
+  }
+  .solution-phase-title {
+    padding: 0 6px;
+  }
+  .solution-request,
+  .solution-failure,
+  .solution-complete {
+    padding: 14px;
+  }
+  .solution-detail {
+    padding: 0 12px 12px;
+  }
+  .solution-page h2 {
+    font-size: 1.45rem;
+  }
+  .solution-step-strip {
+    font-size: 0.8rem;
   }
 }

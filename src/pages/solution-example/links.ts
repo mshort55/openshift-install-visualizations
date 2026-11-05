@@ -73,7 +73,7 @@ export const storyContexts = [
     chapter: "handoff",
     topic: "acceptance",
     lens: "process",
-    label: "Readiness and application handoff",
+    label: "Infrastructure readiness context",
   },
   {
     chapter: "handoff",

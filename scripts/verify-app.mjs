@@ -526,7 +526,7 @@ try {
       "Skip link focuses active page content",
     );
     console.log(
-      "PASS: Solution chapters/defaults, partial save/resume, sample IPAM answer, scoped DNS evidence, automated/local boot comparison and instructions, focused hook recovery and retained failure history, bounded verification/cleanup, retained demonstration state, nested returns, sharing/fallback and independent samples; prerequisite scenarios and handoffs, page navigation, retained state, history, contextual return, legacy links, refresh, removed search/share/About controls, problem/opportunity disclosures and bulk controls, keyboard access, and 320/390/768/1440px layouts.",
+      "PASS: Connected Solution journey, incomplete browser autosave, customized prerequisites, scoped DNS request/fulfillment/verification, automated and manual boot, conditional operator dependencies, customer hooks, failures and targeted recovery with retained evidence, template persistence and storage failure, nested returns, legacy locations and sharing/fallback; prerequisite scenarios and handoffs, page navigation, retained state, history, contextual return, legacy links, refresh, removed search/share/About controls, problem/opportunity disclosures and bulk controls, keyboard access, and 320/390/768/1440px layouts.",
     );
   });
 } finally {

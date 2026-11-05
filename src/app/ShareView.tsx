@@ -13,7 +13,7 @@ export function ShareView({ route }: { route: AppRoute }) {
     location.hash = appHref(route);
     try {
       await navigator.clipboard.writeText(location.href);
-      setMessage("Chapter link copied.");
+      setMessage("View link copied.");
     } catch {
       setUrl(location.href);
       dialog.current?.showModal();
@@ -30,12 +30,12 @@ export function ShareView({ route }: { route: AppRoute }) {
       </button>
       <span role="status">{message}</span>
       <dialog ref={dialog} aria-labelledby="share-title">
-        <h2 id="share-title">Copy chapter link</h2>
+        <h2 id="share-title">Copy view link</h2>
         <p>
-          Only the chapter location is shared. A fresh document opens its
-          default scene.
+          Only the reading location is shared. Deployment inputs and execution
+          evidence stay in your browser; recipients use their own saved example.
         </p>
-        <label htmlFor="share-url">Chapter URL</label>
+        <label htmlFor="share-url">View URL</label>
         <input
           ref={input}
           id="share-url"

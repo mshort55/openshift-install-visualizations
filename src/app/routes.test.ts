@@ -15,10 +15,15 @@ describe("combined app links", () => {
     expect(appHref(journeyHome)).toBe("#/journey");
   });
 
-  test("opens and shares only the six production chapter locations", () => {
+  test("opens current actions and legacy Solution locations without execution state", () => {
     for (const chapter of [
       "introduction",
       "preparation",
+      "dns",
+      "pre-hooks",
+      "preflight",
+      "operators",
+      "post-hooks",
       "installation",
       "readiness",
       "handoff",
