@@ -1,6 +1,6 @@
 # OpenShift installation journey
 
-One web app for understanding OpenShift installation on bare metal. **Journey map** opens by default; **Solution example** demonstrates one saved installation journey from prerequisites to infrastructure readiness; **Network prep** illustrates five-node network handoffs; **Install options** explores Agent-based Installer configuration decisions. The shared header shows these four production pages in that order. The current page has a filled card and check mark. Cards use one row on desktop and two columns on narrow screens.
+One web app for understanding OpenShift installation on bare metal. **Journey map** opens by default; **Install options** explores Agent-based Installer configuration decisions; **Network prep** illustrates five-node network handoffs; **Solution example** demonstrates one saved installation journey from prerequisites to infrastructure readiness. The shared header shows these four production pages in that order. The current page has a filled card and check mark. Cards use one row on desktop and two columns on narrow screens.
 
 ```bash
 npm ci

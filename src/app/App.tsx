@@ -126,29 +126,25 @@ export function App() {
           </a>
 
           <a
-            href={appHref(solution)}
-            aria-labelledby="nav-solution-title"
-            aria-describedby="nav-solution-description"
-            aria-current={
-              route.page === "solution-example" ? "page" : undefined
-            }
-            data-focus="nav-solution-example"
-            onClick={(event) =>
-              follow(event, () => openPage("solution-example"))
-            }
+            href={appHref(choices)}
+            aria-labelledby="nav-choices-title"
+            aria-describedby="nav-choices-description"
+            aria-current={route.page === "choices" ? "page" : undefined}
+            data-focus="nav-choices"
+            onClick={(event) => follow(event, () => openPage("choices"))}
           >
             <span className="app-navigation-heading">
-              <strong id="nav-solution-title">Solution example</strong>
+              <strong id="nav-choices-title">Install options</strong>
               <Icon
-                name={route.page === "solution-example" ? "check" : "arrow"}
+                name={route.page === "choices" ? "check" : "arrow"}
                 size={18}
               />
             </span>
             <span
               className="app-navigation-description"
-              id="nav-solution-description"
+              id="nav-choices-description"
             >
-              Explore a proposed installation experience.
+              Compare Agent-based configuration options.
             </span>
           </a>
           <a
@@ -174,25 +170,29 @@ export function App() {
             </span>
           </a>
           <a
-            href={appHref(choices)}
-            aria-labelledby="nav-choices-title"
-            aria-describedby="nav-choices-description"
-            aria-current={route.page === "choices" ? "page" : undefined}
-            data-focus="nav-choices"
-            onClick={(event) => follow(event, () => openPage("choices"))}
+            href={appHref(solution)}
+            aria-labelledby="nav-solution-title"
+            aria-describedby="nav-solution-description"
+            aria-current={
+              route.page === "solution-example" ? "page" : undefined
+            }
+            data-focus="nav-solution-example"
+            onClick={(event) =>
+              follow(event, () => openPage("solution-example"))
+            }
           >
             <span className="app-navigation-heading">
-              <strong id="nav-choices-title">Install options</strong>
+              <strong id="nav-solution-title">Solution example</strong>
               <Icon
-                name={route.page === "choices" ? "check" : "arrow"}
+                name={route.page === "solution-example" ? "check" : "arrow"}
                 size={18}
               />
             </span>
             <span
               className="app-navigation-description"
-              id="nav-choices-description"
+              id="nav-solution-description"
             >
-              Compare Agent-based configuration options.
+              Explore a proposed installation experience.
             </span>
           </a>
         </nav>

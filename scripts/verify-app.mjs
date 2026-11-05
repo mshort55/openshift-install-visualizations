@@ -97,7 +97,7 @@ try {
         await run(
           `[...document.querySelectorAll('.app-navigation a')].map(link => document.getElementById(link.getAttribute('aria-labelledby')).textContent)`,
         ),
-        ["Journey map", "Solution example", "Network prep", "Install options"],
+        ["Journey map", "Install options", "Network prep", "Solution example"],
         "Page names retain the requested reading and keyboard order",
       );
       await check(
