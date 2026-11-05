@@ -1,108 +1,69 @@
-import { lazy, type MouseEvent, Suspense, useState } from "react";
 import { choicesCatalog } from "../pages/choices/data";
 import { ChoicesPage } from "../pages/choices/ui";
 import { topicById } from "../pages/journey/catalog";
-import type { Chapter } from "../pages/journey/solution-prototype/complete-model";
 import { JourneyPage, useJourneySession } from "../pages/journey/ui";
 import { usePrerequisitesSession } from "../pages/prerequisites/interactions";
 import { journeyPrerequisites } from "../pages/prerequisites/model";
 import { PrerequisitesPage } from "../pages/prerequisites/ui";
+import { storyContexts } from "../pages/solution-example/links";
+import { SolutionPage, useSolutionSession } from "../pages/solution-example/ui";
 import { Icon } from "./Icon";
-import { type NavigationReturn, useAppNavigation } from "./navigation";
+import { follow } from "./links";
+import { useAppNavigation } from "./navigation";
 import { type AppRoute, appHref, journeyHome } from "./routes";
-
-const SolutionPrototype = import.meta.env.DEV
-  ? lazy(() => import("../pages/journey/solution-prototype/complete-story"))
-  : null;
-
-/** Leaves modified clicks to the browser so every destination works in a new tab. */
-function follow(event: MouseEvent<HTMLAnchorElement>, navigate: () => void) {
-  if (
-    event.button ||
-    event.metaKey ||
-    event.ctrlKey ||
-    event.shiftKey ||
-    event.altKey
-  )
-    return;
-  event.preventDefault();
-  navigate();
-}
 
 /** Shared identity and navigation; each page owns its content layout. */
 export function App() {
+  const session = useJourneySession();
+  const prerequisitesSession = usePrerequisitesSession();
+  const solutionSession = useSolutionSession();
+  const captureReading = (source: AppRoute) => {
+    const sourceSession =
+      source.page === "journey"
+        ? session
+        : source.page === "prerequisites"
+          ? prerequisitesSession
+          : source.page === "solution-example"
+            ? solutionSession
+            : null;
+    const opened = new Set(sourceSession?.opened);
+    return () => sourceSession?.setOpened(opened);
+  };
   const {
     route,
     navigate,
     openPage,
-    captureReturn,
+    origin,
+    openContext,
     restoreReturn,
     solution,
     journey,
     choices,
     prerequisites,
-  } = useAppNavigation();
-  const [origins, setOrigins] = useState<
-    Partial<
-      Record<AppRoute["page"], { returnTo: NavigationReturn; label: string }>
-    >
-  >({});
+  } = useAppNavigation(captureReading);
   const contextLink = (next: AppRoute, label: string, id: string) => (
     <a
       href={appHref(next)}
       data-focus={`solution-link-${id}`}
       onClick={(event) =>
         follow(event, () => {
-          const returnTo = captureReturn();
-          setOrigins((previous) => ({
-            ...previous,
-            [next.page]: {
-              returnTo,
-              label:
-                route.page === "solution-prototype"
-                  ? "Solution demo"
-                  : route.page === "journey"
-                    ? (topicById.get(route.view.topic)?.title ?? "Journey map")
-                    : route.page === "prerequisites"
-                      ? "Network prep"
-                      : "Install options",
-            },
-          }));
-          navigate(next);
+          openContext({
+            next,
+            label:
+              route.page === "solution-example"
+                ? "solution example"
+                : route.page === "journey"
+                  ? (topicById.get(route.view.topic)?.title ?? "Journey map")
+                  : route.page === "prerequisites"
+                    ? "Network prep"
+                    : "Install options",
+          });
         })
       }
     >
       {label}
     </a>
   );
-  const origin = origins[route.page];
-  const chapterForContext = (): Chapter | undefined => {
-    if (route.page !== "journey") return undefined;
-    const byItem: Record<string, Chapter> = {
-      "owner-wait": "preparation",
-      "precise-handoffs": "preparation",
-      "boot-handoff": "installation",
-      "supported-recovery": "readiness",
-      "first-vm-blocked": "readiness",
-      "diagnostic-handover": "handoff",
-      "reusable-deployment-configuration": "reuse",
-    };
-    const byTopic: Record<string, Chapter> = {
-      "agent-based": "introduction",
-      dns: "preparation",
-      management: "installation",
-      hosts: "installation",
-      "platform-operators": "readiness",
-      acceptance: "handoff",
-      configuration: "reuse",
-    };
-    return route.view.item
-      ? byItem[route.view.item]
-      : byTopic[route.view.topic];
-  };
-  const contextChapter = chapterForContext();
-  const session = useJourneySession();
-  const prerequisitesSession = usePrerequisitesSession();
   return (
     <div className="application">
       <button
@@ -164,6 +125,33 @@ export function App() {
               Explore installation steps, problems and opportunities.
             </span>
           </a>
+
+          <a
+            href={appHref(solution)}
+            aria-labelledby="nav-solution-title"
+            aria-describedby="nav-solution-description"
+            aria-current={
+              route.page === "solution-example" ? "page" : undefined
+            }
+            data-focus="nav-solution-example"
+            onClick={(event) =>
+              follow(event, () => openPage("solution-example"))
+            }
+          >
+            <span className="app-navigation-heading">
+              <strong id="nav-solution-title">Solution example</strong>
+              <Icon
+                name={route.page === "solution-example" ? "check" : "arrow"}
+                size={18}
+              />
+            </span>
+            <span
+              className="app-navigation-description"
+              id="nav-solution-description"
+            >
+              Explore a proposed installation experience.
+            </span>
+          </a>
           <a
             href={appHref(prerequisites)}
             aria-labelledby="nav-prerequisites-title"
@@ -208,46 +196,16 @@ export function App() {
               Compare Agent-based configuration options.
             </span>
           </a>
-          {SolutionPrototype && (
-            <a
-              href={appHref(solution)}
-              aria-labelledby="nav-solution-title"
-              aria-describedby="nav-solution-description"
-              aria-current={
-                route.page === "solution-prototype" ? "page" : undefined
-              }
-              data-focus="nav-solution-prototype"
-              onClick={(event) =>
-                follow(event, () => openPage("solution-prototype"))
-              }
-            >
-              <span className="app-navigation-heading">
-                <strong id="nav-solution-title">Solution demo</strong>
-                <Icon
-                  name={route.page === "solution-prototype" ? "check" : "arrow"}
-                  size={18}
-                />
-              </span>
-              <span
-                className="app-navigation-description"
-                id="nav-solution-description"
-              >
-                Explore a proposed installation experience.
-              </span>
-            </a>
-          )}
         </nav>
       </header>
 
-      {(origin || route.page === "solution-prototype") && (
+      {(origin || route.page === "solution-example") && (
         <div className="app-return">
           {origin ? (
             <a
               href={appHref(origin.returnTo.route)}
               data-focus="context-return"
-              onClick={(event) =>
-                follow(event, () => restoreReturn(origin.returnTo))
-              }
+              onClick={(event) => follow(event, restoreReturn)}
             >
               ← Return to {origin.label}
             </a>
@@ -256,42 +214,18 @@ export function App() {
               href={appHref(journeyHome)}
               onClick={(event) => follow(event, () => navigate(journeyHome))}
             >
-              Explore the Journey map
+              Explore how installation works
             </a>
           )}
         </div>
       )}
-      {SolutionPrototype && (
-        <Suspense
-          fallback={
-            route.page === "solution-prototype" ? (
-              <main id="main-content">Loading prototype…</main>
-            ) : null
-          }
-        >
-          <SolutionPrototype
-            active={route.page === "solution-prototype"}
-            chapter={solution.chapter}
-            moment={solution.moment}
-            onRead={(chapter, moment = solution.moment) =>
-              navigate({ page: "solution-prototype", chapter, moment })
-            }
-            link={contextLink}
-          />
-        </Suspense>
-      )}
-      {SolutionPrototype && contextChapter && (
-        <div className="app-return">
-          {contextLink(
-            {
-              page: "solution-prototype",
-              chapter: contextChapter,
-              moment: contextChapter === "preparation" ? 0 : solution.moment,
-            },
-            "See this in the Solution demo",
-            `from-${route.page === "journey" ? (route.view.item ?? route.view.topic) : "page"}`,
-          )}
-        </div>
+      {route.page === "solution-example" && (
+        <SolutionPage
+          chapter={route.chapter}
+          onRead={(chapter) => navigate({ page: "solution-example", chapter })}
+          session={solutionSession}
+          link={contextLink}
+        />
       )}
       {route.page === "journey" ? (
         <JourneyPage
@@ -300,6 +234,18 @@ export function App() {
             navigate({ page: "journey", view }, preserve ? "preserve" : "new")
           }
           session={session}
+          solutionLinks={
+            new Map(
+              storyContexts.map((context) => [
+                context.item ?? context.topic,
+                contextLink(
+                  { page: "solution-example", chapter: context.chapter },
+                  "See this in the solution example",
+                  `from-${context.item ?? context.topic}`,
+                ),
+              ]),
+            )
+          }
           prerequisitesLinks={
             new Map(
               [...journeyPrerequisites].map(([topic, target]) => {
@@ -314,7 +260,14 @@ export function App() {
                     className="text-action"
                     href={appHref(next)}
                     data-focus={`explore-prerequisites-${topic}`}
-                    onClick={(event) => follow(event, () => navigate(next))}
+                    onClick={(event) =>
+                      follow(event, () =>
+                        openContext({
+                          next,
+                          label: topicById.get(topic)?.title ?? "Journey map",
+                        }),
+                      )
+                    }
                   >
                     Explore Network prep: a five-node example{" "}
                     <Icon name="arrow" size={16} />
@@ -336,7 +289,7 @@ export function App() {
         />
       ) : (
         <>
-          {!origin && route.page !== "solution-prototype" && (
+          {!origin && route.page !== "solution-example" && (
             <div className="app-return">
               <a
                 href={appHref(journey)}
@@ -357,13 +310,22 @@ export function App() {
               }
             />
           ) : route.page === "prerequisites" ? (
-            <PrerequisitesPage
-              view={route.view}
-              session={prerequisitesSession}
-              onChange={(view, behavior) =>
-                navigate({ page: "prerequisites", view }, behavior)
-              }
-            />
+            <>
+              <div className="app-return">
+                {contextLink(
+                  { page: "solution-example", chapter: "preparation" },
+                  "See this in the solution example",
+                  "from-prerequisites-dns",
+                )}
+              </div>
+              <PrerequisitesPage
+                view={route.view}
+                session={prerequisitesSession}
+                onChange={(view, behavior) =>
+                  navigate({ page: "prerequisites", view }, behavior)
+                }
+              />
+            </>
           ) : null}
         </>
       )}

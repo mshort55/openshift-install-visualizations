@@ -5,6 +5,7 @@ import {
   type PrerequisitesTarget,
   prerequisitesHome,
 } from "../pages/prerequisites/model";
+import { contextRoute, storyContexts } from "../pages/solution-example/links";
 import { appHref, journeyHome, parseLocation } from "./routes";
 
 describe("combined app links", () => {
@@ -12,6 +13,57 @@ describe("combined app links", () => {
     expect(parseLocation("")).toEqual(journeyHome);
     expect(parseLocation("#/missing")).toEqual(journeyHome);
     expect(appHref(journeyHome)).toBe("#/journey");
+  });
+
+  test("opens and shares only the six production chapter locations", () => {
+    for (const chapter of [
+      "introduction",
+      "preparation",
+      "installation",
+      "readiness",
+      "handoff",
+      "reuse",
+    ]) {
+      const hash = `#/solution-example?chapter=${chapter}`;
+      expect(parseLocation(hash)).toEqual({
+        page: "solution-example",
+        chapter,
+      });
+      expect(
+        appHref(
+          parseLocation(
+            `${hash}&moment=5&variant=C&api=10.20.30.12&recovered=true&origin=dns`,
+          ),
+        ),
+      ).toBe(hash);
+    }
+  });
+
+  test("missing, invalid and obsolete solution state opens the introduction", () => {
+    for (const hash of [
+      "#/solution-example",
+      "#/solution-example?chapter=unknown",
+      "#/solution-example?moment=5&layout=B",
+    ]) {
+      expect(appHref(parseLocation(hash))).toBe(
+        "#/solution-example?chapter=introduction",
+      );
+    }
+    expect(parseLocation("#/journey?prototype=solution&moment=5")).toEqual(
+      journeyHome,
+    );
+  });
+
+  test("story links preserve real canonical catalog records and topics", () => {
+    for (const context of storyContexts) {
+      const route = parseLocation(appHref(contextRoute(context)));
+      expect(route.page).toBe("journey");
+      if (route.page !== "journey") throw new Error("Expected catalog route");
+      if (context.item) expect(route.view.item).toBe(context.item);
+      else expect(route.view.topic).toBe(context.topic);
+      expect(route.view.lens).toBe(context.lens);
+      expect(topics.some((topic) => topic.id === route.view.topic)).toBe(true);
+    }
   });
 
   test("retains every published Journey topic and perspective", () => {

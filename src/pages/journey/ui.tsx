@@ -47,6 +47,9 @@ function hasContext(id: string): boolean {
   return topicById.get(id)?.kind !== "group";
 }
 
+const solutionLinksContext = createContext<ReadonlyMap<string, ReactNode>>(
+  new Map(),
+);
 const choicesLinkContext = createContext<ReactNode>(null);
 const prerequisitesLinksContext = createContext<ReadonlyMap<string, ReactNode>>(
   new Map(),
@@ -706,6 +709,7 @@ function Context({ topic }: { topic: Topic }) {
 }
 
 function Process({ topic, navigate }: { topic: Topic; navigate: Navigate }) {
+  const solutionLink = useContext(solutionLinksContext).get(topic.id);
   const choicesLink = useContext(choicesLinkContext);
   return (
     <div className="process-content">
@@ -833,6 +837,7 @@ function Process({ topic, navigate }: { topic: Topic; navigate: Navigate }) {
           ))}
         </section>
       )}
+      {solutionLink && <p>{solutionLink}</p>}
       <div className="next-perspective">
         <div>
           <Icon name="warning" size={18} />
@@ -951,6 +956,7 @@ function RecordDisclosure({
 }) {
   const lens = "kind" in record ? "problems" : "opportunities";
   const open = expansion.disclosureOpen(lens, record.id);
+  const solutionLink = useContext(solutionLinksContext).get(record.id);
   return (
     <details className={`record-card ${lens} record-disclosure`} open={open}>
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Native summary handles Enter and Space; synchronize its disclosure with the shared route. */}
@@ -1001,6 +1007,7 @@ function RecordDisclosure({
       </summary>
       {open && (
         <div className="record-body">
+          {solutionLink && <p>{solutionLink}</p>}
           {"kind" in record ? (
             <ProblemDetail problem={record} topic={topic} navigate={navigate} />
           ) : (
@@ -1252,53 +1259,57 @@ export function JourneyPage({
   session,
   choicesLink,
   prerequisitesLinks,
+  solutionLinks,
 }: {
   route: Route;
   navigate: Navigate;
   session: ReturnType<typeof useJourneySession>;
   choicesLink: ReactNode;
   prerequisitesLinks: ReadonlyMap<string, ReactNode>;
+  solutionLinks: ReadonlyMap<string, ReactNode>;
 }) {
   const expansion = useTimelineExpansion(route, session);
   return (
-    <choicesLinkContext.Provider value={choicesLink}>
-      <prerequisitesLinksContext.Provider value={prerequisitesLinks}>
-        <div className="journey-page">
-          <div className="app timeline-app">
-            <main id="main-content" className="main-shell" tabIndex={-1}>
-              <section className="timeline-hero">
-                <span className="eyebrow hero-eyebrow">
-                  The customer experience
-                </span>
-                <h1 id="page-title" tabIndex={-1}>
-                  Journey map
-                </h1>
-                <p>
-                  Follow a customer from planning to useful workloads and
-                  operational handover on bare metal. Expand a step for
-                  decisions, prerequisites, and details for the applicable
-                  installation method.
-                </p>
-              </section>
-              <div className="timeline-controls">
-                <LensTabs route={route} navigate={navigate} />
-              </div>
-              <div
-                id="perspective-content"
-                role="tabpanel"
-                aria-labelledby={`tab-${route.lens}`}
-                className="perspective-panel"
-              >
-                <Timeline
-                  route={route}
-                  navigate={navigate}
-                  expansion={expansion}
-                />
-              </div>
-            </main>
+    <solutionLinksContext.Provider value={solutionLinks}>
+      <choicesLinkContext.Provider value={choicesLink}>
+        <prerequisitesLinksContext.Provider value={prerequisitesLinks}>
+          <div className="journey-page">
+            <div className="app timeline-app">
+              <main id="main-content" className="main-shell" tabIndex={-1}>
+                <section className="timeline-hero">
+                  <span className="eyebrow hero-eyebrow">
+                    The customer experience
+                  </span>
+                  <h1 id="page-title" tabIndex={-1}>
+                    Journey map
+                  </h1>
+                  <p>
+                    Follow a customer from planning to useful workloads and
+                    operational handover on bare metal. Expand a step for
+                    decisions, prerequisites, and details for the applicable
+                    installation method.
+                  </p>
+                </section>
+                <div className="timeline-controls">
+                  <LensTabs route={route} navigate={navigate} />
+                </div>
+                <div
+                  id="perspective-content"
+                  role="tabpanel"
+                  aria-labelledby={`tab-${route.lens}`}
+                  className="perspective-panel"
+                >
+                  <Timeline
+                    route={route}
+                    navigate={navigate}
+                    expansion={expansion}
+                  />
+                </div>
+              </main>
+            </div>
           </div>
-        </div>
-      </prerequisitesLinksContext.Provider>
-    </choicesLinkContext.Provider>
+        </prerequisitesLinksContext.Provider>
+      </choicesLinkContext.Provider>
+    </solutionLinksContext.Provider>
   );
 }

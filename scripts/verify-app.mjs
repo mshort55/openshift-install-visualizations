@@ -7,8 +7,8 @@ import {
   readMeta,
   withPage,
 } from "../.agents/skills/verify-openshift-install-visualizations/scripts/verify-decisions.mjs";
-
 import { verifyPrerequisites } from "./verify-prerequisites.mjs";
+import { verifySolution } from "./verify-solution.mjs";
 
 const ownsRun = !process.env.VERIFY_RUN_DIR;
 const evidence = new URL("../artifacts/verify/combined-app/", import.meta.url);
@@ -84,7 +84,7 @@ try {
     for (const [page, target] of [
       ["prerequisites", "prerequisites-title"],
       ["choices", "choices-title"],
-      ["solution-prototype", "solution-chapter-introduction"],
+      ["solution-example", "solution-chapter-introduction"],
       ["journey", "page-title"],
     ]) {
       await click(`[data-focus="nav-${page}"]`);
@@ -97,7 +97,7 @@ try {
         await run(
           `[...document.querySelectorAll('.app-navigation a')].map(link => document.getElementById(link.getAttribute('aria-labelledby')).textContent)`,
         ),
-        ["Journey map", "Network prep", "Install options", "Solution demo"],
+        ["Journey map", "Solution example", "Network prep", "Install options"],
         "Page names retain the requested reading and keyboard order",
       );
       await check(
@@ -438,6 +438,8 @@ try {
       check,
     });
 
+    await verifySolution({ cdp, run, settle, wait, click, go, shot, check });
+
     // Real content in all three layouts must fit a phone, tablet, and desktop.
     for (const width of [320, 390, 768, 1440]) {
       await cdp.send("Emulation.setDeviceMetricsOverride", {
@@ -524,7 +526,7 @@ try {
       "Skip link focuses active page content",
     );
     console.log(
-      "PASS: prerequisite scenarios and handoffs, page navigation, retained state, history, contextual return, legacy links, refresh, removed search/share/About controls, problem/opportunity disclosures and bulk controls, keyboard access, and 320/390/768/1440px layouts.",
+      "PASS: Solution chapters/defaults, partial save/resume, sample IPAM answer, scoped DNS evidence, automated/local boot comparison and instructions, focused hook recovery and retained failure history, bounded verification/cleanup, retained demonstration state, nested returns, sharing/fallback and independent samples; prerequisite scenarios and handoffs, page navigation, retained state, history, contextual return, legacy links, refresh, removed search/share/About controls, problem/opportunity disclosures and bulk controls, keyboard access, and 320/390/768/1440px layouts.",
     );
   });
 } finally {

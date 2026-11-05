@@ -1,6 +1,6 @@
-# Decision tree verification map
+# Installation app verification map
 
-This directory is the maintained source for verifying the user-facing behavior of the agent-based bare metal decision tree. Read the index before driving the app, then use the matching feature file as the recipe.
+This directory is the maintained source for verifying the user-facing behavior of the combined installation app. Read the index before driving the app, then use the matching feature file as the recipe.
 
 ## Baseline preconditions
 
@@ -41,3 +41,5 @@ Each feature file starts with an H1 title and one paragraph describing the user-
 - [Static addressing](./static-addressing.md) covers See every option, choosing Static NMState, and keeping the scroll position.
 - [Clear choices](./reset-defaults.md) covers the header control that clears answers while retaining the page and mode.
 - [Shared link](./shared-link.md) covers opening a hash URL without clicking the option.
+
+- [Solution example](./solution-example.md) covers the three demonstrations, independent scenes, nested returns, shared chapters and static handoff/reuse samples.

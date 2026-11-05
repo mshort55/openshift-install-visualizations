@@ -12,12 +12,26 @@ import {
   parseLocation,
 } from "./routes";
 
+// History keys distinguish this document's in-memory entries after a reload.
+const historySession = `${Date.now()}-${Math.random()}`;
+let historySequence = 0;
+function nextHistoryEntry() {
+  return `${historySession}-${historySequence++}`;
+}
+
 const positionSchema = z.object({
   scroll: z.number(),
   focus: z.string().nullable(),
+  entry: z.string().optional(),
 });
 type Position = z.infer<typeof positionSchema>;
-export type NavigationReturn = { route: AppRoute; position: Position };
+type NavigationReturn = {
+  route: AppRoute;
+  position: Position;
+  origin: NavigationOrigin | null;
+  restoreReading: () => void;
+};
+type NavigationOrigin = { label: string; returnTo: NavigationReturn };
 type ScrollAction =
   | "initial"
   | "new"
@@ -28,8 +42,8 @@ export type NavigationBehavior = "new" | "preserve" | "retain";
 
 function pageTitle(route: AppRoute): string {
   switch (route.page) {
-    case "solution-prototype":
-      return "Solution demo · Illustrative prototype";
+    case "solution-example":
+      return "Solution example";
     case "journey":
       return route.view.topic === "journey"
         ? "Journey map"
@@ -43,10 +57,8 @@ function pageTitle(route: AppRoute): string {
 
 function pageTarget(route: AppRoute): string {
   switch (route.page) {
-    case "solution-prototype":
-      return route.chapter === "preparation"
-        ? "pg-moment-title"
-        : `solution-chapter-${route.chapter}`;
+    case "solution-example":
+      return `solution-chapter-${route.chapter}`;
     case "journey":
       return route.view.item
         ? `record-${route.view.item}`
@@ -66,20 +78,36 @@ function position(): Position {
 }
 
 /** Owns browser history and restores each page's last reading position. */
-export function useAppNavigation() {
+export function useAppNavigation(
+  captureReading: (source: AppRoute) => () => void,
+) {
+  const reading = useRef(captureReading);
+  reading.current = captureReading;
+  const [origin, setOrigin] = useState<NavigationOrigin | null>(null);
+  const currentOrigin = useRef(origin);
+  const entry = useRef<string>(nextHistoryEntry());
+  const historyEntries = useRef(
+    new Map<
+      string,
+      { origin: NavigationOrigin | null; restoreReading: () => void }
+    >(),
+  );
+  const selectOrigin = useCallback((next: NavigationOrigin | null) => {
+    currentOrigin.current = next;
+    setOrigin(next);
+  }, []);
   const [route, setRoute] = useState(() =>
     parseLocation(window.location.hash, window.location.search),
   );
   const current = useRef(route);
   const action = useRef<ScrollAction>("initial");
   const visits = useRef({
-    "solution-prototype":
-      route.page === "solution-prototype"
+    "solution-example":
+      route.page === "solution-example"
         ? route
         : ({
-            page: "solution-prototype",
+            page: "solution-example",
             chapter: "introduction",
-            moment: 0,
           } satisfies AppRoute),
     journey: route.page === "journey" ? route : journeyHome,
     choices: route.page === "choices" ? route : emptyChoices,
@@ -88,17 +116,25 @@ export function useAppNavigation() {
   });
   const positions = useRef<Partial<Record<AppRoute["page"], Position>>>({});
 
+  // Native disclosures change reading state without navigation, focus or scroll.
+  useLayoutEffect(() => {
+    historyEntries.current.set(entry.current, {
+      origin,
+      restoreReading: captureReading(route),
+    });
+  }, [captureReading, origin, route]);
+
   const remember = useCallback(() => {
     const saved = position();
     positions.current[current.current.page] = saved;
-    window.history.replaceState(saved, "");
+    window.history.replaceState({ ...saved, entry: entry.current }, "");
   }, []);
 
   const select = (next: AppRoute) => {
     current.current = next;
     if (next.page === "journey") visits.current.journey = next;
-    else if (next.page === "solution-prototype")
-      visits.current["solution-prototype"] = next;
+    else if (next.page === "solution-example")
+      visits.current["solution-example"] = next;
     else if (next.page === "choices") visits.current.choices = next;
     else visits.current.prerequisites = next;
     setRoute(next);
@@ -113,23 +149,31 @@ export function useAppNavigation() {
     window.history.replaceState(window.history.state, "", url);
     const sync = () => {
       const next = parseLocation(window.location.hash, window.location.search);
-      if (appHref(next) === appHref(current.current)) return;
       const saved = positionSchema.safeParse(window.history.state);
+      if (
+        appHref(next) === appHref(current.current) &&
+        saved.success &&
+        saved.data.entry === entry.current
+      )
+        return;
       action.current = saved.success ? saved.data : "new";
+      entry.current =
+        saved.success && saved.data.entry !== undefined
+          ? saved.data.entry
+          : nextHistoryEntry();
+      const remembered = historyEntries.current.get(entry.current);
+      selectOrigin(remembered?.origin ?? null);
+      remembered?.restoreReading();
       current.current = next;
       if (next.page === "journey") visits.current.journey = next;
-      else if (next.page === "solution-prototype")
-        visits.current["solution-prototype"] = next;
+      else if (next.page === "solution-example")
+        visits.current["solution-example"] = next;
       else if (next.page === "choices") visits.current.choices = next;
       else visits.current.prerequisites = next;
       setRoute(next);
     };
     let scrollTimer: number | undefined;
-    const save = () => {
-      const saved = position();
-      positions.current[current.current.page] = saved;
-      window.history.replaceState(saved, "");
-    };
+    const save = remember;
     const saveAfterScroll = () => {
       window.clearTimeout(scrollTimer);
       scrollTimer = window.setTimeout(save, 150);
@@ -148,7 +192,7 @@ export function useAppNavigation() {
       window.removeEventListener("scroll", saveAfterScroll);
       window.removeEventListener("focusin", save);
     };
-  }, []);
+  }, [remember, selectOrigin]);
 
   useLayoutEffect(() => {
     document.title = `${pageTitle(route)} · OpenShift Installation Journey`;
@@ -207,6 +251,7 @@ export function useAppNavigation() {
         : behavior === "retain"
           ? "retain"
           : "new";
+    entry.current = nextHistoryEntry();
     window.history.pushState(null, "", appHref(normalized));
     select(normalized);
   };
@@ -216,28 +261,42 @@ export function useAppNavigation() {
     remember();
     const next = visits.current[page];
     action.current = positions.current[page] ?? "new";
+    selectOrigin(null);
+    entry.current = nextHistoryEntry();
     window.history.pushState(null, "", appHref(next));
     select(next);
   };
 
-  const captureReturn = (): NavigationReturn => ({
-    route: current.current,
-    position: position(),
-  });
-  const restoreReturn = (saved: NavigationReturn) => {
+  const openContext = ({ next, label }: { next: AppRoute; label: string }) => {
+    const returnTo: NavigationReturn = {
+      route: current.current,
+      position: position(),
+      origin: currentOrigin.current,
+      restoreReading: reading.current(current.current),
+    };
+    navigate(next);
+    selectOrigin({ label, returnTo });
+  };
+  const restoreReturn = () => {
+    const saved = currentOrigin.current?.returnTo;
+    if (!saved) return;
     remember();
+    saved.restoreReading();
+    selectOrigin(saved.origin);
     action.current = saved.position;
+    entry.current = nextHistoryEntry();
     window.history.pushState(null, "", appHref(saved.route));
     select(saved.route);
   };
 
   return {
-    captureReturn,
+    origin,
+    openContext,
     restoreReturn,
     route,
     navigate,
     openPage,
-    solution: visits.current["solution-prototype"],
+    solution: visits.current["solution-example"],
     journey: visits.current.journey,
     choices: visits.current.choices,
     prerequisites: visits.current.prerequisites,

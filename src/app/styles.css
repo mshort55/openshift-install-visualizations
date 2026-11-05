@@ -234,3 +234,38 @@ h1:focus {
     margin-left: 0;
   }
 }
+.app-share {
+  flex-shrink: 0;
+}
+.app-share button {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--selection-border);
+  border-radius: var(--radius-box);
+  background: var(--surface);
+  color: var(--link);
+}
+.app-share [role="status"] {
+  display: block;
+  font-size: 0.9rem;
+}
+.app-share dialog {
+  width: min(520px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-dialog);
+  padding: 24px;
+  color: var(--ink);
+}
+.app-share dialog::backdrop {
+  background: #15151580;
+}
+.app-share input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 8px 0 20px;
+  padding: 10px;
+}

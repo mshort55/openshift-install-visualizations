@@ -33,7 +33,7 @@ export async function verifyPrerequisites({
       `location.hash === ${JSON.stringify(`#/prerequisites${path}`)} && document.activeElement?.id === ${JSON.stringify(target)}`,
       `${topic} opens and focuses its prerequisite content`,
     );
-    await click('[data-focus="return-journey"]');
+    await click('[data-focus="context-return"]');
     assert.equal(
       await run(
         'document.querySelectorAll("button[aria-expanded=true]").length',

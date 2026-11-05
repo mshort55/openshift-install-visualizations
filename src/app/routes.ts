@@ -9,18 +9,15 @@ import type { TreeMode } from "../pages/choices/tree";
 import { parseRoute, routeHref } from "../pages/journey/catalog";
 import type { Route } from "../pages/journey/model";
 import {
-  type Chapter,
-  parseChapter,
-} from "../pages/journey/solution-prototype/complete-model";
-import {
   type PrerequisitesView,
   parsePrerequisites,
   prerequisitesHome,
   prerequisitesHref,
 } from "../pages/prerequisites/model";
+import { type Chapter, parseChapter } from "../pages/solution-example/model";
 
 export type AppRoute =
-  | { page: "solution-prototype"; chapter: Chapter; moment: number }
+  | { page: "solution-example"; chapter: Chapter }
   | { page: "journey"; view: Route }
   | { page: "choices"; answers: Answers; mode: TreeMode }
   | { page: "prerequisites"; view: PrerequisitesView };
@@ -46,18 +43,10 @@ export function parseLocation(hash: string, search = ""): AppRoute {
   const fragment = hash.replace(/^#/, "");
   const [path, query = ""] = fragment.split("?");
   const legacyMode = new URLSearchParams(search).get("view");
-  const prototypeParams = new URLSearchParams(query);
-  if (
-    import.meta.env.DEV &&
-    (path === "/solution-example" ||
-      (path === "/journey" && prototypeParams.get("prototype") === "solution"))
-  ) {
-    const moment = Number(prototypeParams.get("moment"));
+  if (path === "/solution-example") {
     return {
-      page: "solution-prototype",
-      chapter: parseChapter(prototypeParams.get("chapter")),
-      moment:
-        Number.isInteger(moment) && moment >= 0 && moment <= 5 ? moment : 0,
+      page: "solution-example",
+      chapter: parseChapter(new URLSearchParams(query).get("chapter")),
     };
   }
   if (path === "/prerequisites" || path?.startsWith("/prerequisites/")) {
@@ -98,8 +87,8 @@ export function parseLocation(hash: string, search = ""): AppRoute {
 
 /** Serializes page state without mixing Journey perspectives and Choices modes. */
 export function appHref(route: AppRoute): string {
-  if (route.page === "solution-prototype")
-    return `#/solution-example?chapter=${route.chapter}${route.chapter === "preparation" ? `&moment=${route.moment}` : ""}`;
+  if (route.page === "solution-example")
+    return `#/solution-example?chapter=${route.chapter}`;
   if (route.page === "journey") return routeHref(route.view);
   if (route.page === "prerequisites") return prerequisitesHref(route.view);
   const selection = encodeSelection(choicesCatalog, route.answers);

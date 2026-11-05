@@ -1,6 +1,6 @@
 ---
 name: verify-openshift-install-visualizations
-description: Verify Journey and Choices in the combined OpenShift app using disposable Vite and headless Chrome. Use for page navigation, retained state, shared links, decision-tree changes, or responsive layouts.
+description: Verify Journey, Solution example, Choices and Prerequisites in the combined OpenShift app using disposable Vite and headless Chrome. Use for page navigation, retained state, shared links, decision-tree changes, or responsive layouts.
 ---
 
 # Verify the installation app
@@ -13,7 +13,9 @@ Run commands from the repository root. Install dependencies with `npm ci` when `
 npm run verify:browser
 ```
 
-This launches disposable Vite and Chrome processes, drives the real UI and cleans up in `finally`. Completion requires the `PASS` line and exit code 0. It verifies Journey as the default page, Choices navigation, retained Journey expansion/scroll and Choices answers, Back/Forward, contextual return, old URL formats, refresh, absence of the removed search/share/About controls, keyboard access, and page layouts at 320, 390, 768 and 1440 pixels. Screenshots remain under `artifacts/verify/combined-app/`.
+This launches disposable Vite and Chrome processes, drives the real UI and cleans up in `finally`. Completion requires the `PASS` line and exit code 0. It verifies the six Solution chapters, independent default scenes, partial preparation save/resume and sample IPAM answer, scoped DNS evidence, automated/local-BMC boot comparison with optional instructions and retained demonstration state, focused customer-hook recovery with retained failure history, scoped verification/cleanup and independent handoff/template content, chapter-only sharing and clipboard fallback, nested contextual returns with exact disclosure/scroll/focus restoration, and Journey as the default page, Choices navigation, retained Journey expansion/scroll and Choices answers, Back/Forward, contextual return, old URL formats, refresh, absence of the removed Journey search/share/About controls, keyboard access, and page layouts at 320, 390, 768 and 1440 pixels. Screenshots remain under `artifacts/verify/combined-app/`. Inspect the Solution screenshots at 320/390/768/1440 widths and enlarged text, including expanded local boot instructions, recovery evidence and the sample handoff; overflow assertions alone do not establish readability. Read [Solution example: three demonstrations](features/solution-example.md) for the focused recipe and scope limits.
+
+After `npm run build`, run `VERIFY_PRODUCTION=1 npm run verify:browser` to exercise the same entry and direct routes against Vite production preview. This mode uses the same disposable-process cleanup.
 
 The first run downloads Chrome for Testing to this skill's ignored `cache/` directory. The app has no login, database or external runtime service.
 

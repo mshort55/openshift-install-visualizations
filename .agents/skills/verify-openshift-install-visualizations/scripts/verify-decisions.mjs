@@ -267,7 +267,7 @@ async function launch() {
   const viteLog = await fs.open(path.join(dir, "vite.log"), "a");
   const vite = spawn(
     "npm",
-    ["run", "app", "--", "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
+    ["run", process.env.VERIFY_PRODUCTION === "1" ? "preview" : "app", "--", "--host", "127.0.0.1", "--port", String(port), "--strictPort"],
     {
       cwd: repoRoot,
       detached: true,
