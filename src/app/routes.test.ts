@@ -72,6 +72,14 @@ describe("combined app links", () => {
       "tickets/bmc",
       "firewall",
       "sources",
+      "reference",
+      "inventory",
+      "configuration",
+      "ports",
+      "dns-access",
+      "tickets/ipam",
+      "tickets/dhcp",
+      "tickets/admin",
     ] satisfies PrerequisitesTarget[]) {
       for (const addressing of ["dhcp", "static"] satisfies (
         | "dhcp"
@@ -101,7 +109,7 @@ describe("combined app links", () => {
       appHref(
         parseLocation("#/prerequisites/dns/?addressing=static&dns=published"),
       ),
-    ).toBe("#/prerequisites/dns?addressing=static&dns=published");
+    ).toBe("#/prerequisites/dns?addressing=static");
     expect(
       appHref(
         parseLocation("#/prerequisites/tickets/missing?addressing=static"),

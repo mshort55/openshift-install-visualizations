@@ -1,12 +1,12 @@
-import { Addressing, Dns, Firewall, Handoffs, Sources } from "./content";
+import { Handoffs } from "./content";
 import { exampleNodes } from "./data";
 import {
-  Disclosure,
   PrerequisiteLink,
   type PrerequisitesProps,
   PrerequisitesProvider,
 } from "./interactions";
-import { sections } from "./model";
+import { prerequisitesSection, sections } from "./model";
+import { TechnicalReference } from "./reference";
 import { Services } from "./services";
 import "./styles.css";
 
@@ -18,7 +18,7 @@ function NetworkMap() {
     >
       <div className="section-head">
         <div>
-          <h2>Five servers. Two networks. One site handoff.</h2>
+          <h2>Five-node network map</h2>
           <p>
             <strong>7 machine-LAN addresses</strong> = 5 nodes + 2 VIPs ·{" "}
             <strong>5 separate BMC addresses</strong>
@@ -61,11 +61,6 @@ function NetworkMap() {
               </div>
               <div className="node-mode dhcp-only">DHCP reservation</div>
               <div className="node-mode static-only">Static in agent ISO</div>
-              <div className="node-meta">
-                NIC <b>eno1</b> · switch port <b>{node.port}</b>
-                <br />
-                MAC <code>{node.mac}</code>
-              </div>
               <div className="node-note">
                 {node.rendezvous
                   ? "Rendezvous · TCP 8090"
@@ -101,7 +96,6 @@ function NetworkMap() {
             <div className="bmc" key={node.name}>
               <span>{node.name} BMC</span>
               <b>{node.bmc}</b>
-              <small>Configured before ISO boot</small>
             </div>
           ))}
         </div>
@@ -117,37 +111,12 @@ function NetworkMap() {
           </span>
         </div>
         <p className="bmc-caption">
-          For URL-mounted virtual media, the BMC fetches the ISO. Reaching a BMC
-          does not prove that it can retrieve media. Vendor console streaming
-          can use a different path.
+          URL-mounted media needs both paths: admin → BMC and BMC → ISO host.
+          Confirm ports and media support for the chosen hardware.
         </p>
         <PrerequisiteLink target="tickets/bmc">
-          Open the BMC and virtual-media handoff →
+          Server-management handoff →
         </PrerequisiteLink>
-      </div>
-      <div className="overview-note">
-        <div className="note">
-          <strong>Internal DNS and client access are separate</strong>
-          <span className="apps-pending-only">
-            In this managed example, site API/app records are pending. The
-            monitoring workstation still needs API resolution; the example uses
-            a local hosts entry. Nodes use managed internal resolution.
-          </span>
-          <span className="published-only">
-            API and application records are published for clients in this
-            example. Their routes and firewall access to the VIPs still need
-            verification.
-          </span>
-          <PrerequisiteLink target="dns" focusId="dns-explanation">
-            Read the DNS scope and evidence →
-          </PrerequisiteLink>
-        </div>
-        <div className="note neutral">
-          <strong>Managed networking still uses site infrastructure</strong>This
-          example needs usable addresses, switching, routes and permitted
-          traffic. It uses managed VIPs and internal DNS, with no external load
-          balancer, separate bootstrap server or PXE provisioning network.
-        </div>
       </div>
     </section>
   );
@@ -156,11 +125,7 @@ function NetworkMap() {
 /** A fixed learning example; its scenario controls do not assess a real site's readiness. */
 export function PrerequisitesPage(props: PrerequisitesProps) {
   const { view, onChange } = props;
-  const activeSection = view.target.startsWith("tickets/")
-    ? "tickets"
-    : view.target === "management"
-      ? "overview"
-      : view.target;
+  const activeSection = prerequisitesSection(view.target);
   return (
     <PrerequisitesProvider {...props}>
       <main
@@ -179,42 +144,12 @@ export function PrerequisitesPage(props: PrerequisitesProps) {
               Network prerequisites: a five-node example
             </h1>
             <p>
-              Explore the addresses, shared services and access paths the data
-              center supplies before installation.
+              Prepare addresses, shared services and access before booting the
+              servers. This example uses managed VIPs, OVN-Kubernetes and a full
+              agent ISO delivered through BMC virtual media.
             </p>
           </div>
         </header>
-        <Disclosure
-          id="scope"
-          summary={
-            <>
-              Example scope{" "}
-              <span className="scope-summary">
-                Managed networking · full ISO · BMC virtual media
-              </span>
-            </>
-          }
-        >
-          <div className="detail-body">
-            <p>
-              Three control-plane nodes and two workers share one machine LAN,
-              using <code>platform: baremetal</code>, managed VIPs and
-              OVN-Kubernetes. The full agent ISO is delivered through BMC
-              virtual media on a separate management network.
-            </p>
-            <p>
-              Addresses and MACs are illustrative. This page explains one
-              design; it does not validate a site or follow selections made on
-              Choices. An existing approved service can satisfy a prerequisite
-              without a new ticket.
-            </p>
-            <p>
-              Documentation and source reviewed 4 November 2026. DNS conclusions
-              apply to this managed design. Exact VIP failover ACLs and
-              hardware-specific media behavior still require site verification.
-            </p>
-          </div>
-        </Disclosure>
         <nav className="topnav" aria-label="Prerequisite sections">
           {sections.map((section) => (
             <span
@@ -233,7 +168,7 @@ export function PrerequisitesPage(props: PrerequisitesProps) {
         </nav>
         <div className="controlbar">
           <fieldset>
-            <legend>Example node addressing</legend>
+            <legend>Node addressing</legend>
             <div className="choices">
               {(
                 [
@@ -256,13 +191,13 @@ export function PrerequisitesPage(props: PrerequisitesProps) {
               ))}
             </div>
           </fieldset>
-          <fieldset>
-            <legend>Example external cluster DNS</legend>
+          <fieldset aria-describedby="site-dns-timing">
+            <legend>Site DNS publication</legend>
             <div className="choices">
               {(
                 [
-                  "pending",
                   "published",
+                  "pending",
                 ] satisfies PrerequisitesProps["view"]["dns"][]
               ).map((dns) => (
                 <label className="choice" key={dns}>
@@ -273,20 +208,22 @@ export function PrerequisitesPage(props: PrerequisitesProps) {
                     checked={view.dns === dns}
                     onChange={() => onChange({ ...view, dns }, "retain")}
                   />
-                  {dns === "pending"
-                    ? "Pending · local API access"
-                    : "Published"}
+                  {dns === "published"
+                    ? "Before installation"
+                    : "Defer until after installation"}
                 </label>
               ))}
             </div>
+            <p id="site-dns-timing" className="control-hint">
+              API and application records can wait in this managed bare-metal
+              example. Installation still needs upstream DNS and API name
+              resolution on the monitoring workstation.
+            </p>
           </fieldset>
         </div>
         <NetworkMap />
-        <Addressing />
-        <Dns />
         <Handoffs />
-        <Firewall />
-        <Sources />
+        <TechnicalReference />
       </main>
     </PrerequisitesProvider>
   );

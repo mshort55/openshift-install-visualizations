@@ -9,7 +9,7 @@ npm run app
 
 Open <http://localhost:5174>. Choose **Choices** in the header, or follow **Explore Agent-based choices** from Journey's deployment-planning explanation. **Return to journey** restores the previous step and reading position. Page switches preserve Journey's expanded sections and Choices answers for the current session.
 
-Choose **Prerequisites** in the header, or follow its contextual links from networking, addressing, DNS, firewall review and host management. Its DHCP/static and external-DNS controls explore a fixed example independently of Choices. Section links preserve both scenarios; handoff links open the corresponding disclosure. Page switches retain scenarios, expanded disclosures and reading position.
+Choose **Prerequisites** in the header, or follow its contextual links from networking, addressing, DNS, firewall review and host management. The page presents a network map, five site handoffs and expandable technical references. Node addressing and site DNS publication are equally prominent controls above the map. DNS can be published before installation or deferred until afterward in this managed bare-metal example; the visible note explains the installation-time resolution needs. Section links preserve both selections, and reference links open their panel. Page switches retain selections, expanded references and reading position.
 
 ```bash
 npm run check
@@ -26,7 +26,7 @@ The single production output is `dist/`. Serve it at a root or subdirectory URL.
 
 - `#/journey` opens the timeline. For example, `#/journey/dns?view=problems` opens a topic and perspective.
 - `#/choices` opens the decision tree with nothing selected. `#/choices?mode=map&host-addressing=static` opens every option with Static NMState selected.
-- `#/prerequisites` opens the five-node network map. `#/prerequisites/dns?addressing=static&dns=published` opens DNS with both scenarios selected. `#/prerequisites/tickets/network` opens the switch and routing handoff.
+- `#/prerequisites` opens the five-node network map with DHCP and published client DNS. `#/prerequisites/dns?addressing=static` focuses the DNS handoff with static addressing. `#/prerequisites/dns-access?dns=pending` opens the temporary-access reference. Existing `#/prerequisites/tickets/network` links reach the consolidated addresses/network handoff.
 - Earlier Journey `#/<topic>?view=...` and Choices `?view=map#decision=option&...` links are accepted at the new app address. Existing content redirects remain supported.
 - An empty address opens Journey. Old standalone deployment addresses must be redirected by their host to the new app, preserving query strings and fragments; the app cannot redirect a different host or port. An old empty Choices address must explicitly target `#/choices`.
 

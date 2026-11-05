@@ -447,7 +447,7 @@ try {
           "#/journey/networking?view=opportunities&item=network-translation",
         ],
         ["choices", "#/choices?mode=map&host-addressing=static"],
-        ["prerequisites", "#/prerequisites?addressing=static&dns=published"],
+        ["prerequisites", "#/prerequisites?addressing=static"],
         ["prerequisites-handoff", "#/prerequisites/tickets/network"],
       ]) {
         await go(hash);
@@ -457,7 +457,7 @@ try {
             : page === "new-evidence"
               ? 'document.getElementById("record-misleading-health").scrollIntoView()'
               : page === "prerequisites-handoff"
-                ? 'document.getElementById("prerequisites-tickets-network").scrollIntoView()'
+                ? 'document.getElementById("prerequisites-addressing").scrollIntoView()'
                 : "window.scrollTo(0, 0)",
         );
         await settle();

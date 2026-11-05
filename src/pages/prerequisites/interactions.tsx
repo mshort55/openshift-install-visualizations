@@ -10,6 +10,7 @@ import {
   type PrerequisitesView,
   prerequisitesHref,
   prerequisitesTarget,
+  referenceDisclosures,
 } from "./model";
 
 /** Keeps disclosures open across page switches without adding them all to the URL. */
@@ -41,7 +42,7 @@ export function PrerequisitesProvider({
     session: { setOpened },
   } = page;
   useLayoutEffect(() => {
-    if (!view.target.startsWith("tickets/")) return;
+    if (!referenceDisclosures.has(view.target)) return;
     setOpened((current) =>
       current.has(view.target) ? current : new Set([...current, view.target]),
     );
@@ -81,7 +82,7 @@ export function PrerequisiteLink({
         )
           return;
         event.preventDefault();
-        if (target.startsWith("tickets/"))
+        if (referenceDisclosures.has(target))
           session.setOpened((current) => new Set([...current, target]));
         if (target === view.target) {
           requestAnimationFrame(() => {

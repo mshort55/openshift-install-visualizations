@@ -34,19 +34,11 @@
   font-weight: 700;
   text-decoration: none;
 }
-.prerequisites-page .assumption {
-  padding: var(--space-md) var(--space-lg);
-  border-left: var(--bar-thin) solid var(--blue-50);
-  background: var(--blue-10);
-  border-radius: 0 var(--radius-box) var(--radius-box) 0;
-  margin-bottom: var(--space-lg);
-}
 .prerequisites-page .controlbar {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-lg);
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: start;
   background: var(--white);
   border: 1px solid var(--edge);
   border-radius: var(--radius-card);
@@ -157,13 +149,6 @@
   font-size: 13px;
   color: var(--quiet);
   line-height: 1.55;
-}
-.prerequisites-page .service .owner {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--quiet);
 }
 .prerequisites-page .service a {
   display: inline-block;
@@ -307,14 +292,6 @@
   color: var(--accent-orange);
   margin: var(--space-xs) 0 var(--space-md);
 }
-.prerequisites-page .node-meta {
-  font-size: 11px;
-  color: var(--text-secondary);
-  line-height: 1.9;
-}
-.prerequisites-page .node-meta code {
-  font-size: 10px;
-}
 .prerequisites-page .node-note {
   margin-top: var(--space-md);
   padding-top: var(--space-sm);
@@ -405,28 +382,6 @@
   color: var(--purple-60);
   margin-top: var(--space-sm);
   text-align: center;
-}
-.prerequisites-page .overview-note {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
-  margin-top: var(--space-lg);
-}
-.prerequisites-page .note {
-  padding: var(--space-md);
-  border-radius: var(--radius-box);
-  background: var(--success-green-10);
-  font-size: 12px;
-  color: var(--success-green-80);
-}
-.prerequisites-page .note.neutral {
-  background: var(--gray-10);
-  color: var(--quiet);
-}
-.prerequisites-page .note strong {
-  display: block;
-  margin-bottom: var(--space-xs);
-  font-size: 13px;
 }
 .prerequisites-page .section {
   margin-top: var(--space-xl);
@@ -539,14 +494,6 @@
 .prerequisites-page details[open] > summary {
   border-bottom: 1px solid var(--edge);
 }
-.prerequisites-page .ticket-id {
-  background: var(--blue-10);
-  color: var(--blue-70);
-  font-size: 11px;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-badge);
-  flex-shrink: 0;
-}
 .prerequisites-page .detail-body {
   padding: var(--space-lg);
   color: var(--quiet);
@@ -579,48 +526,6 @@
   margin-top: var(--space-md);
   color: var(--quiet);
 }
-.prerequisites-page .dns-banner {
-  padding: var(--space-lg);
-  border: 1px solid var(--success-green-30);
-  border-radius: var(--radius-box);
-  background: var(--success-green-10);
-  margin-top: var(--space-lg);
-}
-.prerequisites-page .dns-banner h3 {
-  font-size: 18px;
-  color: var(--success-green-80);
-}
-.prerequisites-page .dns-banner p {
-  font-size: 13px;
-  color: var(--success-green-80);
-  margin-top: var(--space-sm);
-}
-.prerequisites-page .flow {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  flex-wrap: wrap;
-  margin: var(--space-md) 0;
-}
-.prerequisites-page .flow span {
-  padding: var(--space-sm) var(--space-md);
-  background: var(--white);
-  border: 1px solid var(--edge);
-  border-radius: var(--radius-badge);
-  font-size: 12px;
-}
-.prerequisites-page .flow b {
-  color: var(--link-hover);
-}
-.prerequisites-page .evidence {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-lg);
-}
-.prerequisites-page .evidence li {
-  margin: var(--space-sm) 0;
-  font-size: 12px;
-}
 @media (max-width: 1100px) {
   .prerequisites-page .node-grid,
   .prerequisites-page .bmc-grid {
@@ -631,12 +536,6 @@
   }
   .prerequisites-page .node-ip {
     font-size: 14px;
-  }
-  .prerequisites-page .node-meta {
-    font-size: 10px;
-  }
-  .prerequisites-page .node-meta code {
-    font-size: 9px;
   }
   .prerequisites-page .services {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -670,12 +569,6 @@
   .prerequisites-page .node-ip {
     font-size: 17px;
   }
-  .prerequisites-page .node-meta {
-    font-size: 11px;
-  }
-  .prerequisites-page .node-meta code {
-    font-size: 10px;
-  }
   .prerequisites-page .bmc-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     border-bottom: 0;
@@ -686,9 +579,7 @@
   .prerequisites-page .bmc:last-child {
     grid-column: 1 / -1;
   }
-  .prerequisites-page .two-col,
-  .prerequisites-page .overview-note,
-  .prerequisites-page .evidence {
+  .prerequisites-page .two-col {
     grid-template-columns: 1fr;
   }
   .prerequisites-page .overview,
@@ -719,6 +610,7 @@
     margin-bottom: var(--space-xs);
   }
   .prerequisites-page .controlbar {
+    grid-template-columns: 1fr;
     padding: var(--space-md);
   }
   .prerequisites-page summary {
@@ -730,7 +622,6 @@
     padding: var(--space-md);
   }
 }
-
 .prerequisites-page {
   width: 100%;
   color: var(--ink);
@@ -789,11 +680,6 @@
 .prerequisites-page .hero p {
   margin-top: 12px;
 }
-.prerequisites-page .scope-summary {
-  font-size: 12px;
-  color: var(--quiet);
-  font-weight: 400;
-}
 .prerequisites-page .topnav {
   position: sticky;
   top: 0;
@@ -814,15 +700,16 @@
   padding: 12px 20px;
   margin-bottom: 20px;
 }
+.prerequisites-page .control-hint {
+  margin-top: 8px;
+  color: var(--quiet);
+  font-size: 13px;
+}
 .prerequisites-page .section-head {
   margin-bottom: 16px;
 }
 .prerequisites-page .node-ip {
   font-size: clamp(13px, 1.2vw, 17px);
-}
-.prerequisites-page .note a {
-  display: block;
-  margin-top: 8px;
 }
 .prerequisites-page .bmc-area > a {
   display: inline-block;
@@ -871,9 +758,6 @@
   .prerequisites-page .node-ip {
     font-size: 15px;
   }
-  .prerequisites-page .scope-summary {
-    flex-basis: 100%;
-  }
   .prerequisites-page :is(h2, h3, summary) {
     scroll-margin-top: 120px;
   }
@@ -904,5 +788,51 @@
   }
   .prerequisites-page table {
     min-width: 0;
+  }
+}
+
+.prerequisites-page .handoffs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+.prerequisites-page .handoffs .panel:last-child {
+  grid-column: 1 / -1;
+}
+.prerequisites-page .handoffs .panel {
+  font-size: 13px;
+}
+.prerequisites-page .panel .owner-line {
+  color: var(--blue-60);
+  margin: var(--space-xs) 0 var(--space-md);
+}
+.prerequisites-page .handoff-check {
+  border-top: 1px solid var(--edge);
+  padding-top: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+.prerequisites-page .record-list {
+  margin: var(--space-md) 0;
+}
+.prerequisites-page .record-list > div + div {
+  margin-top: var(--space-sm);
+}
+.prerequisites-page .record-list dt {
+  font-weight: 700;
+}
+.prerequisites-page .record-list dd {
+  margin: 0;
+  color: var(--quiet);
+}
+.prerequisites-page[data-addressing="static"] li.static-only {
+  display: list-item;
+}
+.prerequisites-page .source-list {
+  margin: var(--space-md) 0;
+}
+@media (max-width: 760px) {
+  .prerequisites-page .handoffs {
+    grid-template-columns: 1fr;
   }
 }
